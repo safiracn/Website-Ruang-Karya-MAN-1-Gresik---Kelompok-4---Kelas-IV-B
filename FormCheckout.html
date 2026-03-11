@@ -3,97 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembelian</title>
+    <title>Pembelian | Ruang Karya MAN 1 Gresik</title>
     <link rel="stylesheet" href="./RuangKaryaCSS/output.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="font-sans-body p-4 md:p-12 flex items-center justify-center min-h-screen bg-slate-100">
 
-<div class="luxury-container">
-    <header class="main-header">
-        <span><img src="images/logo sekolah.png" alt="Logo Sekolah"> </span>
-        <h1>Pembelian</h1>
+<div class="bg-gray-50 w-[95%] max-w-6xl mx-auto rounded-xl shadow-luxury overflow-hidden flex flex-col">
+    <header class="bg-gray-50 text-white pb-0 md:px-[25px] py-[1px] flex md:flex-row items-center gap-[95px] md:gap-1">
+        <img src="images/logo sekolah.png" alt="Logo Sekolah" class="h-[80px] w-auto bg-white shrink-0">
     </header>
+    <h1 class="font-serif-heading md:text-4xl ml-[35px] font-semibold text-blue-900">Pembelian</h1>
+    <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-[40px] p-[30px]">
 
-    <div class="customizer-wrapper">
-
-        <div class="content-panel">
+        <div class="space-y-8">
+            <div class="bg-white border-0 p-6 rounded border">
             <form id="po-form">
-                
-                <div class="step-panel active">
-                    <h2>Produk</h2>
-                    <img src="images/meja belajar kotak.jpeg" alt="Foto Meja Belajar Kotak">
-                </div>
 
                 <div class="step-panel">
-                    <h2>1. Kontak</h2>
-                    <div class="input-group">
-                        <label for="nama">Nama</label>
-                        <span class="separator">:</span>
-                            <input type="text" id="nama" name="nama" required> 
+                    <h2 class=" text-blue-900 uppercase font-bold mb-6 tracking-wider">Kontak</h2>
+                    <div class="flex flex-col gap-1 mb-5">
+                        <label for="nama" class="text-left shrink-0">Nama</label>
+                            <input type="text" id="nama" name="nama" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"> 
                         </div>
 
-                    <div class="input-group">
-                        <label for="noTelp">No. Telepon</label>
-                        <span class="separator">:</span>
-                            <input type="text" id="noTelp" name="noTelp" required> 
+                    <div class="flex flex-col gap-1 mb-5">
+                        <label for="noTelp" class="text-left shrink-0">No. Telepon</label>
+                            <input type="text" id="noTelp" name="noTelp" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"> 
+                        </div>
+
+                    <div class="flex flex-row gap-4">
+                    <div class="flex flex-col gap-1 mb-5">
+                        <label for="provinsi" class="text-left shrink-0">Provinsi</label>
+                            <input type="text" id="provinsi" name="provinsi" required class="w-60 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"> 
+                        </div>
+
+                    <div class="flex flex-col gap-1 mb-5">
+                        <label for="kota" class="text-left shrink-0">Kota</label>
+                            <input type="text" id="kota" name="kota" required class="w-60 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
+                        </div>
+
+                        <div class="flex flex-col gap-1 mb-5">
+                        <label for="kodePos" class="text-left shrink-0">Kode Pos</label>
+                            <input type="text" id="kodePos" name="kodePos" required class="w-30 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
+                        </div>
                         </div>
                     
-                    <div class="input-group">
-                        <label for="alamat">Alamat</label>
-                        <span class="separator">:</span>
-                            <textarea id="alamat" name="alamat" rows="4" required></textarea> 
+                    <div class="flex flex-col gap-1 mb-5">
+                        <label for="alamat" class="text-left shrink-0">Detail Lainnya</label>
+                            <textarea id="alamat" name="alamat" rows="4" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"></textarea> 
                         </div>
 
-                    </div>
-                </div>
-
-                <div class="step-panel">
-                    <h2>2. Metode Pengiriman</h2>
-                    <div class="grid-options">
-                        <label class="card-option">
-                            <input type="radio" name="pengiriman" value="Ambil" checked>
-                            <div class="card-content">
+                    <div class="step-panel mt-5">
+                    <h2 class=" text-blue-900 uppercase font-bold mb-4 tracking-wider">Metode Pengiriman</h2>
+                    <div class="flex gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="pengiriman" value="Ambil" checked class="hidden peer">
+                            <div class="w-40 p-2 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-300 peer-checked:font-semibold transition-all">
                                 <span>Ambil</span>
                             </div>
                         </label>
-                        <label class="card-option">
-                            <input type="radio" name="pengiriman" value="Antar">
-                            <div class="card-content">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="pengiriman" value="Antar" class="hidden peer">
+                            <div class="w-40 p-2 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-300 peer-checked:font-semibold transition-all">
                                 <span>Antar</span>
                             </div>
                         </label>
                     </div>
-
-                    <div class="step-panel">
-                    <h2>3. Detail Pesanan</h2>
-                    <div class="input-group">
-                        <label for="jumlah">Jumlah Pesanan</label>
-                        <span class="separator">:</span>
-                            <input type="number" id="jumlah" name="jumlah" min="1" max="10" value="1" required> 
-                            <small class="pcs-text">Pcs</small>
-                        </div>
-
-                <div class="step-panel">
-                    <h2>Konfirmasi Pesanan</h2>
-                    <div class="invoice-box">
-                        <p>Produk: <b>Meja Belajar Pradipa</b></p>
-                        <p>Jumlah Pesanan: <b id="res-jumlah">1</b></p>
-                        <p class="price-tag">Total Harga: <b id="res-total">Rp 100.000,00</b></p>
-                    </div>
-                    <button type="button" class="order-btn" onclick="submitFinal()">Pesan</button>
                 </div>
+                    </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-8">
+                <div class="bg-gray-50 p-6 rounded-xl border border-slate-200">
+                    <div class="step-panel">
+                    <h2 class=" text-blue-900 uppercase font-bold mb-4 tracking-wider">Produk</h2>
+                    <div class="flex items-start gap-2">
+                    <img src="images/meja belajar kotak.jpeg" alt="Foto Meja Belajar Kotak" class="w-25 h-25 object-cover rounded-xl shadow-md">
+                    <div class="flex flex-col gap-2 pt-1">
+                        <p class="font-semibold">Meja Belajar Pradipa</p>
+                    <div class="flex items-center gap-2">
+                        <p>Jumlah : </p>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="jumlah" name="jumlah" min="1" max="10" value="1" required class="w-15 p-1.5 border focus:ring-2 focus:ring-yellow-300 transition border-slate-300 rounded-xl text-center"> 
+                            <small class="text-sm text-text-muted font-medium text-gray-500">Pcs</small>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <p>Subtotal : <b id="res-total">Rp 100.000,00</b></p>
+                        </div>
+                        </div>
+                        </div>
+                </div>
+                
+                    <div class="space-y-3 text-base mt-[1px] p-[15px] pl-0 text-left border-t border-slate-100">
+                        <p>Subtotal Pesanan : <b id="res-total">Rp 100.000,00</b></p>
+                    </div>
+
+                    <button type="button" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl mt-[15px] cursor-pointer hover:bg-blue-900 transition-colors shadow" onclick="submitFinal()" >Pesan</button>
+                    </div>
 
             </form>
-        </div>
     </div>
 </div>
 
-<footer>
-<p>&copy; 2026 Ruang Karya MAN 1 Gresik</p>
+<footer class="mt-[1px] p-[15px] text-center border-t border-slate-100">
+<p class="text-gray-500 text-text-muted text-xs">&copy; 2026 Ruang Karya MAN 1 Gresik</p>
 </footer>
 
-<script src="shava.js"></script>
+<script src="shv.js"></script>
 
 </body>
 </html>
