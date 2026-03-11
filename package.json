@@ -1,0 +1,25 @@
+{
+  "name": "website-ruang-karya",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/safiracn/Website-Ruang-Karya-MAN-1-Gresik---Kelompok-4---Kelas-IV-B.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/safiracn/Website-Ruang-Karya-MAN-1-Gresik---Kelompok-4---Kelas-IV-B/issues"
+  },
+  "homepage": "https://github.com/safiracn/Website-Ruang-Karya-MAN-1-Gresik---Kelompok-4---Kelas-IV-B#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "tailwindcss": "^4.2.1"
+  }
+}
