@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+@theme {
+    --font-serif-heading: "Cambria", serif; 
+    --font-sans-body: "Inter", sans-serif;
+}
