@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katalog Produk</title>
+  <link rel="stylesheet" href="./RuangKaryaCSS/output.css" />
+</head>
+<body class="font-sans-body bg-slate-50 text-slate-800">
+
+  <main class="min-h-screen">
+    <section class="py-12">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        <!-- FILTER BAR -->
+        <div class="mt-8 mb-8 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
+            <!-- CATEGORY -->
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+
+              <span class="text-sm font-semibold text-slate-500">
+                Kategori
+              </span>
+
+              <div class="flex flex-wrap gap-2">
+
+                <button class="rounded-xl bg-blue-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-800">
+                  Semua
+                </button>
+
+                <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-900 hover:text-white hover:border-blue-900">
+                  Busana
+                </button>
+
+                <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-900 hover:text-white hover:border-blue-900">
+                  Mebel
+                </button>
+
+                <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-900 hover:text-white hover:border-blue-900">
+                  Kerajinan Tangan
+                </button>
+
+              </div>
+            </div>
+
+            <!-- SORT -->
+            <div class="flex items-center gap-2">
+
+              <button class="rounded-xl border border-blue-900 px-4 py-2 text-sm font-medium text-blue-900 transition hover:bg-blue-900 hover:text-white">
+                Terbaru
+              </button>
+
+              <button class="rounded-xl border border-blue-900 px-4 py-2 text-sm font-medium text-blue-900 transition hover:bg-blue-900 hover:text-white">
+                Populer
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- grid -->
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+          <!-- card 1 -->
+          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative bg-slate-100 p-6 pt-8">
+              <img
+                src="./images/meja belajar kotak.jpeg"
+                alt="Meja Aksara"
+                class="mx-auto h-44 w-full object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-blue-900">Meja Aksara</h2>
+              <p class="mt-1 text-sm text-slate-500">Meja sedang ukuran 110 x 60</p>
+              <div class="mt-3 flex items-center gap-3">
+                <span class="text-xl font-extrabold text-blue-900">Rp100.000</span>
+              </div>
+              <div class="mt-5 flex gap-3">
+                <button class="flex-1 rounded-xl bg-blue-900 px-4 py-3 font-semibold text-white transition hover:bg-yellow-500 hover:text-blue-900">
+                  Beli Sekarang
+                </button>
+                <button class="rounded-xl border border-blue-900 px-4 py-3 text-xl text-blue-900 transition hover:bg-slate-100 hover:scale-110">
+                  🛒
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- card 2 -->
+          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative bg-slate-100 p-6 pt-8">
+              <img
+                src="./images/meja 2 lapis.jpg"
+                alt="Meja Ksatria"
+                class="mx-auto h-44 w-full object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-blue-900">Meja Ksatria</h2>
+              <p class="mt-1 text-sm text-slate-500">Meja sedang ukuran 110 x 60</p>
+              <div class="mt-3">
+                <span class="text-xl font-extrabold text-blue-900">Rp180.000</span>
+              </div>
+              <div class="mt-5 flex gap-3">
+                <button class="flex-1 rounded-xl bg-blue-900 px-4 py-3 font-semibold text-white transition hover:bg-yellow-500 hover:text-blue-900">
+                  Beli Sekarang
+                </button>
+                <button class="rounded-xl border border-blue-900 px-4 py-3 text-xl text-blue-900 transition hover:bg-slate-100 hover:scale-110">
+                  🛒
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- card 3 -->
+          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative bg-slate-100 p-6 pt-8">
+              <img
+                src="./images/meja lonjong.jpg"
+                alt="Meja Bulong"
+                class="mx-auto h-44 w-full object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-blue-900">Meja Bulong</h2>
+              <p class="mt-1 text-sm text-slate-500">Meja sedang ukuran 110 x 60</p>
+              <div class="mt-3">
+                <span class="text-xl font-extrabold text-blue-900">Rp150.000</span>
+              </div>
+              <div class="mt-5 flex gap-3">
+                <button class="flex-1 rounded-xl bg-blue-900 px-4 py-3 font-semibold text-white transition hover:bg-yellow-500 hover:text-blue-900">
+                  Beli Sekarang
+                </button>
+                <button class="rounded-xl border border-blue-900 px-4 py-3 text-xl text-blue-900 transition hover:bg-slate-100 hover:scale-110">
+                  🛒
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- card 4 -->
+          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative bg-slate-100 p-6 pt-8">
+              <img
+                src="./images/kursi.jpg"
+                alt="Kursi Kartini"
+                class="mx-auto h-44 w-full object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-blue-900">Kursi Kartini</h2>
+              <p class="mt-1 text-sm text-slate-500">Kursi sedang ukuran 110 x 60</p>
+              <div class="mt-3">
+                <span class="text-xl font-extrabold text-blue-900">Rp99.999</span>
+              </div>
+              <div class="mt-5 flex gap-3">
+                <button class="flex-1 rounded-xl bg-blue-900 px-4 py-3 font-semibold text-white transition hover:bg-yellow-500 hover:text-blue-900">
+                  Beli Sekarang
+                </button>
+                <button class="rounded-xl border border-blue-900 px-4 py-3 text-xl text-blue-900 transition hover:bg-slate-100 hover:scale-110">
+                  🛒
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- card 5 -->
+          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative bg-slate-100 p-6 pt-8">
+              <img
+                src="./images/kursi 2.jpg"
+                alt="Kursi Rahayu"
+                class="mx-auto h-44 w-full object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-blue-900">Kursi Rahayu</h2>
+              <p class="mt-1 text-sm text-slate-500">Kursi sedang ukuran 110 x 60</p>
+              <div class="mt-3">
+                <span class="text-xl font-extrabold text-blue-900">Rp129.000</span>
+              </div>
+              <div class="mt-5 flex gap-3">
+                <button class="flex-1 rounded-xl bg-blue-900 px-4 py-3 font-semibold text-white transition hover:bg-yellow-500 hover:text-blue-900">
+                  Beli Sekarang
+                </button>
+                <button class="rounded-xl border border-blue-900 px-4 py-3 text-xl text-blue-900 transition hover:bg-slate-100 hover:scale-110">
+                  🛒
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- card 6 -->
+          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative bg-slate-100 p-6 pt-8">
+              <img
+                src="./images/batik 1.jpg"
+                alt="Batik Nusantara"
+                class="mx-auto h-44 w-full object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-blue-900">Batik Nusantara</h2>
+              <p class="mt-1 text-sm text-slate-500">Batik berkualitas tersedia ukuran S/M/L</p>
+              <div class="mt-3">
+                <span class="text-xl font-extrabold text-blue-900">Rp100.000</span>
+              </div>
+              <div class="mt-5 flex gap-3">
+                <button class="flex-1 rounded-xl bg-blue-900 px-4 py-3 font-semibold text-white transition hover:bg-yellow-500 hover:text-blue-900">
+                  Beli Sekarang
+                </button>
+                <button class="rounded-xl border border-blue-900 px-4 py-3 text-xl text-blue-900 transition hover:bg-slate-100 hover:scale-110">
+                  🛒
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- card 7 -->
+          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative bg-slate-100 p-6 pt-8">
+              <img
+                src="./images/batik 2.jpg"
+                alt="Batik Nuansa Bening"
+                class="mx-auto h-44 w-full object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-blue-900">Batik Nuansa Bening</h2>
+              <p class="mt-1 text-sm text-slate-500">Batik berkualitas tersedia ukuran S/M/L</p>
+              <div class="mt-3">
+                <span class="text-xl font-extrabold text-blue-900">Rp100.000</span>
+              </div>
+              <div class="mt-5 flex gap-3">
+                <button class="flex-1 rounded-xl bg-blue-900 px-4 py-3 font-semibold text-white transition hover:bg-yellow-500 hover:text-blue-900">
+                  Beli Sekarang
+                </button>
+                <button class="rounded-xl border border-blue-900 px-4 py-3 text-xl text-blue-900 transition hover:bg-slate-100 hover:scale-110">
+                  🛒
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- card 8 -->
+          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="relative bg-slate-100 p-6 pt-8">
+              <img
+                src="./images/vas bunga.jpg"
+                alt="Vas Bunga Anyam Premium"
+                class="mx-auto h-44 w-full object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-blue-900">Vas Bunga Anyam Premium</h2>
+              <p class="mt-1 text-sm text-slate-500">Terbuat dari akar pohon mangrove</p>
+              <div class="mt-3">
+                <span class="text-xl font-extrabold text-blue-900">Rp50.000</span>
+              </div>
+              <div class="mt-5 flex gap-3">
+                <button class="flex-1 rounded-xl bg-blue-900 px-4 py-3 font-semibold text-white transition hover:bg-yellow-500 hover:text-blue-900">
+                  Beli Sekarang
+                </button>
+                <button class="rounded-xl border border-blue-900 px-4 py-3 text-xl text-blue-900 transition hover:bg-slate-100 hover:scale-110">
+                  🛒
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
