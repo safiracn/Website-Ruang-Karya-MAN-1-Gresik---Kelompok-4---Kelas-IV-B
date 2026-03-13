@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="./RuangKaryaCSS/output.css">
 </head>
 <body class="font-sans-body p-4 md:p-12 flex items-center justify-center min-h-screen bg-slate-100">
-    <div class="bg-gray-50 w-[95%] max-w-6xl  mx-auto rounded-xl shadow-luxury overflow-hidden flex flex-col">
-        <header class="bg-gray-50 text-white pb-0 md:px-[25px] py-[1px] flex md:flex-row items-center gap-5 md:gap-1">
+    <div class="bg-gray-50 w-full max-w-6xl mx-auto rounded-xl shadow-luxury overflow-hidden flex flex-col">
+        <header class="bg-gray-50 text-white pb-0 md:px-[25px] py-[1px] flex flex-col md:flex-row items-center gap-5 md:gap-1">
             <img src="images/LOGO.jpeg" alt="Logo Sekolah" class="mt-5 mb-5 w-full h-auto block object-contain" style="width: 50px !important;">
             <div>
                 <h1 class="font-serif-heading text-xl mt-5 font-bold leading-tight text-blue-900">Ruang Karya</h1>
@@ -17,7 +17,7 @@
             </div>
         </header>
         <h1 class="font-serif-heading md:text-4xl ml-[35px] font-semibold text-blue-900">Pembelian</h1>
-        <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-[40px] p-[30px]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 p-6 gap-8">
             
             <div class="space-y-8">
                 <div class="bg-white border-0 p-6 rounded border">
@@ -37,17 +37,17 @@
                             <div class="flex flex-row gap-4">
                                 <div class="flex flex-col gap-1 mb-5">
                                     <label for="provinsi" class="text-left shrink-0">Provinsi</label>
-                                    <input type="text" id="provinsi" name="provinsi" required class="w-60 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
+                                    <input type="text" id="provinsi" name="provinsi" required class="w-full flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
                                 </div>
 
                                 <div class="flex flex-col gap-1 mb-5">
                                     <label for="kota" class="text-left shrink-0">Kota/Kabupaten</label>
-                                    <input type="text" id="kota" name="kota" required class="w-60 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
+                                    <input type="text" id="kota" name="kota" required class="w-full flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
                                 </div>
 
                                 <div class="flex flex-col gap-1 mb-5">
                                     <label for="kodePos" class="text-left shrink-0">Kode Pos</label>
-                                    <input type="text" id="kodePos" name="kodePos" required class="w-30 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
+                                    <input type="text" id="kodePos" name="kodePos" required class="w-full flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
                                 </div>
                             </div>
                             
@@ -58,14 +58,14 @@
 
                             <div class="step-panel mt-5">
                                 <h2 class="text-blue-900 uppercase font-bold mb-4 tracking-wider">Metode Pengiriman</h2>
-                                <div class="flex gap-4">
-                                    <label class="cursor-pointer">
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="cursor-pointer flex-1 min-w-[140px]">
                                         <input type="radio" name="pengiriman" value="Ambil" checked class="hidden peer">
                                         <span class="block w-40 p-2 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-300 peer-checked:font-semibold transition-all">
                                             <span>Ambil</span>
                                         </span>
                                     </label>
-                                    <label class="flex-1 cursor-pointer">
+                                    <label class="flex-1 min-w-[140px] cursor-pointer">
                                         <input type="radio" name="pengiriman" value="Antar" class="hidden peer">
                                         <span class="block w-40 p-2 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-300 peer-checked:font-semibold transition-all">
                                             <span>Antar</span>
@@ -82,10 +82,10 @@
                 <div class="bg-gray-50 p-6 rounded-xl border border-slate-200">
                     <div class="step-panel">
                         <h2 class="text-blue-900 uppercase font-bold mb-4 tracking-wider">Produk</h2>
-                        <div class="flex items-start gap-2">
+                        <div class="flex flex-col sm:flex-row items-center gap-4 mb-6">
                             <img src="images/meja%20belajar%20kotak.jpeg" alt="Foto Meja Belajar Kotak" class="w-25 h-25 object-cover rounded-xl shadow-md">
                             <div class="flex flex-col gap-2 pt-1">
-                                <p class="font-semibold">Meja Belajar Pradipa</p>
+                                <p class="font-semibold">Meja Aksara</p>
                                 <div class="flex items-center gap-2">
                                     <p>Jumlah : </p>
                                     <div class="flex items-center gap-2">
@@ -113,7 +113,7 @@
         </footer>
     </div>
 
-    <script src="shv.js"></script>
+    <script src="js/gabungan.js"></script>
     
 </body>
 </html>
