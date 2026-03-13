@@ -1,118 +1,119 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembelian | Ruang Karya MAN 1 Gresik</title>
     <link rel="stylesheet" href="./RuangKaryaCSS/output.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body class="font-sans-body p-4 md:p-12 flex items-center justify-center min-h-screen bg-slate-100">
-
-<div class="bg-gray-50 w-[95%] max-w-6xl mx-auto rounded-xl shadow-luxury overflow-hidden flex flex-col">
-    <header class="bg-gray-50 text-white pb-0 md:px-[25px] py-[1px] flex md:flex-row items-center gap-[95px] md:gap-1">
-        <img src="images/logo sekolah.png" alt="Logo Sekolah" class="h-[80px] w-auto bg-white shrink-0">
-    </header>
-    <h1 class="font-serif-heading md:text-4xl ml-[35px] font-semibold text-blue-900">Pembelian</h1>
-    <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-[40px] p-[30px]">
-
-        <div class="space-y-8">
-            <div class="bg-white border-0 p-6 rounded border">
-            <form id="po-form">
-
-                <div class="step-panel">
-                    <h2 class=" text-blue-900 uppercase font-bold mb-6 tracking-wider">Kontak</h2>
-                    <div class="flex flex-col gap-1 mb-5">
-                        <label for="nama" class="text-left shrink-0">Nama</label>
-                            <input type="text" id="nama" name="nama" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"> 
-                        </div>
-
-                    <div class="flex flex-col gap-1 mb-5">
-                        <label for="noTelp" class="text-left shrink-0">No. Telepon</label>
-                            <input type="text" id="noTelp" name="noTelp" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"> 
-                        </div>
-
-                    <div class="flex flex-row gap-4">
-                    <div class="flex flex-col gap-1 mb-5">
-                        <label for="provinsi" class="text-left shrink-0">Provinsi</label>
-                            <input type="text" id="provinsi" name="provinsi" required class="w-60 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"> 
-                        </div>
-
-                    <div class="flex flex-col gap-1 mb-5">
-                        <label for="kota" class="text-left shrink-0">Kota</label>
-                            <input type="text" id="kota" name="kota" required class="w-60 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
-                        </div>
-
-                        <div class="flex flex-col gap-1 mb-5">
-                        <label for="kodePos" class="text-left shrink-0">Kode Pos</label>
-                            <input type="text" id="kodePos" name="kodePos" required class="w-30 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
-                        </div>
-                        </div>
-                    
-                    <div class="flex flex-col gap-1 mb-5">
-                        <label for="alamat" class="text-left shrink-0">Detail Lainnya</label>
-                            <textarea id="alamat" name="alamat" rows="4" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"></textarea> 
-                        </div>
-
-                    <div class="step-panel mt-5">
-                    <h2 class=" text-blue-900 uppercase font-bold mb-4 tracking-wider">Metode Pengiriman</h2>
-                    <div class="flex gap-4">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="pengiriman" value="Ambil" checked class="hidden peer">
-                            <div class="w-40 p-2 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-300 peer-checked:font-semibold transition-all">
-                                <span>Ambil</span>
+    <div class="bg-gray-50 w-[95%] max-w-6xl  mx-auto rounded-xl shadow-luxury overflow-hidden flex flex-col">
+        <header class="bg-gray-50 text-white pb-0 md:px-[25px] py-[1px] flex md:flex-row items-center gap-5 md:gap-1">
+            <img src="images/LOGO.jpeg" alt="Logo Sekolah" class="mt-5 mb-5 w-full h-auto block object-contain" style="width: 50px !important;">
+            <div>
+                <h1 class="font-serif-heading text-xl mt-5 font-bold leading-tight text-blue-900">Ruang Karya</h1>
+                <h2 class="text-xs italic font-semibold leading-tight text-blue-900">MAN 1 Gresik</h2>
+                <p class="mt-1 text-sm text-xs mb-5 italic text-blue-800">Islami, Cerdas, Unggul, Kompetitif, &amp; Peduli Lingkungan</p>
+            </div>
+        </header>
+        <h1 class="font-serif-heading md:text-4xl ml-[35px] font-semibold text-blue-900">Pembelian</h1>
+        <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-[40px] p-[30px]">
+            
+            <div class="space-y-8">
+                <div class="bg-white border-0 p-6 rounded border">
+                    <form id="po-form">
+                        <div class="step-panel">
+                            <h2 class="text-blue-900 uppercase font-bold mb-6 tracking-wider">Kontak</h2>
+                            <div class="flex flex-col gap-1 mb-5">
+                                <label for="nama" class="text-left shrink-0">Nama</label>
+                                <input type="text" id="nama" name="nama" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
                             </div>
-                        </label>
-                        <label class="flex-1 cursor-pointer">
-                            <input type="radio" name="pengiriman" value="Antar" class="hidden peer">
-                            <div class="w-40 p-2 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-300 peer-checked:font-semibold transition-all">
-                                <span>Antar</span>
+
+                            <div class="flex flex-col gap-1 mb-5">
+                                <label for="noTelp" class="text-left shrink-0">No. Telepon</label>
+                                <input type="text" id="noTelp" name="noTelp" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
                             </div>
-                        </label>
-                    </div>
+
+                            <div class="flex flex-row gap-4">
+                                <div class="flex flex-col gap-1 mb-5">
+                                    <label for="provinsi" class="text-left shrink-0">Provinsi</label>
+                                    <input type="text" id="provinsi" name="provinsi" required class="w-60 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
+                                </div>
+
+                                <div class="flex flex-col gap-1 mb-5">
+                                    <label for="kota" class="text-left shrink-0">Kota/Kabupaten</label>
+                                    <input type="text" id="kota" name="kota" required class="w-60 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
+                                </div>
+
+                                <div class="flex flex-col gap-1 mb-5">
+                                    <label for="kodePos" class="text-left shrink-0">Kode Pos</label>
+                                    <input type="text" id="kodePos" name="kodePos" required class="w-30 flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition">
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col gap-1 mb-5">
+                                <label for="detail" class="text-left shrink-0">Detail Lainnya</label>
+                                <textarea id="detail" name="detail" rows="4" required class="flex-1 p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition"></textarea>
+                            </div>
+
+                            <div class="step-panel mt-5">
+                                <h2 class="text-blue-900 uppercase font-bold mb-4 tracking-wider">Metode Pengiriman</h2>
+                                <div class="flex gap-4">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="pengiriman" value="Ambil" checked class="hidden peer">
+                                        <span class="block w-40 p-2 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-300 peer-checked:font-semibold transition-all">
+                                            <span>Ambil</span>
+                                        </span>
+                                    </label>
+                                    <label class="flex-1 cursor-pointer">
+                                        <input type="radio" name="pengiriman" value="Antar" class="hidden peer">
+                                        <span class="block w-40 p-2 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-300 peer-checked:font-semibold transition-all">
+                                            <span>Antar</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="space-y-8">
+            </div>
+
+            <div class="space-y-8">
                 <div class="bg-gray-50 p-6 rounded-xl border border-slate-200">
                     <div class="step-panel">
-                    <h2 class=" text-blue-900 uppercase font-bold mb-4 tracking-wider">Produk</h2>
-                    <div class="flex items-start gap-2">
-                    <img src="images/meja belajar kotak.jpeg" alt="Foto Meja Belajar Kotak" class="w-25 h-25 object-cover rounded-xl shadow-md">
-                    <div class="flex flex-col gap-2 pt-1">
-                        <p class="font-semibold">Meja Belajar Pradipa</p>
-                    <div class="flex items-center gap-2">
-                        <p>Jumlah : </p>
-                        <div class="flex items-center gap-2">
-                            <input type="number" id="jumlah" name="jumlah" min="1" max="10" value="1" required class="w-15 p-1.5 border focus:ring-2 focus:ring-yellow-300 transition border-slate-300 rounded-xl text-center"> 
-                            <small class="text-sm text-text-muted font-medium text-gray-500">Pcs</small>
+                        <h2 class="text-blue-900 uppercase font-bold mb-4 tracking-wider">Produk</h2>
+                        <div class="flex items-start gap-2">
+                            <img src="images/meja%20belajar%20kotak.jpeg" alt="Foto Meja Belajar Kotak" class="w-25 h-25 object-cover rounded-xl shadow-md">
+                            <div class="flex flex-col gap-2 pt-1">
+                                <p class="font-semibold">Meja Belajar Pradipa</p>
+                                <div class="flex items-center gap-2">
+                                    <p>Jumlah : </p>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="jumlah" name="jumlah" min="1" max="10" value="1" required class="w-15 p-1.5 border focus:ring-2 focus:ring-yellow-300 transition border-slate-300 rounded-xl text-center">
+                                        <small class="text-sm font-medium text-gray-500">Pcs</small>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <p>Subtotal : <b id="res-total">Rp 100.000,00</b></p>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <p>Subtotal : <b id="res-total">Rp 100.000,00</b></p>
-                        </div>
-                        </div>
-                        </div>
-                </div>
-                
+                    </div>
+
                     <div class="space-y-3 text-base mt-[1px] p-[15px] pl-0 text-left border-t border-slate-100">
-                        <p>Subtotal Pesanan : <b id="res-total">Rp 100.000,00</b></p>
+                        <p>Subtotal Pesanan : <b id="res-total-final">Rp 100.000,00</b></p>
                     </div>
 
-                    <button type="button" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl mt-[15px] cursor-pointer hover:bg-blue-900 transition-colors shadow" onclick="submitFinal()" >Pesan</button>
-                    </div>
-
-            </form>
+                    <button type="button" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl mt-[15px] cursor-pointer hover:bg-blue-900 transition-colors shadow" onclick="submitFinal()">Pesan</button> 
+                </div>
+            </div>
+        </div>
+        <footer class="mt-[1px] p-[15px] text-center border-t border-slate-100">
+            <p class="text-gray-500 text-xs">&copy; 2026 Ruang Karya MAN 1 Gresik</p>
+        </footer>
     </div>
-</div>
 
-<footer class="mt-[1px] p-[15px] text-center border-t border-slate-100">
-<p class="text-gray-500 text-text-muted text-xs">&copy; 2026 Ruang Karya MAN 1 Gresik</p>
-</footer>
-
-<script src="shv.js"></script>
-
+    <script src="shv.js"></script>
+    
 </body>
 </html>
