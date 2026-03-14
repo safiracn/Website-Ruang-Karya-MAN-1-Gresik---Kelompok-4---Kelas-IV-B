@@ -45,7 +45,7 @@
     <div class="flex items-center gap-4">
       <img src="./images/logo man.png" alt="Logo MAN 1 Gresik" class="h-14 w-auto md:h-20" />
       <div>
-        <h1 class="text-xl md:text-3xl font-bold leading-tight text-blue-900">Ruang Karya</h1>
+        <h1 class="text-xl md:text-3xl font-serif-heading font-bold text-blue-900">Ruang Karya</h1>
         <h2 class="text-sm md:text-xl italic font-semibold leading-tight text-blue-900">MAN 1 Gresik</h2>
         <p class="hidden md:block mt-1 text-xs italic text-blue-800">
           Islami, Cerdas, Unggul, Kompetitif, & Peduli Lingkungan
@@ -131,37 +131,37 @@
 
               <div class="flex flex-wrap gap-2">
 
-                <button class="rounded-xl bg-blue-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-800">
-                  Semua
-                </button>
+              <button onclick="filterCategory('all')" data-category="all" class="category-btn rounded-xl bg-blue-900 px-4 py-2 text-sm font-medium text-white">
+                Semua
+              </button>
 
-                <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-900 hover:text-white hover:border-blue-900">
-                  Busana
-                </button>
+              <button onclick="filterCategory('busana')" data-category="busana" class="category-btn rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">
+                Busana
+              </button>
 
-                <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-900 hover:text-white hover:border-blue-900">
-                  Mebel
-                </button>
+              <button onclick="filterCategory('mebel')" data-category="mebel" class="category-btn rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">
+                Mebel
+              </button>
 
-                <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-900 hover:text-white hover:border-blue-900">
-                  Kerajinan Tangan
-                </button>
+              <button onclick="filterCategory('kerajinan')" data-category="kerajinan" class="category-btn rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700">
+                Kerajinan Tangan
+              </button>
 
-              </div>
+            </div>
             </div>
 
             <!-- SORT -->
             <div class="flex items-center gap-2">
 
-              <button class="rounded-xl border border-blue-900 px-4 py-2 text-sm font-medium text-blue-900 transition hover:bg-blue-900 hover:text-white">
-                Terbaru
-              </button>
+            <button onclick="filterSort('new')" data-sort="new" class="sort-btn rounded-xl border border-blue-900 px-4 py-2 text-sm font-medium text-blue-900">
+              Terbaru
+            </button>
 
-              <button class="rounded-xl border border-blue-900 px-4 py-2 text-sm font-medium text-blue-900 transition hover:bg-blue-900 hover:text-white">
-                Populer
-              </button>
+            <button onclick="filterSort('popular')" data-sort="popular" class="sort-btn rounded-xl border border-blue-900 px-4 py-2 text-sm font-medium text-blue-900">
+              Populer
+            </button>
 
-            </div>
+          </div>
 
           </div>
 
@@ -171,7 +171,10 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
           <!-- card 1 -->
-          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <article class="product overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            data-category="mebel"
+            data-popular="true"
+            data-new="false">
             <div class="relative bg-slate-100 p-6 pt-8">
               <img
                 src="./images/meja belajar kotak.jpeg"
@@ -181,7 +184,7 @@
             </div>
             <div class="p-5">
               <h2 class="text-lg font-bold text-blue-900">Meja Aksara</h2>
-              <p class="mt-1 text-sm text-slate-500">Meja sedang ukuran 110 x 60</p>
+              <p class="mt-1 text-sm text-slate-500">Meja minimalis ukuran 110 × 60 cm yang kokoh dan cocok untuk belajar, bekerja, maupun kebutuhan sehari-hari.</p>
               <div class="mt-3 flex items-center gap-3">
                 <span class="text-xl font-extrabold text-blue-900">Rp100.000</span>
               </div>
@@ -197,7 +200,10 @@
           </article>
 
           <!-- card 2 -->
-          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <article class="product overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            data-category="mebel"
+            data-popular="false"
+            data-new="true">
             <div class="relative bg-slate-100 p-6 pt-8">
               <img
                 src="./images/meja 2 lapis.jpg"
@@ -207,7 +213,7 @@
             </div>
             <div class="p-5">
               <h2 class="text-lg font-bold text-blue-900">Meja Ksatria</h2>
-              <p class="mt-1 text-sm text-slate-500">Meja sedang ukuran 110 x 60</p>
+              <p class="mt-1 text-sm text-slate-500">Meja kayu elegan berukuran 110 × 70 cm dengan desain modern yang memberikan kenyamanan saat digunakan.</p>
               <div class="mt-3">
                 <span class="text-xl font-extrabold text-blue-900">Rp180.000</span>
               </div>
@@ -223,7 +229,10 @@
           </article>
 
           <!-- card 3 -->
-          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <article class="product overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            data-category="mebel"
+            data-popular="false"
+            data-new="false">
             <div class="relative bg-slate-100 p-6 pt-8">
               <img
                 src="./images/meja lucu.jpg"
@@ -233,7 +242,7 @@
             </div>
             <div class="p-5">
               <h2 class="text-lg font-bold text-blue-900">Meja Bulong</h2>
-              <p class="mt-1 text-sm text-slate-500">Meja sedang ukuran 110 x 60</p>
+              <p class="mt-1 text-sm text-slate-500">Meja serbaguna ukuran 120 × 60 cm dengan tampilan simpel yang cocok melengkapi berbagai ruangan.</p>
               <div class="mt-3">
                 <span class="text-xl font-extrabold text-blue-900">Rp150.000</span>
               </div>
@@ -249,7 +258,10 @@
           </article>
 
           <!-- card 4 -->
-          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+         <article class="product overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            data-category="mebel"
+            data-popular="false"
+            data-new="false">
             <div class="relative bg-slate-100 p-6 pt-8">
               <img
                 src="./images/kursi.jpg"
@@ -259,7 +271,7 @@
             </div>
             <div class="p-5">
               <h2 class="text-lg font-bold text-blue-900">Kursi Kartini</h2>
-              <p class="mt-1 text-sm text-slate-500">Kursi sedang ukuran 110 x 60</p>
+              <p class="mt-1 text-sm text-slate-500">Kursi kayu minimalis ukuran ±45 × 45 × 85 cm yang nyaman digunakan untuk berbagai kebutuhan.</p>
               <div class="mt-3">
                 <span class="text-xl font-extrabold text-blue-900">Rp99.999</span>
               </div>
@@ -275,7 +287,10 @@
           </article>
 
           <!-- card 5 -->
-          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+         <article class="product overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            data-category="mebel"
+            data-popular="false"
+            data-new="true">
             <div class="relative bg-slate-100 p-6 pt-8">
               <img
                 src="./images/kursi 2.jpg"
@@ -285,7 +300,7 @@
             </div>
             <div class="p-5">
               <h2 class="text-lg font-bold text-blue-900">Kursi Rahayu</h2>
-              <p class="mt-1 text-sm text-slate-500">Kursi sedang ukuran 110 x 60</p>
+              <p class="mt-1 text-sm text-slate-500">Kursi kayu elegan ukuran ±45 × 45 × 90 cm dengan desain sederhana dan kokoh.</p>
               <div class="mt-3">
                 <span class="text-xl font-extrabold text-blue-900">Rp129.000</span>
               </div>
@@ -301,7 +316,10 @@
           </article>
 
           <!-- card 6 -->
-          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <article class="product overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            data-category="busana"
+            data-popular="true"
+            data-new="false">
             <div class="relative bg-slate-100 p-6 pt-8">
               <img
                 src="./images/batik 1.jpg"
@@ -311,7 +329,7 @@
             </div>
             <div class="p-5">
               <h2 class="text-lg font-bold text-blue-900">Batik Nusantara</h2>
-              <p class="mt-1 text-sm text-slate-500">Batik berkualitas tersedia ukuran S/M/L</p>
+              <p class="mt-1 text-sm text-slate-500">Batik berkualitas dengan bahan nyaman dipakai tersedia ukuran S, M, dan L.</p>
               <div class="mt-3">
                 <span class="text-xl font-extrabold text-blue-900">Rp100.000</span>
               </div>
@@ -327,7 +345,10 @@
           </article>
 
           <!-- card 7 -->
-          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <article class="product overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            data-category="busana"
+            data-popular="false"
+            data-new="false">
             <div class="relative bg-slate-100 p-6 pt-8">
               <img
                 src="./images/batik 2.jpg"
@@ -337,7 +358,7 @@
             </div>
             <div class="p-5">
               <h2 class="text-lg font-bold text-blue-900">Batik Nuansa Bening</h2>
-              <p class="mt-1 text-sm text-slate-500">Batik berkualitas tersedia ukuran S/M/L</p>
+              <p class="mt-1 text-sm text-slate-500">Kemeja batik motif elegan dengan bahan adem tersedia ukuran S, M, dan L.</p>
               <div class="mt-3">
                 <span class="text-xl font-extrabold text-blue-900">Rp100.000</span>
               </div>
@@ -353,7 +374,10 @@
           </article>
 
           <!-- card 8 -->
-          <article class="overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <article class="product overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            data-category="kerajinan"
+            data-popular="false"
+            data-new="true">
             <div class="relative bg-slate-100 p-6 pt-8">
               <img
                 src="./images/vas bunga.jpg"
@@ -363,7 +387,7 @@
             </div>
             <div class="p-5">
               <h2 class="text-lg font-bold text-blue-900">Vas Bunga Anyam Premium</h2>
-              <p class="mt-1 text-sm text-slate-500">Terbuat dari akar pohon mangrove</p>
+              <p class="mt-1 text-sm text-slate-500">Vas bunga anyaman handmade dengan ukuran 20 × 20 × 30 cm yang cocok untuk dekorasi ruangan.</p>
               <div class="mt-3">
                 <span class="text-xl font-extrabold text-blue-900">Rp50.000</span>
               </div>

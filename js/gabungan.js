@@ -116,3 +116,78 @@ Metode: ${metode}`;
     // Reset Form
     if (formElemen) formElemen.reset();
 }
+
+// js fira
+const products = document.querySelectorAll(".product");
+const categoryButtons = document.querySelectorAll(".category-btn");
+const sortButtons = document.querySelectorAll(".sort-btn");
+
+let activeCategory = "all";
+let activeSort = null;
+
+function updateCategoryButtons() {
+  categoryButtons.forEach((btn) => {
+    const category = btn.dataset.category;
+
+    if (category === activeCategory) {
+      btn.classList.remove("border", "border-slate-300", "text-slate-700");
+      btn.classList.add("bg-blue-900", "text-white");
+    } else {
+      btn.classList.remove("bg-blue-900", "text-white");
+      btn.classList.add("border", "border-slate-300", "text-slate-700");
+    }
+  });
+}
+
+function updateSortButtons() {
+  sortButtons.forEach((btn) => {
+    const sort = btn.dataset.sort;
+
+    if (sort === activeSort) {
+      btn.classList.remove("text-blue-900");
+      btn.classList.add("bg-blue-900", "text-white");
+    } else {
+      btn.classList.remove("bg-blue-900", "text-white");
+      btn.classList.add("border", "border-blue-900", "text-blue-900");
+    }
+  });
+}
+
+function applyFilters() {
+  products.forEach((product) => {
+    const matchCategory =
+      activeCategory === "all" || product.dataset.category === activeCategory;
+
+    let matchSort = true;
+
+    if (activeSort === "popular") {
+      matchSort = product.dataset.popular === "true";
+    } else if (activeSort === "new") {
+      matchSort = product.dataset.new === "true";
+    }
+
+    if (matchCategory && matchSort) {
+      product.style.display = "block";
+    } else {
+      product.style.display = "none";
+    }
+  });
+}
+
+function filterCategory(category) {
+  activeCategory = category;
+
+  updateCategoryButtons();
+  applyFilters();
+}
+
+function filterSort(sort) {
+  if (activeSort === sort) {
+    activeSort = null;
+  } else {
+    activeSort = sort;
+  }
+
+  updateSortButtons();
+  applyFilters();
+}
