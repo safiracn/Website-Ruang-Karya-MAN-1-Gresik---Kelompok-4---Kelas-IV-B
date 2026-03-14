@@ -1,50 +1,50 @@
-// 1. DATA PRODUK
+// 1. DATA PRODUK & hitung harga
+const params = new URLSearchParams(window.location.search);
+
+const namaProduk = params.get("nama") || "Meja Aksara";
+const hargaProduk = parseInt(params.get("harga")) || 100000;
+const imgProduk = params.get("img") || "meja belajar kotak.jpeg";
+
 const produkTerpilih = {
-    nama: "Meja Aksara",
-    harga: 100000
+    nama: namaProduk,
+    harga: hargaProduk
 };
 
-// 2. LOGIKA MENU MOBILE (Dikasih pengaman agar tidak merusak script lain)
-const btn = document.getElementById("mobile-menu-button");
-const closeBtn = document.getElementById("close-menu-button");
-const menu = document.getElementById("mobile-menu");
+const inputJumlah = document.getElementById("jumlah");
+const displaySubtotal = document.getElementById("res-total");
+const displayTotalFinal = document.getElementById("res-total-final");
+const elemenNamaProduk = document.getElementById("checkout-nama");
+const elemenImgProduk = document.getElementById("checkout-img");
 
-if (btn && menu) {
-    btn.addEventListener("click", function () {
-        menu.classList.remove("hidden");
-    });
+if (elemenNamaProduk) {
+    elemenNamaProduk.innerText = produkTerpilih.nama;
 }
 
-if (closeBtn && menu) {
-    closeBtn.addEventListener("click", function () {
-        menu.classList.add("hidden");
-    });
+if (elemenImgProduk) {
+    elemenImgProduk.src = "images/" + imgProduk;
+    elemenImgProduk.alt = produkTerpilih.nama;
 }
 
-// 3. ELEMEN HITUNG HARGA
-const inputJumlah = document.getElementById('jumlah');
-const displaySubtotal = document.getElementById('res-total');
-const displayTotalFinal = document.getElementById('res-total-final');
+const hargaAwal = "Rp " + produkTerpilih.harga.toLocaleString("id-ID") + ",00";
+if (displaySubtotal) displaySubtotal.innerText = hargaAwal;
+if (displayTotalFinal) displayTotalFinal.innerText = hargaAwal;
 
 if (inputJumlah) {
-    // Gunakan event 'input' agar harga berubah seketika saat angka diketik/diklik
-    inputJumlah.addEventListener('input', function() {
+    inputJumlah.addEventListener("input", function () {
         let qty = parseInt(inputJumlah.value);
-        
-        // Proteksi jika input kosong atau bukan angka
+
         if (isNaN(qty) || qty < 1) qty = 1;
         if (qty > 10) qty = 10;
 
         let totalHarga = qty * produkTerpilih.harga;
-        let formatHarga = "Rp " + totalHarga.toLocaleString('id-ID') + ",00";
+        let formatHarga = "Rp " + totalHarga.toLocaleString("id-ID") + ",00";
 
-        // Update tampilan ke HTML
         if (displaySubtotal) displaySubtotal.innerText = formatHarga;
         if (displayTotalFinal) displayTotalFinal.innerText = formatHarga;
     });
 }
 
-// 4. VALIDASI & SUBMIT PESANAN
+// 2. VALIDASI & SUBMIT PESANAN
 function submitFinal() {
     // A. Ambil elemen form-nya dulu
     const formElemen = document.getElementById('po-form');
@@ -105,11 +105,11 @@ function submitFinal() {
 
     // --- JIKA LOLOS SEMUA ---
     const ringkasan = `Pesanan Berhasil!
------------------------
-Nama: ${namaValue}
-Produk: ${inputJumlah.value}x Meja Belajar
-Total: ${displayTotalFinal.innerText}
-Metode: ${metode}`;
+    -----------------------
+    Nama: ${namaValue}
+    Produk: ${inputJumlah.value}x ${produkTerpilih.nama}
+    Total: ${displayTotalFinal.innerText}
+    Metode: ${metode}`;
 
     alert(ringkasan);
 
@@ -190,4 +190,40 @@ function filterSort(sort) {
 
   updateSortButtons();
   applyFilters();
+}
+
+// tampilan mobile 
+const mobileMenuButton = document.getElementById("mobile-menu-button");
+const closeMenuButton = document.getElementById("close-menu-button");
+const closeMenuBackdrop = document.getElementById("close-menu-backdrop");
+const mobileMenu = document.getElementById("mobile-menu");
+const mobileMenuContent = document.getElementById("mobile-menu-content");
+
+if (mobileMenuButton && mobileMenu && mobileMenuContent) {
+  mobileMenuButton.addEventListener("click", function () {
+    mobileMenu.classList.remove("hidden");
+    setTimeout(() => {
+      mobileMenuContent.classList.remove("translate-x-full");
+    }, 10);
+  });
+}
+
+function closeMobileMenu() {
+  if (mobileMenuContent) {
+    mobileMenuContent.classList.add("translate-x-full");
+  }
+
+  setTimeout(() => {
+    if (mobileMenu) {
+      mobileMenu.classList.add("hidden");
+    }
+  }, 300);
+}
+
+if (closeMenuButton) {
+  closeMenuButton.addEventListener("click", closeMobileMenu);
+}
+
+if (closeMenuBackdrop) {
+  closeMenuBackdrop.addEventListener("click", closeMobileMenu);
 }
