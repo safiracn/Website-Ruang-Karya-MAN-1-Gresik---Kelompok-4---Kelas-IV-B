@@ -1,31 +1,34 @@
 <?php
-require './php/koneksi.php'; // Pastikan file ini ada
+session_start();
+require_once '../php/koneksi.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    // Jika bukan admin, tendang ke halaman login atau beranda
-    header("Location: login.php");
+if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../php/login.php");
     exit();
 }
 
 setcookie("last_admin_page", "edit_produk", time() + 3600, "/");
 
-$namaAdmin = $_SESSION['nama'] ?? 'Admin';
+$namaAdmin = $_SESSION['nama_lengkap'] ?? 'Admin';
 
-$id_produk = $_GET['id_produk'] ?? null;
+$id_produk = $_GET['id'] ?? null;
 
 if ($id_produk) {
-    // Ambil data produk sekaligus nama kategorinya menggunakan JOIN
+    $id_produk = (int)$id_produk;
+
     $query = "SELECT produk.*, kategori.nama_kategori 
               FROM produk 
               JOIN kategori ON produk.id_kategori = kategori.id_kategori 
               WHERE produk.id_produk = '$id_produk'";
-              
+
     $result = mysqli_query($koneksi, $query);
     $produk = mysqli_fetch_assoc($result);
 
     if (!$produk) {
         die("Produk tidak ditemukan!");
     }
+} else {
+    die("ID produk tidak ditemukan!");
 }
 ?>
 
@@ -35,7 +38,7 @@ if ($id_produk) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ubah Informasi Produk | Ruang Karya Admin</title>
-    <link href="./RuangKaryaCSS/output.css" rel="stylesheet">
+    <link href="../RuangKaryaCSS/output.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body class="font-sans-body bg-slate-100 font-sans text-slate-900">
@@ -168,7 +171,7 @@ if ($id_produk) {
                     </label>
                     
                     <div class="aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-inner mb-4 bg-slate-50 flex items-center justify-center">
-                        <img id="preview-foto" src="./images/<?= $produk['foto_produk'] ?>" alt="Foto Produk" class="w-full h-full object-cover">
+                        <img id="preview-foto" src="../images/<?= $produk['foto_produk'] ?>" alt="Foto Produk" class="w-full h-full object-cover">
                     </div>
 
                     <input type="file" id="foto_utama" name="foto_utama" accept="images/*" class="hidden" onchange="previewImage(this)">

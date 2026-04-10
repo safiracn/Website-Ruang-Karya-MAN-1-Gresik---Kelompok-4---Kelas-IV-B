@@ -2,8 +2,12 @@
 session_start();
 require 'koneksi.php';
 
-if (isset($_SESSION['login'])) {
-    header("Location: gabungan.php");
+if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        header("Location: ../admin/dashboard.php");
+    } else {
+        header("Location: gabungan.php");
+    }
     exit;
 }
 
@@ -32,7 +36,15 @@ if (isset($_POST['submit'])) {
             $row = mysqli_fetch_assoc($result);
 
             // Pakai password_verify kalau password disimpan dengan password_hash
+            $login_valid = false;
+
             if (password_verify($password, $row['password'])) {
+                $login_valid = true;
+            } elseif ($password === $row['password']) {
+                $login_valid = true;
+            }
+
+            if ($login_valid) {
                 $_SESSION['login'] = true;
                 $_SESSION['id_user'] = $row['id_user'];
                 $_SESSION['nama_lengkap'] = $row['nama_lengkap'];
@@ -46,7 +58,7 @@ if (isset($_POST['submit'])) {
                 }
 
                 if ($row['role'] === 'admin') {
-                    header("Location: admin/index.php");
+                    header("Location: ../admin/dashboard.php");
                 } else {
                     header("Location: gabungan.php");
                 }

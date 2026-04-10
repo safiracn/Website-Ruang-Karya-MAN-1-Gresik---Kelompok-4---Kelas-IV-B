@@ -2,6 +2,11 @@
 session_start();
 require_once '../php/koneksi.php';
 
+if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../php/login.php");
+    exit;
+}
+
 /* ambil admin id 1 */
 $queryAdmin = mysqli_query($koneksi, "
     SELECT id_user, nama_lengkap, email, no_telp, alamat
@@ -15,6 +20,10 @@ $admin = mysqli_fetch_assoc($queryAdmin);
 $activeMenu = 'profil';
 $pageTitle = 'Profil';
 $pageDesc = 'Kelola informasi akun admin Ruang Karya MAN 1 Gresik.';
+
+/* avatar admin */
+$adminNama = $admin['nama_lengkap'] ?? 'Admin';
+$avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($adminNama) . "&background=e2e8f0&color=1e3a8a&size=128";
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -50,16 +59,16 @@ $pageDesc = 'Kelola informasi akun admin Ruang Karya MAN 1 Gresik.';
                     <img
                         src="<?= $avatarUrl; ?>"
                         alt="Foto Profil"
-                        class="h-full w-full object-cover rounded-full"
+                        class="h-full w-full rounded-full object-cover"
                     >
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- CARD FORM -->
+    <!-- CARD INFORMASI -->
     <div class="rounded-[24px] bg-white p-8 shadow-sm ring-1 ring-slate-200">
-        <form action="#" method="POST" class="space-y-7">
+        <div class="space-y-7">
 
             <div>
                 <label class="mb-3 block text-[15px] font-semibold text-blue-900">
@@ -67,9 +76,9 @@ $pageDesc = 'Kelola informasi akun admin Ruang Karya MAN 1 Gresik.';
                 </label>
                 <input
                     type="text"
-                    name="nama_lengkap"
                     value="<?= htmlspecialchars($admin['nama_lengkap'] ?? ''); ?>"
-                    class="h-[56px] w-full rounded-xl border border-slate-300 bg-white px-5 text-[16px] outline-none transition focus:border-blue-900"
+                    readonly
+                    class="h-[56px] w-full cursor-default rounded-xl border border-slate-300 bg-slate-50 px-5 text-[16px] text-slate-700 outline-none"
                 >
             </div>
 
@@ -80,9 +89,9 @@ $pageDesc = 'Kelola informasi akun admin Ruang Karya MAN 1 Gresik.';
                     </label>
                     <input
                         type="email"
-                        name="email"
                         value="<?= htmlspecialchars($admin['email'] ?? ''); ?>"
-                        class="h-[56px] w-full rounded-xl border border-slate-300 bg-white px-5 text-[16px] outline-none transition focus:border-blue-900"
+                        readonly
+                        class="h-[56px] w-full cursor-default rounded-xl border border-slate-300 bg-slate-50 px-5 text-[16px] text-slate-700 outline-none"
                     >
                 </div>
 
@@ -92,9 +101,9 @@ $pageDesc = 'Kelola informasi akun admin Ruang Karya MAN 1 Gresik.';
                     </label>
                     <input
                         type="text"
-                        name="no_telp"
                         value="<?= htmlspecialchars($admin['no_telp'] ?? ''); ?>"
-                        class="h-[56px] w-full rounded-xl border border-slate-300 bg-white px-5 text-[16px] outline-none transition focus:border-blue-900"
+                        readonly
+                        class="h-[56px] w-full cursor-default rounded-xl border border-slate-300 bg-slate-50 px-5 text-[16px] text-slate-700 outline-none"
                     >
                 </div>
             </div>
@@ -104,28 +113,13 @@ $pageDesc = 'Kelola informasi akun admin Ruang Karya MAN 1 Gresik.';
                     Alamat
                 </label>
                 <textarea
-                    name="alamat"
                     rows="5"
-                    class="w-full rounded-xl border border-slate-300 bg-white px-5 py-4 text-[16px] outline-none transition focus:border-blue-900"
+                    readonly
+                    class="w-full cursor-default rounded-xl border border-slate-300 bg-slate-50 px-5 py-4 text-[16px] text-slate-700 outline-none resize-none"
                 ><?= htmlspecialchars($admin['alamat'] ?? ''); ?></textarea>
             </div>
 
-            <div class="flex items-center justify-end gap-8 pt-2">
-                <button
-                    type="button"
-                    class="text-[16px] font-semibold text-blue-900 transition hover:text-blue-700"
-                >
-                    Batalkan
-                </button>
-
-                <button
-                    type="submit"
-                    class="inline-flex h-[62px] min-w-[220px] items-center justify-center rounded-xl bg-yellow-500 px-10 text-[17px] font-semibold text-blue-900 shadow-sm transition hover:bg-yellow-400 hover:shadow-md"
-                >
-                    Simpan Perubahan
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 
 </section>
