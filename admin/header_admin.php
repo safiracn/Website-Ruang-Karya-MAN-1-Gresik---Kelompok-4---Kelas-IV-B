@@ -68,7 +68,7 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($adminNama) . "&bac
 
         <!-- LOGOUT -->
         <div class="pt-6">
-            <a href="../php/logout.php"
+            <a href="logout_admin.php"
                class="flex items-center gap-3 rounded-xl border border-red-800 bg-red-700 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-red-800">
                 <span class="flex h-5 w-5 items-center justify-center">
                     <i class="fa-solid fa-right-from-bracket text-[15px]"></i>

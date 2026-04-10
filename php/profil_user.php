@@ -1,15 +1,18 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
+
 require_once 'koneksi.php';
 
 /*
 |--------------------------------------------------------------------------
 | AMBIL DATA USER LOGIN
 |--------------------------------------------------------------------------
-| Nanti idealnya pakai session login:
-| $_SESSION['id_user']
 */
-
 $id_user = $_SESSION['id_user'] ?? 0;
 
 if ($id_user > 0) {
@@ -20,7 +23,6 @@ if ($id_user > 0) {
         LIMIT 1
     ");
 } else {
-    // fallback sementara kalau session belum ada
     $queryUser = mysqli_query($koneksi, "
         SELECT id_user, nama_lengkap, email, no_telp, alamat
         FROM user
@@ -36,8 +38,6 @@ $user = mysqli_fetch_assoc($queryUser);
 |--------------------------------------------------------------------------
 | FUNGSI BUAT INISIAL 2 KATA PERTAMA
 |--------------------------------------------------------------------------
-| Contoh:
-| Safira Choirun Nisa -> SC
 */
 function getInitials($nama)
 {
@@ -81,7 +81,9 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($inisialUser) . "&b
 </head>
 <body class="font-sans-body bg-slate-100 text-slate-800">
 
-    <div class="h-[135px]"></div>
+    <?php include 'header.php'; ?>
+
+    <div class="h-[40px]"></div>
 
     <main class="px-6 pb-16">
         <div class="mx-auto max-w-[1280px]">
@@ -98,7 +100,7 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($inisialUser) . "&b
                 </div>
 
                 <a
-                    href="logout.php"
+                    href="logout_user.php"
                     class="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-3 text-[15px] font-semibold text-red-500 shadow-sm transition hover:bg-red-50"
                 >
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -122,9 +124,9 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($inisialUser) . "&b
                     </div>
                 </div>
 
-                <!-- FORM -->
+                <!-- INFORMASI -->
                 <div class="rounded-[24px] bg-white p-10 shadow-sm ring-1 ring-slate-200">
-                    <form action="#" method="POST" class="space-y-8">
+                    <div class="space-y-8">
 
                         <div>
                             <label class="mb-4 block text-[15px] font-semibold text-blue-900">
@@ -132,9 +134,9 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($inisialUser) . "&b
                             </label>
                             <input
                                 type="text"
-                                name="nama_lengkap"
                                 value="<?= htmlspecialchars($user['nama_lengkap'] ?? ''); ?>"
-                                class="h-[64px] w-full rounded-2xl border border-slate-300 bg-white px-6 text-[18px] outline-none transition focus:border-blue-900"
+                                readonly
+                                class="h-[64px] w-full cursor-default rounded-2xl border border-slate-300 bg-slate-50 px-6 text-[18px] text-slate-700 outline-none"
                             >
                         </div>
 
@@ -145,9 +147,9 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($inisialUser) . "&b
                                 </label>
                                 <input
                                     type="email"
-                                    name="email"
                                     value="<?= htmlspecialchars($user['email'] ?? ''); ?>"
-                                    class="h-[64px] w-full rounded-2xl border border-slate-300 bg-white px-6 text-[18px] outline-none transition focus:border-blue-900"
+                                    readonly
+                                    class="h-[64px] w-full cursor-default rounded-2xl border border-slate-300 bg-slate-50 px-6 text-[18px] text-slate-700 outline-none"
                                 >
                             </div>
 
@@ -157,9 +159,9 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($inisialUser) . "&b
                                 </label>
                                 <input
                                     type="text"
-                                    name="no_telp"
                                     value="<?= htmlspecialchars($user['no_telp'] ?? ''); ?>"
-                                    class="h-[64px] w-full rounded-2xl border border-slate-300 bg-white px-6 text-[18px] outline-none transition focus:border-blue-900"
+                                    readonly
+                                    class="h-[64px] w-full cursor-default rounded-2xl border border-slate-300 bg-slate-50 px-6 text-[18px] text-slate-700 outline-none"
                                 >
                             </div>
                         </div>
@@ -169,33 +171,19 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($inisialUser) . "&b
                                 Alamat
                             </label>
                             <textarea
-                                name="alamat"
                                 rows="7"
-                                class="w-full rounded-2xl border border-slate-300 bg-white px-6 py-5 text-[18px] outline-none transition focus:border-blue-900"
+                                readonly
+                                class="w-full cursor-default rounded-2xl border border-slate-300 bg-slate-50 px-6 py-5 text-[18px] text-slate-700 outline-none resize-none"
                             ><?= htmlspecialchars($user['alamat'] ?? ''); ?></textarea>
                         </div>
 
-                        <div class="flex items-center justify-end gap-8 pt-2">
-                        <button
-                            type="button"
-                            class="text-[16px] font-semibold text-blue-900 transition hover:text-blue-700"
-                        >
-                            Batalkan
-                        </button>
-
-                        <button
-                            type="submit"
-                            class="inline-flex h-[62px] min-w-[220px] items-center justify-center rounded-xl bg-yellow-500 px-10 text-[17px] font-semibold text-blue-900 shadow-sm transition hover:bg-yellow-400 hover:shadow-md"
-                        >
-                            Simpan Perubahan
-                        </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
 
             </section>
         </div>
     </main>
 
+    <?php include 'footer.php'; ?>
 </body>
 </html>
