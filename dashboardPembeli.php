@@ -8,7 +8,7 @@ session_start();
  * 3. Jika sudah login dan role-nya 'admin', tendang ke dashboard admin.
  */
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    header("Location: admin_dashboard.php"); // Ganti dengan file admin kamu
+    header("Location: dashboard.php"); // Ganti dengan file admin kamu
     exit();
 }
 
@@ -18,8 +18,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
  * agar JS bisa menyapa namanya.
  */
 $namaUser = "Pengunjung";
-if (isset($_SESSION['nama'])) {
-    $namaUser = $_SESSION['nama'];
+if (isset($_SESSION['nama_lengkap'])) {
+    $namaUser = $_SESSION['nama_lengkap'];
     setcookie("last_user", $namaUser, time() + 3600, "/");
 }
 ?>
@@ -75,7 +75,7 @@ if (isset($_SESSION['nama'])) {
         <nav class="hidden lg:block">
             <ul class="flex items-center gap-8 font-semibold">
             <li><a href="dashboardPembeli.php" class="text-yellow-500 border-b-2 border-blue-900 pb-1">Beranda</a></li>
-            <li><a href="katalog.php" class="text-blue-900 hover:text-yellow-500 transition">Katalog</a></li>
+            <li><a href="gabungan.php" class="text-blue-900 hover:text-yellow-500 transition">Katalog</a></li>
             <li><a href="riwayat.php" class="text-blue-900 hover:text-yellow-500 transition">Riwayat</a></li>
             <li class="relative"> 
                 <a href="keranjang.php" class="text-blue-900 hover:text-yellow-500 transition flex items-center p-2 rounded-full hover:bg-slate-">
@@ -91,7 +91,7 @@ if (isset($_SESSION['nama'])) {
                     <div class="text-right hidden xl:block">
                         <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider leading-none">Akun Saya</p>
                         <p class="text-sm text-blue-900 font-bold group-hover:text-yellow-500 transition">
-                            <?= isset($_SESSION['nama']) ? $_SESSION['nama'] : 'Tamu' ?>
+                            <?= isset($_SESSION['nama_lengkap']) ? $_SESSION['nama_lengkap'] : 'Tamu' ?>
                         </p>
                     </div>
                     <div class="h-11 w-11 rounded-full border-2 border-blue-900 overflow-hidden group-hover:border-yellow-500 transition shadow-sm bg-blue-50 flex items-center justify-center">
@@ -119,7 +119,7 @@ if (isset($_SESSION['nama'])) {
             <h2 class="text-5xl font-serif-heading font-bold text-[#0A265F] mb-6">Ruang Karya: <br> Dari Siswa untuk Dunia</h2>
             <p class="text-slate-500 mb-8 leading-relaxed">Etalase kreativitas dan inovasi berkelanjutan dari siswa-siswi MAN 1 Gresik. Menghadirkan karya autentik yang memadukan keterampilan tradisional dengan visi modern.</p>
             <div class="flex gap-4">
-                <a href="katalog.php" class="bg-[#0A265F] text-white px-6 py-3 rounded-full font-bold hover:bg-yellow-500 transition inline-block">
+                <a href="gabungan.php" class="bg-[#0A265F] text-white px-6 py-3 rounded-full font-bold hover:bg-yellow-500 transition inline-block">
                     Jelajahi Karya Kami →
                 </a>
             </div>
@@ -165,7 +165,7 @@ if (isset($_SESSION['nama'])) {
     <section class="py-20 px-6 md:px-20 container mx-auto">
         <div class="flex justify-between items-end mb-10">
             <h2 class="text-3xl font-serif-heading font-black text-[#0A265F]">Kategori Unggulan</h2>
-            <a href="katalog.php" class="text-blue-800 font-bold text-sm">Lihat Semua &rarr;</a>
+            <a href="gabungan.php" class="text-blue-800 font-bold text-sm">Lihat Semua &rarr;</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="group relative h-[400px] overflow-hidden rounded-[2rem] shadow-xl">
@@ -202,7 +202,7 @@ if (isset($_SESSION['nama'])) {
         <div class="bg-[#0A265F] rounded-[3rem] p-16 text-center text-white space-y-6">
             <h2 class="text-4xl font-serif-heading font-bold">Miliki Karya Eksklusif Siswa Kami</h2>
             <p class="max-w-xl mx-auto opacity-70 text-sm">Setiap pembelian adalah bentuk dukungan nyata bagi pengembangan kreativitas dan jiwa wirausaha generasi muda.</p>
-            <a href="katalog.php" class="bg-yellow-500 text-blue-900 font-black px-10 py-4 rounded-full hover:scale-105 transition shadow-lg inline-block">
+            <a href="gabungan.php" class="bg-yellow-500 text-blue-900 font-black px-10 py-4 rounded-full hover:scale-105 transition shadow-lg inline-block">
                 Mulai Belanja
             </a>
         </div>
