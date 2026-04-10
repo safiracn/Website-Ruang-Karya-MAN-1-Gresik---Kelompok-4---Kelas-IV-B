@@ -4,12 +4,20 @@ require './php/koneksi.php';
 
 // 1. Logika Identitas (Sudah Login atau Tamu)
 $isLoggedIn = isset($_SESSION['role']);
+<<<<<<< HEAD
 $namaUser = $isLoggedIn ? $_SESSION['nama'] : "Tamu"; // Jika belum login, tampilkan "Tamu"
+=======
+$namaUser = $isLoggedIn ? $_SESSION['nama_lengkap'] : "Tamu"; // Jika belum login, tampilkan "Tamu"
+>>>>>>> rania
 
 // 2. Ambil Data Riwayat
 $items = [];
 if ($isLoggedIn) {
+<<<<<<< HEAD
     $user_id = $_SESSION['user_id'];
+=======
+    $user_id = $_SESSION['id_user'];
+>>>>>>> rania
     $tab = $_GET['tab'] ?? 'sedang-dipesan';
     
     // Query hanya untuk user yang sedang login
@@ -94,7 +102,11 @@ if ($isLoggedIn) {
                             <div class="text-right hidden xl:block">
                                 <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider leading-none">Akun Saya</p>
                                 <p class="text-sm text-blue-900 font-bold group-hover:text-yellow-500 transition">
+<<<<<<< HEAD
                                     <?= isset($_SESSION['nama']) ? $_SESSION['nama'] : 'Tamu' ?>
+=======
+                                    <?= isset($_SESSION['nama_lengkap']) ? $_SESSION['nama_lengkap'] : 'Tamu' ?>
+>>>>>>> rania
                                 </p>
                             </div>
                             <div class="h-11 w-11 rounded-full border-2 border-blue-900 overflow-hidden group-hover:border-yellow-500 transition shadow-sm bg-blue-50 flex items-center justify-center">
