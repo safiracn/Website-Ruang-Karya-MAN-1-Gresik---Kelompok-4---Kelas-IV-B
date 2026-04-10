@@ -2,17 +2,69 @@
 session_start();
 require_once 'koneksi.php';
 
-$nama_lengkap = $_SESSION['nama_lengkap'] ?? "Safira Nisa'";
-$email        = $_SESSION['email'] ?? "firafizua@gmail.com";
-$no_telp      = $_SESSION['no_telp'] ?? "085859249749";
-$alamat       = $_SESSION['alamat'] ?? "Pagerngumbuk Rt.03 Rw.01, Kec. wonoayu Kab. Sidoarjo Jawa Timur 61261";
+/*
+|--------------------------------------------------------------------------
+| AMBIL DATA USER LOGIN
+|--------------------------------------------------------------------------
+| Nanti idealnya pakai session login:
+| $_SESSION['id_user']
+*/
+
+$id_user = $_SESSION['id_user'] ?? 0;
+
+if ($id_user > 0) {
+    $queryUser = mysqli_query($koneksi, "
+        SELECT id_user, nama_lengkap, email, no_telp, alamat
+        FROM user
+        WHERE id_user = '$id_user' AND role = 'user'
+        LIMIT 1
+    ");
+} else {
+    // fallback sementara kalau session belum ada
+    $queryUser = mysqli_query($koneksi, "
+        SELECT id_user, nama_lengkap, email, no_telp, alamat
+        FROM user
+        WHERE role = 'user'
+        ORDER BY id_user ASC
+        LIMIT 1
+    ");
+}
+
+$user = mysqli_fetch_assoc($queryUser);
+
+/*
+|--------------------------------------------------------------------------
+| FUNGSI BUAT INISIAL 2 KATA PERTAMA
+|--------------------------------------------------------------------------
+| Contoh:
+| Safira Choirun Nisa -> SC
+*/
+function getInitials($nama)
+{
+    $nama = trim($nama);
+    if ($nama === '') return 'US';
+
+    $parts = preg_split('/\s+/', $nama);
+    $initials = '';
+
+    for ($i = 0; $i < count($parts) && $i < 2; $i++) {
+        $initials .= strtoupper(substr($parts[$i], 0, 1));
+    }
+
+    return $initials ?: 'US';
+}
+
+$userNama = $user['nama_lengkap'] ?? 'User';
+$inisialUser = getInitials($userNama);
+
+$avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($inisialUser) . "&background=e2e8f0&color=1e3a8a&size=128";
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Pengguna</title>
+    <title>Profil Pengguna - Ruang Karya</title>
 
     <link rel="stylesheet" href="../RuangKaryaCSS/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -29,7 +81,6 @@ $alamat       = $_SESSION['alamat'] ?? "Pagerngumbuk Rt.03 Rw.01, Kec. wonoayu K
 </head>
 <body class="font-sans-body bg-slate-100 text-slate-800">
 
-    <!-- Space header -->
     <div class="h-[135px]"></div>
 
     <main class="px-6 pb-16">
@@ -56,97 +107,89 @@ $alamat       = $_SESSION['alamat'] ?? "Pagerngumbuk Rt.03 Rw.01, Kec. wonoayu K
             </section>
 
             <!-- Content -->
-            <section class="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
+            <section class="grid grid-cols-1 gap-8 xl:grid-cols-[260px_1fr]">
 
-                <!-- Card Foto -->
-                <div class="rounded-[24px] bg-white p-7 shadow-sm ring-1 ring-slate-200">
+                <!-- FOTO KIRI -->
+                <div class="h-fit rounded-[24px] bg-white p-7 shadow-sm ring-1 ring-slate-200">
                     <div class="flex flex-col items-center">
-                        <div class="flex h-[128px] w-[128px] items-center justify-center overflow-hidden rounded-full bg-slate-100 ring-4 ring-slate-200">
+                        <div class="h-[150px] w-[150px] overflow-hidden rounded-full">
                             <img
-                                src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+                                src="<?= $avatarUrl; ?>"
                                 alt="Foto Profil"
-                                class="h-[118px] w-[118px] object-cover"
+                                class="h-full w-full rounded-full object-cover"
                             >
                         </div>
-
-                        <button
-                            type="button"
-                            class="mt-7 inline-flex h-[52px] w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-5 text-[15px] font-medium text-slate-700 transition hover:bg-slate-50"
-                        >
-                            Ganti Foto
-                        </button>
                     </div>
                 </div>
 
-                <!-- Card Form -->
-                <div class="rounded-[24px] bg-white p-8 shadow-sm ring-1 ring-slate-200">
-                    <form action="#" method="POST" class="space-y-7">
+                <!-- FORM -->
+                <div class="rounded-[24px] bg-white p-10 shadow-sm ring-1 ring-slate-200">
+                    <form action="#" method="POST" class="space-y-8">
 
                         <div>
-                            <label class="mb-3 block text-[15px] font-semibold text-blue-900">
+                            <label class="mb-4 block text-[15px] font-semibold text-blue-900">
                                 Nama Lengkap
                             </label>
                             <input
                                 type="text"
                                 name="nama_lengkap"
-                                value="<?= htmlspecialchars($nama_lengkap); ?>"
-                                class="h-[58px] w-full rounded-xl border border-slate-300 bg-white px-5 text-[16px] outline-none transition focus:border-blue-900"
+                                value="<?= htmlspecialchars($user['nama_lengkap'] ?? ''); ?>"
+                                class="h-[64px] w-full rounded-2xl border border-slate-300 bg-white px-6 text-[18px] outline-none transition focus:border-blue-900"
                             >
                         </div>
 
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
                             <div>
-                                <label class="mb-3 block text-[15px] font-semibold text-blue-900">
+                                <label class="mb-4 block text-[15px] font-semibold text-blue-900">
                                     Email
                                 </label>
                                 <input
                                     type="email"
                                     name="email"
-                                    value="<?= htmlspecialchars($email); ?>"
-                                    class="h-[58px] w-full rounded-xl border border-slate-300 bg-white px-5 text-[16px] outline-none transition focus:border-blue-900"
+                                    value="<?= htmlspecialchars($user['email'] ?? ''); ?>"
+                                    class="h-[64px] w-full rounded-2xl border border-slate-300 bg-white px-6 text-[18px] outline-none transition focus:border-blue-900"
                                 >
                             </div>
 
                             <div>
-                                <label class="mb-3 block text-[15px] font-semibold text-blue-900">
+                                <label class="mb-4 block text-[15px] font-semibold text-blue-900">
                                     No. Telepon
                                 </label>
                                 <input
                                     type="text"
                                     name="no_telp"
-                                    value="<?= htmlspecialchars($no_telp); ?>"
-                                    class="h-[58px] w-full rounded-xl border border-slate-300 bg-white px-5 text-[16px] outline-none transition focus:border-blue-900"
+                                    value="<?= htmlspecialchars($user['no_telp'] ?? ''); ?>"
+                                    class="h-[64px] w-full rounded-2xl border border-slate-300 bg-white px-6 text-[18px] outline-none transition focus:border-blue-900"
                                 >
                             </div>
                         </div>
 
                         <div>
-                            <label class="mb-3 block text-[15px] font-semibold text-blue-900">
+                            <label class="mb-4 block text-[15px] font-semibold text-blue-900">
                                 Alamat
                             </label>
                             <textarea
                                 name="alamat"
-                                rows="5"
-                                class="w-full rounded-xl border border-slate-300 bg-white px-5 py-4 text-[16px] outline-none transition focus:border-blue-900"
-                            ><?= htmlspecialchars($alamat); ?></textarea>
+                                rows="7"
+                                class="w-full rounded-2xl border border-slate-300 bg-white px-6 py-5 text-[18px] outline-none transition focus:border-blue-900"
+                            ><?= htmlspecialchars($user['alamat'] ?? ''); ?></textarea>
                         </div>
 
                         <div class="flex items-center justify-end gap-8 pt-2">
-                            <button
-                                type="button"
-                                class="text-[16px] font-semibold text-blue-900 transition hover:text-blue-700"
-                            >
-                                Batalkan
-                            </button>
+                        <button
+                            type="button"
+                            class="text-[16px] font-semibold text-blue-900 transition hover:text-blue-700"
+                        >
+                            Batalkan
+                        </button>
 
-                            <button
-                                type="submit"
-                                class="inline-flex h-[56px] items-center justify-center rounded-xl bg-yellow-500 px-8 text-[16px] font-semibold text-blue-900 shadow-sm transition hover:bg-yellow-400 hover:shadow-md"
-                            >
-                                Simpan Perubahan
-                            </button>
+                        <button
+                            type="submit"
+                            class="inline-flex h-[62px] min-w-[220px] items-center justify-center rounded-xl bg-yellow-500 px-10 text-[17px] font-semibold text-blue-900 shadow-sm transition hover:bg-yellow-400 hover:shadow-md"
+                        >
+                            Simpan Perubahan
+                        </button>
                         </div>
-
                     </form>
                 </div>
 
