@@ -54,7 +54,7 @@ function getInitial($name) {
             Masuk
           </a>
         <?php else: ?>
-          <span class="text-xs text-blue-200">Halo, <b class="text-white"><?= htmlspecialchars($nama_user) ?></b></span>
+          <span class="font-semibold italic text-yellow-500">Halo, <b class=font-semibold italic text-yellow-500"><?= htmlspecialchars($nama_user) ?></b></span>
         <?php endif; ?>
       </div>
 

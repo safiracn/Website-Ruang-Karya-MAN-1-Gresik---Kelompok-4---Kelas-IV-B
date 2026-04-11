@@ -1,17 +1,17 @@
 <?php
-require './php/koneksi.php'; // Pastikan file ini ada
+require 'koneksi.php'; // Pastikan file ini ada
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    // Jika bukan admin, tendang ke halaman login atau beranda
-    header("Location: login.php");
-    exit();
-}
+// if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+//     // Jika bukan admin, tendang ke halaman login atau beranda
+//     header("Location: login.php");
+//     exit();
+// }
 
-setcookie("last_admin_page", "edit_produk", time() + 3600, "/");
+// setcookie("last_admin_page", "edit_produk", time() + 3600, "/");
 
-$namaAdmin = $_SESSION['nama'] ?? 'Admin';
+// $namaAdmin = $_SESSION['nama'] ?? 'Admin';
 
-$id_produk = $_GET['id_produk'] ?? null;
+// $id_produk = $_GET['id_produk'] ?? null;
 
 if ($id_produk) {
     // Ambil data produk sekaligus nama kategorinya menggunakan JOIN
@@ -35,7 +35,7 @@ if ($id_produk) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ubah Informasi Produk | Ruang Karya Admin</title>
-    <link href="./RuangKaryaCSS/output.css" rel="stylesheet">
+    <link href="../RuangKaryaCSS/output.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body class="font-sans-body bg-slate-100 font-sans text-slate-900">

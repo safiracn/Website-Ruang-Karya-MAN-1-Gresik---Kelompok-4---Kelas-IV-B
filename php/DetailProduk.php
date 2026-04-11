@@ -96,7 +96,7 @@ $selected_stok      = $varian_pertama['stok'];
                     Produk pilihan dengan kualitas yang baik, tampilan rapi, dan cocok digunakan sesuai kebutuhan.
                 </p>
 
-                <div class="mt-5 rounded-2xl bg-[#1e3a8a] p-4 text-blue shadow-sm">
+                <div class="mt-5 rounded-2xl bg-[#1e3a8a] p-4 text-white shadow-sm">
                     <p class="text-[10px] font-bold uppercase tracking-widest text-blue-200/80">
                         Harga
                     </p>
