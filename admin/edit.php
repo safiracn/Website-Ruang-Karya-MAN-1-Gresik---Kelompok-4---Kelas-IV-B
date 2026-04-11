@@ -192,7 +192,7 @@ if ($id_produk) {
 
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                     <h3 class="font-bold text-lg text-blue-900 mb-6 flex items-center gap-2">
-                        <span class="w-1 h-6 bg-yellow-500 rounded-full"></span> Data Penjualan
+                        <span class="w-1 h-6 bg-yellow-500 rounded-full"></span> Data Penjualan <label class="text-lg text-red-600 mb-1">*</label>
                     </h3>
     
                     <div class="overflow-x-auto">
