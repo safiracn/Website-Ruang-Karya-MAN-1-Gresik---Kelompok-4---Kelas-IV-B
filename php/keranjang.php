@@ -1,5 +1,10 @@
 <?php
 session_start();
+session_start();
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
 require_once 'koneksi.php';
 
 /*
@@ -198,6 +203,10 @@ $total_item  = (int)($dataTotal['total_item'] ?? 0);
 $grand_total = (float)($dataTotal['grand_total'] ?? 0);
 
 $adaProduk = $total_item > 0;
+
+function rupiah($angka) {
+    return 'Rp ' . number_format((float)$angka, 0, ',', '.');
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -219,7 +228,7 @@ $adaProduk = $total_item > 0;
         .font-sans-body { font-family: var(--font-sans-body); }
 
         .custom-scrollbar::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-track {
@@ -228,38 +237,76 @@ $adaProduk = $total_item > 0;
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #d7dde7;
+            background: #cbd5e1;
             border-radius: 9999px;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #bcc6d4;
+        .cart-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            position: relative;
+            transition: 0.2s ease;
+        }
+
+        .cart-checkbox:checked {
+            background: #1e3a8a;
+            border-color: #1e3a8a;
+        }
+
+        .cart-checkbox:checked::after {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: white;
+            font-size: 12px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cart-checkbox:indeterminate {
+            background: #1e3a8a;
+            border-color: #1e3a8a;
+        }
+
+        .cart-checkbox:indeterminate::after {
+            content: "";
+            width: 10px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 999px;
         }
     </style>
 </head>
 <body class="font-sans-body bg-slate-100 text-slate-800">
 
-    <!-- Space header -->
-    <div class="h-[150px]"></div>
+    <?php include 'header.php'; ?>
 
-    <main class="px-6 pb-16">
-        <div class="mx-auto max-w-[1500px]">
+    <main class="px-4 py-8 md:px-6">
+        <div class="mx-auto max-w-[1450px]">
 
-            <!-- Judul -->
-            <section class="mb-7">
-                <h1 class="font-serif-heading text-[54px] font-bold leading-none text-blue-900">
+            <section class="mb-6">
+                <h1 class="font-serif-heading text-[38px] font-bold leading-tight text-blue-900 md:text-[52px]">
                     Keranjang Belanja
                 </h1>
-                <p class="mt-3 max-w-[760px] text-[16px] leading-relaxed text-slate-500">
+                <p class="mt-2 max-w-[760px] text-[15px] leading-relaxed text-slate-500 md:text-[16px]">
                     Koleksi karya terpilih dari siswa MAN 1 Gresik yang siap menghiasi ruang belajar dan kerja Anda.
                 </p>
             </section>
 
-            <!-- Box utama -->
-            <section class="overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-slate-200">
-
-                <!-- Header tabel -->
-                <div class="grid grid-cols-[70px_2.2fr_1.1fr_180px_1.1fr_50px] items-center border-b border-slate-200 px-6 py-5 text-[14px] font-semibold uppercase tracking-wide text-slate-500">
+            <section class="overflow-hidden rounded-[24px] bg-white shadow-sm ring-1 ring-slate-200">
+                <div class="grid grid-cols-[48px_2.4fr_1fr_150px_1fr_40px] items-center border-b border-slate-200 px-4 py-4 text-[13px] font-semibold uppercase tracking-wide text-slate-500 md:px-6">
                     <div></div>
                     <div>Produk</div>
                     <div>Harga Satuan</div>
@@ -268,134 +315,202 @@ $adaProduk = $total_item > 0;
                     <div></div>
                 </div>
 
-                <!-- Isi list -->
-                <div class="custom-scrollbar max-h-[720px] overflow-y-auto">
+                <div class="custom-scrollbar h-[560px] overflow-y-auto">
                     <?php if ($qCart && mysqli_num_rows($qCart) > 0): ?>
                         <?php while ($row = mysqli_fetch_assoc($qCart)): ?>
-                            <div class="grid grid-cols-[70px_2.2fr_1.1fr_180px_1.1fr_50px] items-center border-b border-slate-200 px-6 py-6 transition hover:bg-slate-50">
-
-                                <!-- Checkbox item -->
+                            <div
+                                class="cart-item grid grid-cols-[48px_2.4fr_1fr_150px_1fr_40px] items-center border-b border-slate-200 px-4 py-3 transition hover:bg-slate-50 md:px-6"
+                                data-id="<?= (int)$row['id_keranjang_detail']; ?>"
+                                data-subtotal="<?= (float)$row['subtotal']; ?>"
+                            >
                                 <div class="flex justify-center">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-md bg-blue-900 text-white shadow-sm">
-                                        <i class="fa-solid fa-check text-sm"></i>
-                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        class="cart-checkbox item-checkbox"
+                                        value="<?= (int)$row['id_keranjang_detail']; ?>"
+                                        checked
+                                    >
                                 </div>
 
-                                <!-- Produk -->
                                 <div class="flex items-center gap-4">
                                     <img
                                         src="../images/<?= htmlspecialchars($row['foto_produk']); ?>"
                                         alt="<?= htmlspecialchars($row['nama_produk']); ?>"
-                                        class="h-[92px] w-[92px] rounded-xl object-cover ring-1 ring-slate-200"
+                                        class="h-[68px] w-[68px] rounded-xl object-cover ring-1 ring-slate-200 md:h-[78px] md:w-[78px]"
                                     >
 
-                                    <div>
-                                        <p class="text-[30px] font-bold leading-tight text-blue-900">
+                                    <div class="min-w-0">
+                                        <p class="text-[18px] font-bold leading-tight text-blue-900 md:text-[21px]">
                                             <?= htmlspecialchars($row['nama_produk']); ?>
+                                        </p>
+                                        <p class="mt-1 text-[12px] font-medium text-slate-500 md:text-[13px]">
+                                            Varian: <?= htmlspecialchars($row['nama_varian']); ?>
                                         </p>
                                     </div>
                                 </div>
 
-                                <!-- Harga -->
                                 <div>
-                                    <p class="text-[28px] font-bold text-blue-900">
-                                        Rp <?= number_format($row['harga'], 0, ',', '.'); ?>
+                                    <p class="text-[19px] font-bold text-blue-900 md:text-[21px]">
+                                        <?= rupiah($row['harga']); ?>
                                     </p>
                                 </div>
 
-                                <!-- Jumlah -->
                                 <div>
                                     <div class="inline-flex h-[42px] items-center overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
                                         <form method="POST" class="contents">
                                             <input type="hidden" name="id_detail" value="<?= (int)$row['id_keranjang_detail']; ?>">
                                             <input type="hidden" name="mode_qty" value="minus">
-                                            <button type="submit" name="update_qty" class="flex h-full w-12 items-center justify-center text-slate-500 transition hover:bg-slate-100 hover:text-blue-900">
+                                            <button type="submit" name="update_qty" class="flex h-full w-11 items-center justify-center text-slate-500 transition hover:bg-slate-100 hover:text-blue-900">
                                                 <i class="fa-solid fa-minus text-sm"></i>
                                             </button>
                                         </form>
 
-                                        <span class="flex h-full min-w-[54px] items-center justify-center text-[18px] font-semibold text-slate-700">
+                                        <span class="flex h-full min-w-[48px] items-center justify-center text-[17px] font-semibold text-slate-700">
                                             <?= (int)$row['jumlah']; ?>
                                         </span>
 
                                         <form method="POST" class="contents">
                                             <input type="hidden" name="id_detail" value="<?= (int)$row['id_keranjang_detail']; ?>">
                                             <input type="hidden" name="mode_qty" value="plus">
-                                            <button type="submit" name="update_qty" class="flex h-full w-12 items-center justify-center text-slate-500 transition hover:bg-slate-100 hover:text-blue-900">
+                                            <button type="submit" name="update_qty" class="flex h-full w-11 items-center justify-center text-slate-500 transition hover:bg-slate-100 hover:text-blue-900">
                                                 <i class="fa-solid fa-plus text-sm"></i>
                                             </button>
                                         </form>
                                     </div>
                                 </div>
 
-                                <!-- Total -->
                                 <div>
-                                    <p class="text-[30px] font-bold text-blue-900">
-                                        Rp <?= number_format($row['subtotal'], 0, ',', '.'); ?>
+                                    <p class="text-[19px] font-bold text-blue-900 md:text-[21px] item-total-text">
+                                        <?= rupiah($row['subtotal']); ?>
                                     </p>
                                 </div>
 
-                                <!-- Hapus -->
                                 <div class="flex justify-center">
                                     <form method="POST">
                                         <input type="hidden" name="id_detail" value="<?= (int)$row['id_keranjang_detail']; ?>">
                                         <button type="submit" name="hapus_item" class="text-red-500 transition hover:scale-110 hover:text-red-600">
-                                            <i class="fa-regular fa-trash-can text-[22px]"></i>
+                                            <i class="fa-regular fa-trash-can text-[20px]"></i>
                                         </button>
                                     </form>
                                 </div>
                             </div>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <!-- Tetap tampil area kosong rapi -->
-                        <div class="min-h-[420px] border-b border-slate-200">
-                            <div class="flex h-full items-center justify-center px-6 py-20 text-[20px] text-slate-400">
+                        <div class="min-h-[280px] border-b border-slate-200">
+                            <div class="flex h-full items-center justify-center px-6 py-20 text-[18px] text-slate-400">
                                 Keranjang masih kosong.
                             </div>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <!-- Panel bawah -->
-                <div class="sticky bottom-0 z-20 border-t border-slate-200 bg-white px-6 py-5 shadow-[0_-6px_18px_rgba(15,23,42,0.04)]">
-                    <div class="grid grid-cols-[1fr_auto_320px] items-center gap-6">
+                <div class="border-t border-slate-200 bg-white px-4 py-4 shadow-[0_-6px_18px_rgba(15,23,42,0.04)] md:px-6">
+                    <form action="FormCheckout.php" method="GET" id="checkoutForm">
+                        <input type="hidden" name="selected_items" id="selectedItemsInput">
 
-                        <!-- Kiri -->
-                        <div class="flex items-center gap-3">
-                            <div class="h-9 w-9 rounded-md border border-slate-300 bg-white shadow-sm"></div>
-                            <p class="text-[28px] font-semibold text-slate-800">
-                                Pilih Semua (<?= $total_item; ?> Produk)
-                            </p>
-                        </div>
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_240px] md:items-center md:gap-5">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="selectAll" class="cart-checkbox" <?= $adaProduk ? 'checked' : ''; ?>>
+                                <p class="text-[18px] font-semibold text-slate-800 md:text-[20px]">
+                                    Pilih Semua (<span id="selectedCountText"><?= $total_item; ?></span> Produk)
+                                </p>
+                            </div>
 
-                        <!-- Tengah kanan -->
-                        <div class="text-right">
-                            <p class="text-[14px] font-medium text-slate-500">
-                                Total Pesanan (<?= $total_item; ?> Produk)
-                            </p>
-                            <p class="mt-1 text-[44px] font-bold leading-none text-blue-900">
-                                Rp <?= number_format($grand_total, 0, ',', '.'); ?>
-                            </p>
-                        </div>
+                            <div class="text-left md:text-right">
+                                <p class="text-[13px] font-medium text-slate-500">
+                                    Total Pesanan (<span id="selectedCountInfo"><?= $total_item; ?></span> Produk)
+                                </p>
+                                <p id="grandTotalText" class="mt-1 text-[30px] font-bold leading-none text-blue-900 md:text-[36px]">
+                                    <?= rupiah($grand_total); ?>
+                                </p>
+                            </div>
 
-                        <!-- Kanan -->
-                        <div class="flex justify-end">
-                            <?php if ($adaProduk): ?>
-                                <button class="inline-flex h-[76px] w-full max-w-[300px] items-center justify-center rounded-2xl bg-yellow-500 px-8 text-[28px] font-semibold text-blue-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-yellow-400 hover:shadow-md">
+                            <div class="flex justify-end">
+                                <button
+                                    type="submit"
+                                    id="checkoutButton"
+                                    class="inline-flex h-[56px] w-full items-center justify-center rounded-2xl bg-yellow-500 px-6 text-[20px] font-semibold text-blue-900 shadow-sm transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60"
+                                    <?= $adaProduk ? '' : 'disabled'; ?>
+                                >
                                     Pesan Sekarang
                                 </button>
-                            <?php else: ?>
-                                <button class="inline-flex h-[76px] w-full max-w-[300px] items-center justify-center rounded-2xl bg-yellow-500 px-8 text-[28px] font-semibold text-blue-900 opacity-80 cursor-not-allowed shadow-sm">
-                                    Pesan Sekarang
-                                </button>
-                            <?php endif; ?>
+                            </div>
                         </div>
-
-                    </div>
+                    </form>
                 </div>
             </section>
         </div>
     </main>
 
+    <?php include 'footer.php'; ?>
+
+    <script>
+        const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+        const selectAll = document.getElementById('selectAll');
+        const selectedCountText = document.getElementById('selectedCountText');
+        const selectedCountInfo = document.getElementById('selectedCountInfo');
+        const grandTotalText = document.getElementById('grandTotalText');
+        const selectedItemsInput = document.getElementById('selectedItemsInput');
+        const checkoutButton = document.getElementById('checkoutButton');
+
+        function formatRupiah(number) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(number);
+        }
+
+        function updateCartSummary() {
+            let total = 0;
+            let count = 0;
+            let selectedIds = [];
+
+            itemCheckboxes.forEach((checkbox) => {
+                if (checkbox.checked) {
+                    count++;
+                    selectedIds.push(checkbox.value);
+
+                    const itemRow = checkbox.closest('.cart-item');
+                    total += Number(itemRow.dataset.subtotal || 0);
+                }
+            });
+
+            selectedCountText.textContent = count;
+            selectedCountInfo.textContent = count;
+            grandTotalText.textContent = formatRupiah(total);
+            selectedItemsInput.value = selectedIds.join(',');
+
+            checkoutButton.disabled = count === 0;
+
+            if (itemCheckboxes.length === 0) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+                return;
+            }
+
+            if (count === itemCheckboxes.length) {
+                selectAll.checked = true;
+                selectAll.indeterminate = false;
+            } else if (count === 0) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            } else {
+                selectAll.checked = false;
+                selectAll.indeterminate = true;
+            }
+        }
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function () {
+                itemCheckboxes.forEach((checkbox) => {
+                    checkbox.checked = this.checked;
+                });
+                updateCartSummary();
+            });
+        }
+
+        itemCheckboxes.forEach((checkbox) => {
+            checkbox.addEventListener('change', updateCartSummary);
+        });
+
+        updateCartSummary();
+    </script>
 </body>
 </html>
