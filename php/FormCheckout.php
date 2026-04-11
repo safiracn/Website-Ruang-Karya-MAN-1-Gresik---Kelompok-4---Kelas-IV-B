@@ -1,12 +1,128 @@
 <?php
 session_start();
-require './php/koneksi.php';
+require '../php/koneksi.php';
 
-// Simulasi data keranjang jika datang dari Katalog/Detail/Keranjang
-// Jika data kosong, kita buat array kosong agar tidak error
-$items = $_SESSION['checkout_items'] ?? []; 
+// 1. CEK COOKIE (Agar fitur Remember Me jalan di sini)
+if (!isset($_SESSION['id_user']) && isset($_COOKIE['user_login'])) {
+    $_SESSION['id_user'] = $_COOKIE['user_login'];
+    $_SESSION['nama_lengkap'] = $_COOKIE['user_nama'];
+}
 
-// Hitung Total Awal
+// 2. PROTEKSI HALAMAN
+if (!isset($_SESSION['id_user'])) {
+    echo "<script>alert('Silakan login terlebih dahulu'); location='login.php';</script>";
+    exit;
+}
+
+// --- LOGIKA SIMPAN (Hanya jalan kalau tombol Pesan Sekarang diklik) ---
+// PERBAIKAN: Pastikan name 'konfirmasi_pesanan' ada di button HTML
+if (isset($_POST['konfirmasi_pesanan'])) {
+    $id_user        = $_SESSION['id_user'];
+    $nama_penerima  = mysqli_real_escape_string($koneksi, $_POST['nama']);
+    $no_telp        = mysqli_real_escape_string($koneksi, $_POST['noTelp']);
+    $provinsi       = mysqli_real_escape_string($koneksi, $_POST['provinsi']);
+    $kota           = mysqli_real_escape_string($koneksi, $_POST['kota']);
+    $kode_pos       = mysqli_real_escape_string($koneksi, $_POST['kodePos']);
+    $detail_alamat  = mysqli_real_escape_string($koneksi, $_POST['detail']);
+    $pengiriman     = $_POST['pengiriman'];
+    $total_final    = $_POST['total_final'];
+
+    // 1. Simpan ke tabel pembelian
+    $query_beli = "INSERT INTO pembelian (id_user, nama_penerima, no_telp_penerima, provinsi, kota_kabupaten, kode_pos, detail_alamat, metode_pengiriman, total_harga) 
+                   VALUES ('$id_user', '$nama_penerima', '$no_telp', '$provinsi', '$kota', '$kode_pos', '$detail_alamat', '$pengiriman', '$total_final')";
+    
+    if (mysqli_query($koneksi, $query_beli)) {
+        $id_pembelian_baru = mysqli_insert_id($koneksi);
+
+        if (isset($_POST['items']) && is_array($_POST['items'])) {
+            foreach ($_POST['items'] as $item) {
+                $id_varian = $item['id_varian'];
+                $jumlah    = $item['jumlah'];
+                $harga     = $item['harga'];
+                $subtotal  = $harga * $jumlah;
+
+                $query_detail = "INSERT INTO pembelian_detail (id_pembelian, id_varian, jumlah, harga_satuan, subtotal) 
+                                 VALUES ('$id_pembelian_baru', '$id_varian', '$jumlah', '$harga', '$subtotal')";
+                mysqli_query($koneksi, $query_detail);
+
+                // Update stok
+                mysqli_query($koneksi, "UPDATE produk_varian SET stok = stok - $jumlah WHERE id_varian = '$id_varian'");
+            }
+            
+            // --- TAMBAHAN: HAPUS DARI KERANJANG SETELAH CHECKOUT BERHASIL ---
+            // Kita hapus semua item di keranjang milik user ini yang id_varian-nya baru saja dibeli
+            $id_user_login = $_SESSION['id_user'];
+            mysqli_query($koneksi, "DELETE FROM keranjang_detail WHERE id_keranjang IN (SELECT id_keranjang FROM keranjang WHERE id_user = '$id_user_login')");
+
+            // PERBAIKAN: Alert dipindah ke sini agar muncul setelah loop selesai
+            echo "<script>
+                    alert('PESANAN BERHASIL DISIMPAN! Terima kasih telah berbelanja.');
+                    window.location.href='riwayat.php';
+                  </script>";
+            exit;
+        } else {
+            echo "<script>alert('Gagal: Data produk tidak ditemukan.'); window.history.back();</script>";
+            exit;
+        }
+    } else {
+        $error_db = mysqli_error($koneksi);
+        echo "<script>alert('DATABASE ERROR: $error_db'); window.history.back();</script>";
+        exit;
+    }
+}
+
+$items = [];
+// --- LOGIKA 1: AMBIL DATA DARI KERANJANG (Lewat GET selected_items) ---
+if (isset($_GET['selected_items']) && !empty($_GET['selected_items'])) {
+    $ids = mysqli_real_escape_string($koneksi, $_GET['selected_items']);
+    
+    // Query untuk mengambil detail produk berdasarkan ID detail keranjang yang dicentang
+    $sql_keranjang = "SELECT kd.jumlah, pv.id_varian, pv.harga, pv.nama_varian, p.nama_produk, p.foto_produk 
+                      FROM keranjang_detail kd
+                      JOIN produk_varian pv ON kd.id_varian = pv.id_varian
+                      JOIN produk p ON pv.id_produk = p.id_produk
+                      WHERE kd.id_keranjang_detail IN ($ids)";
+            
+    $query_keranjang = mysqli_query($koneksi, $sql_keranjang);
+    while ($row = mysqli_fetch_assoc($query_keranjang)) {
+        $items[] = [
+            'id_varian' => $row['id_varian'],
+            'nama'      => $row['nama_produk'] . " (" . $row['nama_varian'] . ")",
+            'harga'     => $row['harga'],
+            'jumlah'    => $row['jumlah'],
+            'gambar'    => $row['foto_produk']
+        ];
+    }
+}
+
+// --- LOGIKA 2: BELI LANGSUNG (Lewat POST dari Detail Produk) ---
+else if (isset($_POST['aksi']) && $_POST['aksi'] === 'beli') {
+    $id_produk = $_POST['id_produk'];
+    $id_varian = $_POST['id_varian'];
+    $jumlah = $_POST['jumlah'];
+
+    $sql = "SELECT p.nama_produk, p.foto_produk, v.harga, v.nama_varian 
+            FROM produk p 
+            JOIN produk_varian v ON p.id_produk = v.id_produk 
+            WHERE p.id_produk = '$id_produk' AND v.id_varian = '$id_varian'";
+            
+    $query = mysqli_query($koneksi, $sql);
+    $data = mysqli_fetch_assoc($query);
+
+    if ($data) {
+        $items[] = [
+            'id_produk' => $id_produk,
+            'id_varian' => $id_varian,
+            'nama'      => $data['nama_produk'] . " (" . $data['nama_varian'] . ")",
+            'harga'     => $data['harga'],
+            'jumlah'    => $jumlah,
+            'gambar'    => $data['foto_produk']
+        ];
+    }
+} else if (isset($_SESSION['checkout_items']) && !empty($_SESSION['checkout_items'])) {
+    $items = $_SESSION['checkout_items'];
+}
+
 $total_akhir = 0;
 foreach($items as $item) {
     $total_akhir += ($item['harga'] * $item['jumlah']);
@@ -19,13 +135,13 @@ foreach($items as $item) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembelian | Ruang Karya MAN 1 Gresik</title>
-    <link rel="stylesheet" href="./RuangKaryaCSS/output.css">
+    <link rel="stylesheet" href="../RuangKaryaCSS/output.css">
 </head>
 <body class="font-sans-body p-4 md:p-12 flex items-center justify-center min-h-screen bg-slate-100">
     <div class="bg-gray-50 w-full max-w-6xl mx-auto rounded-xl shadow-2xl overflow-hidden flex flex-col">
         
         <header class="bg-white px-6 py-5 flex items-center gap-4">
-            <img src="images/LOGO.jpeg" alt="Logo" class="h-14 w-14 object-contain">
+            <img src="../images/LOGO.jpeg" alt="Logo" class="h-14 w-14 object-contain">
             <div>
                 <h1 class="text-xl font-serif-heading font-bold text-blue-900 leading-tight">Ruang Karya</h1>
                 <h2 class="text-sm italic font-semibold text-blue-900">MAN 1 Gresik</h2>
@@ -35,7 +151,7 @@ foreach($items as $item) {
             </div>
         </header>
 
-        <form id="orderForm" action="proses_simpan.php" method="POST" class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <form id="orderForm" action="" method="POST" class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             <div class="space-y-6">
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
@@ -75,8 +191,7 @@ foreach($items as $item) {
 
                         <div>
                             <h3 class="font-bold text-blue-900">Metode Pengiriman</h3>
-                            <p class="italic text-xs mb-3 text-blue-900 opacity-80">Pilih salah satu metode pengiriman di bawah!</p>
-                            <div class="flex gap-4">
+                            <div class="flex gap-4 mt-2">
                                 <label class="flex-1 cursor-pointer">
                                     <input type="radio" name="pengiriman" value="Ambil" checked class="hidden peer">
                                     <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-400 font-semibold transition-all">Ambil</div>
@@ -92,7 +207,7 @@ foreach($items as $item) {
             </div>
 
             <div class="space-y-6">
-                <div class="bg-gray-50 text-white border border-slate-200 p-6 rounded-xl shadow-lg">
+                <div class="bg-gray-100 border border-slate-200 p-6 rounded-xl shadow-lg">
                     <h2 class="text-blue-900 uppercase font-bold mb-6 tracking-wider">Ringkasan Produk</h2>
                     
                     <div id="product-list" class="max-h-[400px] overflow-y-auto space-y-4 pr-2">
@@ -100,26 +215,30 @@ foreach($items as $item) {
                             <p class="italic text-blue-900 opacity-70">Belum ada barang yang dipilih!</p>
                         <?php else: ?>
                             <?php foreach($items as $index => $item): ?>
-                            <div class="flex items-center gap-4 bg-white/10 p-3 rounded-lg border border-white/10">
-                                <img src="images/<?= $item['gambar'] ?>" class="w-16 h-16 object-cover rounded-lg">
+                            <div class="flex items-center gap-4 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                                <input type="hidden" name="items[<?= $index ?>][id_varian]" value="<?= $item['id_varian'] ?>">
+                                <input type="hidden" name="items[<?= $index ?>][jumlah]" value="<?= $item['jumlah'] ?>">
+                                <input type="hidden" name="items[<?= $index ?>][harga]" value="<?= $item['harga'] ?>">
+
+                                <img src="../images/<?= $item['gambar'] ?>" class="w-20 h-20 object-cover rounded-lg">
                                 <div class="flex-1">
-                                    <p class="font-bold"><?= $item['nama'] ?></p>
+                                    <p class="text-black font-bold"><?= $item['nama'] ?></p>
                                     <p class="text-xs text-blue-900">Jumlah: <?= $item['jumlah'] ?> pcs</p>
-                                    <p class="text-yellow-500 font-bold">Rp <?= number_format($item['harga'] * $item['jumlah'], 0, ',', '.') ?></p>
+                                    <p class="text-yellow-600 font-bold">Rp <?= number_format($item['harga'] * $item['jumlah'], 0, ',', '.') ?></p>
                                 </div>
                             </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
 
-                    <div class="mt-8 pt-6 border-t border-white/20">
+                    <div class="mt-8 pt-6 border-t border-slate-300">
                         <div class="flex justify-between items-center text-xl font-black">
                             <span class="text-blue-900">TOTAL</span>
-                            <span class="text-yellow-500">Rp <?= number_format($total_akhir, 0, ',', '.') ?></span>
+                            <span class="text-yellow-600">Rp <?= number_format($total_akhir, 0, ',', '.') ?></span>
                         </div>
                         <input type="hidden" name="total_final" value="<?= $total_akhir ?>">
                         
-                        <button type="button" onclick="validateAndSubmit()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl mt-6 hover:scale-[1.02] transition shadow-xl hover:bg-yellow-500 uppercase">
+                        <button type="submit" name="konfirmasi_pesanan" onclick="validateAndSubmit(event)" class="w-full bg-yellow-500 text-blue-900 font-black py-4 rounded-xl mt-6 hover:scale-[1.02] transition shadow-xl hover:bg-blue-900 hover:text-yellow-500 uppercase">
                             Pesan Sekarang
                         </button>
                     </div>
@@ -133,7 +252,9 @@ foreach($items as $item) {
     </div>
 
     <script>
-        function validateAndSubmit() {
+        function validateAndSubmit(event) {
+            // Kita biarkan tombol submit bekerja secara default, 
+            // tapi jika validasi gagal baru kita hentikan.
             const fields = [
                 { id: 'nama', label: 'Nama', type: 'alpha' },
                 { id: 'noTelp', label: 'No. Telepon', type: 'num' },
@@ -150,30 +271,28 @@ foreach($items as $item) {
                 const element = document.getElementById(field.id);
                 const val = element.value.trim();
 
-                // Cek Kosong
                 if (!val) {
                     alert(`Peringatan: ${field.label} tidak boleh kosong!`);
+                    event.preventDefault();
                     element.focus();
                     return false;
                 }
 
-                // Cek Alfabet (Nama, Kota, Provinsi)
                 if (field.type === 'alpha' && !alphaRegex.test(val)) {
-                    alert(`Peringatan: ${field.label} hanya boleh berisi huruf dan tanda petik (')`);
+                    alert(`Peringatan: ${field.label} hanya boleh berisi huruf!`);
+                    event.preventDefault();
                     element.focus();
                     return false;
                 }
 
-                // Cek Nomor (NoTelp, KodePos)
                 if (field.type === 'num' && !numRegex.test(val)) {
                     alert(`Peringatan: ${field.label} hanya boleh berisi angka!`);
+                    event.preventDefault();
                     element.focus();
                     return false;
                 }
             }
-
-            // Jika semua lolos, kirim form
-            document.getElementById('orderForm').submit();
+            // Jika lolos semua, form akan terkirim karena type="submit"
         }
     </script>
 </body>
