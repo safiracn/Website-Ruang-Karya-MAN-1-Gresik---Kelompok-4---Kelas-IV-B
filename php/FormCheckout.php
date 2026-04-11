@@ -48,6 +48,12 @@ if (isset($_POST['konfirmasi_pesanan'])) {
                 // Update stok
                 mysqli_query($koneksi, "UPDATE produk_varian SET stok = stok - $jumlah WHERE id_varian = '$id_varian'");
             }
+            
+            // --- TAMBAHAN: HAPUS DARI KERANJANG SETELAH CHECKOUT BERHASIL ---
+            // Kita hapus semua item di keranjang milik user ini yang id_varian-nya baru saja dibeli
+            $id_user_login = $_SESSION['id_user'];
+            mysqli_query($koneksi, "DELETE FROM keranjang_detail WHERE id_keranjang IN (SELECT id_keranjang FROM keranjang WHERE id_user = '$id_user_login')");
+
             // PERBAIKAN: Alert dipindah ke sini agar muncul setelah loop selesai
             echo "<script>
                     alert('PESANAN BERHASIL DISIMPAN! Terima kasih telah berbelanja.');
@@ -66,7 +72,31 @@ if (isset($_POST['konfirmasi_pesanan'])) {
 }
 
 $items = [];
-if (isset($_POST['aksi']) && $_POST['aksi'] === 'beli') {
+// --- LOGIKA 1: AMBIL DATA DARI KERANJANG (Lewat GET selected_items) ---
+if (isset($_GET['selected_items']) && !empty($_GET['selected_items'])) {
+    $ids = mysqli_real_escape_string($koneksi, $_GET['selected_items']);
+    
+    // Query untuk mengambil detail produk berdasarkan ID detail keranjang yang dicentang
+    $sql_keranjang = "SELECT kd.jumlah, pv.id_varian, pv.harga, pv.nama_varian, p.nama_produk, p.foto_produk 
+                      FROM keranjang_detail kd
+                      JOIN produk_varian pv ON kd.id_varian = pv.id_varian
+                      JOIN produk p ON pv.id_produk = p.id_produk
+                      WHERE kd.id_keranjang_detail IN ($ids)";
+            
+    $query_keranjang = mysqli_query($koneksi, $sql_keranjang);
+    while ($row = mysqli_fetch_assoc($query_keranjang)) {
+        $items[] = [
+            'id_varian' => $row['id_varian'],
+            'nama'      => $row['nama_produk'] . " (" . $row['nama_varian'] . ")",
+            'harga'     => $row['harga'],
+            'jumlah'    => $row['jumlah'],
+            'gambar'    => $row['foto_produk']
+        ];
+    }
+}
+
+// --- LOGIKA 2: BELI LANGSUNG (Lewat POST dari Detail Produk) ---
+else if (isset($_POST['aksi']) && $_POST['aksi'] === 'beli') {
     $id_produk = $_POST['id_produk'];
     $id_varian = $_POST['id_varian'];
     $jumlah = $_POST['jumlah'];
