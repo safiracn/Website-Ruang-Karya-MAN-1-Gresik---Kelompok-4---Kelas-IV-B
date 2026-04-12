@@ -244,6 +244,14 @@ $selected_stok      = $varian_pertama['stok'];
                     <div class="flex items-start justify-between gap-4 border-b border-slate-200 pb-3">
                         <span class="text-slate-400">Finishing</span>
                         <span class="text-right font-bold text-slate-700"><?= htmlspecialchars($produk['finishing']) ?></span>
+                          <?= !empty($produk['finishing']) ? htmlspecialchars($produk['finishing']) : '-' ?>
+                    </div>
+
+                    <div class="flex items-start justify-between gap-4 border-b border-slate-200 pb-3">
+                        <span class="text-slate-400">Dimensi</span>
+                        <span class="text-right font-bold text-slate-700">
+                            <?= !empty($produk['dimensi']) ? htmlspecialchars($produk['dimensi']) : '-' ?>
+                        </span>
                     </div>
 
                     <div class="flex items-start justify-between gap-4">
