@@ -30,8 +30,8 @@ $query_kategori = mysqli_query($koneksi, "SELECT * FROM kategori");
         </div>
       </div>
 
-     /* Mengambil data produk beserta kategori dan harga termurah untuk ditampilkan di katalog 
-     - Harga termurah diambil karena ada beberapa produk mempunyai banyak varian, jadi yg ditampilkan di katalog adalah harga yg termurah */
+<!-- Mengambil data produk beserta kategori dan harga termurah untuk ditampilkan di katalog 
+     - Harga termurah diambil karena ada beberapa produk mempunyai banyak varian, jadi yg ditampilkan di katalog adalah harga yg termurah  -->
       <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <?php
         $sql = "SELECT p.*, k.nama_kategori, MIN(v.harga) as harga_mulai 
