@@ -17,10 +17,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
  * Menyimpan nama user di browser selama 1 jam jika dia sudah login, 
  * agar JS bisa menyapa namanya.
  */
-$namaUser = "Pengunjung";
+$namaUser = "Pengunjung"; // Default kalau belum login
+
 if (isset($_SESSION['nama_lengkap'])) {
+    // Kalau sudah login, ambil dari session saja
     $namaUser = $_SESSION['nama_lengkap'];
-    setcookie("last_user", $namaUser, time() + 3600, "/");
 }
 ?>
 
