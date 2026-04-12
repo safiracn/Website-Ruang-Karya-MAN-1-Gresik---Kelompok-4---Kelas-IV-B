@@ -6,7 +6,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
     if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
         header("Location: ../admin/dashboard.php");
     } else {
-        header("Location: gabungan.php");
+        header("Location: dashboardPembeli.php");
     }
     exit;
 }
@@ -60,7 +60,7 @@ if (isset($_POST['submit'])) {
                 if ($row['role'] === 'admin') {
                     header("Location: ../admin/dashboard.php");
                 } else {
-                    header("Location: gabungan.php");
+                    header("Location: dashboardPembeli.php");
                 }
                 exit;
             } else {
