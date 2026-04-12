@@ -8,11 +8,7 @@ if (!isset($_SESSION['login'])) {
 
 require_once 'koneksi.php';
 
-/*
-|--------------------------------------------------------------------------
-| AMBIL DATA USER LOGIN
-|--------------------------------------------------------------------------
-*/
+/* Mengambil data user yang sedang login berdasarkan id_user dari session */
 $id_user = $_SESSION['id_user'] ?? 0;
 
 if ($id_user > 0) {
@@ -34,11 +30,7 @@ if ($id_user > 0) {
 
 $user = mysqli_fetch_assoc($queryUser);
 
-/*
-|--------------------------------------------------------------------------
-| FUNGSI BUAT INISIAL 2 KATA PERTAMA
-|--------------------------------------------------------------------------
-*/
+/* Mengambil 2 huruf awal dari nama user untuk digunakan sebagai avatar */
 function getInitials($nama)
 {
     $nama = trim($nama);

@@ -1,9 +1,9 @@
 <?php 
 include 'koneksi.php';
-// Header ini harus berisi bagian Logo sampai Navigasi agar tidak double
+
 include 'header.php'; 
 
-// Ambil data kategori untuk tombol filter di atas
+// Ambil data kategori untuk tombol filter 
 $query_kategori = mysqli_query($koneksi, "SELECT * FROM kategori");
 ?>
 
@@ -30,6 +30,8 @@ $query_kategori = mysqli_query($koneksi, "SELECT * FROM kategori");
         </div>
       </div>
 
+     /* Mengambil data produk beserta kategori dan harga termurah untuk ditampilkan di katalog 
+     - Harga termurah diambil karena ada beberapa produk mempunyai banyak varian, jadi yg ditampilkan di katalog adalah harga yg termurah */
       <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <?php
         $sql = "SELECT p.*, k.nama_kategori, MIN(v.harga) as harga_mulai 
@@ -81,7 +83,7 @@ $query_kategori = mysqli_query($koneksi, "SELECT * FROM kategori");
 </main>
 
 <script>
-// Fungsi filter agar kategori bisa diklik tanpa reload
+// Untuk memfilter  produk berdasarkan kategori
 function filterCategory(category) {
     const products = document.querySelectorAll('.product-item');
     const buttons = document.querySelectorAll('.category-btn');

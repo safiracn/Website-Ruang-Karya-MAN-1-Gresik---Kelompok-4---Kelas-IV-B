@@ -7,7 +7,7 @@ if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-/* ambil admin id 1 */
+// Mengambil data admin dari database supaya bisa ditampilkan di halaman profil
 $queryAdmin = mysqli_query($koneksi, "
     SELECT id_user, nama_lengkap, email, no_telp, alamat
     FROM user

@@ -1,69 +1,37 @@
 <?php
-// Menyalakan session agar bisa membaca data login admin
 session_start();
-
-// Menghubungkan file ini ke database
-require_once '../php/koneksi.php';
-
-/*
-|--------------------------------------------------------------------------
-| PROTEKSI HALAMAN ADMIN
-|--------------------------------------------------------------------------
-| Jika belum login atau role bukan admin, paksa kembali ke login.
-*/
+/* kalau user belum login || dan kalau user login tetapi role bukan admin, maka dia tidak bisa masuk halaman ini */
 if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../php/login.php");
+    header("Location: ../php/login.php"); // kalau user tidak lolos pengecekan di atas, dia langsung diarahkan ke halaman login
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| AMBIL DATA ADMIN YANG SEDANG LOGIN
-|--------------------------------------------------------------------------
-| id_user diambil dari session login, lalu dipakai untuk mengambil data admin.
-*/
+require_once '../php/koneksi.php';
+
+/* id_user diambil dari session login, lalu dipakai untuk mengambil data admin */
 $id_admin = (int)($_SESSION['id_user'] ?? 0);
 
+/* $id_admin diambil dari id session (id admin yg mana? alias admin yg sudah login dan role jg harus admin */
 $queryAdmin = mysqli_query($koneksi, "
     SELECT id_user, nama_lengkap, email, no_telp, alamat
     FROM user
-    WHERE id_user = '$id_admin' AND role = 'admin'
+    WHERE id_user = '$id_admin' AND role = 'admin' 
     LIMIT 1
 ");
 $admin = mysqli_fetch_assoc($queryAdmin);
 
-/*
-|--------------------------------------------------------------------------
-| VARIABEL UNTUK HEADER ADMIN
-|--------------------------------------------------------------------------
-| Variabel ini dipakai oleh header_admin.php untuk judul, deskripsi, dan menu aktif.
-*/
+/* untuk mengirim data ke header_admin.php */
 $activeMenu = 'dashboard';
 $pageTitle = 'Daftar Produk';
 $pageDesc = 'Kelola dan pantau semua inventaris produk karya siswa Anda.';
 
-/*
-|--------------------------------------------------------------------------
-| HAPUS PRODUK
-|--------------------------------------------------------------------------
-| Alur:
-| 1. Ambil id produk dari URL (?hapus=ID)
-| 2. Ambil nama produk dulu untuk ditampilkan di notifikasi
-| 3. Hapus produk dari tabel produk
-| 4. Simpan nama produk ke session sebagai flash message
-| 5. Redirect ke dashboard agar halaman bersih dari parameter URL
-| 6. Jika sedang search, pertahankan keyword search setelah hapus
-|
-| Catatan:
-| Karena tabel produk_varian memakai relasi ke produk,
-| varian bisa ikut terhapus jika FK-nya ON DELETE CASCADE.
-*/
+/* periksa apakah ada permintaan hapus, jika tidak ada hapus, blok ini tidak dijalankan */
 if (isset($_GET['hapus'])) {
     $id_hapus = (int) $_GET['hapus'];
     $search_redirect = trim($_GET['search'] ?? '');
 
     if ($id_hapus > 0) {
-        // Ambil nama produk terlebih dahulu sebelum dihapus
+        // ambil nama produk dulu
         $qNamaProduk = mysqli_query($koneksi, "
             SELECT nama_produk
             FROM produk
@@ -74,18 +42,38 @@ if (isset($_GET['hapus'])) {
         $dataNamaProduk = mysqli_fetch_assoc($qNamaProduk);
         $namaProdukHapus = $dataNamaProduk['nama_produk'] ?? 'Produk';
 
-        // Eksekusi hapus produk
-        mysqli_query($koneksi, "
-            DELETE FROM produk
-            WHERE id_produk = '$id_hapus'
-            LIMIT 1
+        // cek apakah produk sudah pernah dipakai di transaksi
+        $qCekDipakai = mysqli_query($koneksi, "
+            SELECT COUNT(*) AS total
+            FROM pembelian_detail pd
+            INNER JOIN produk_varian pv ON pd.id_varian = pv.id_varian
+            WHERE pv.id_produk = '$id_hapus'
         ");
 
-        // Simpan pesan sukses ke session agar bisa ditampilkan setelah redirect
-        $_SESSION['success_hapus'] = $namaProdukHapus;
+        $dataCekDipakai = mysqli_fetch_assoc($qCekDipakai);
+        $totalDipakai = (int)($dataCekDipakai['total'] ?? 0);
+
+        /* Menentukan apakah produk boleh dihapus atau tidak. 
+        lalu menyimpan hasilnya ke session (untuk notifikasi)/nama produk dan jenis pesan (sukses/error disimpan untuk notif) */
+        if ($totalDipakai > 0) {
+            $_SESSION['error_hapus'] = 'Produk "' . $namaProdukHapus . '" tidak bisa dihapus karena sudah pernah masuk transaksi.';
+        } else {
+            $hapusProduk = mysqli_query($koneksi, "
+                DELETE FROM produk
+                WHERE id_produk = '$id_hapus'
+                LIMIT 1
+            ");
+
+            if ($hapusProduk) {
+                $_SESSION['success_hapus'] = $namaProdukHapus;
+            } else {
+                $_SESSION['error_hapus'] = 'Produk "' . $namaProdukHapus . '" gagal dihapus.';
+            }
+        }
+    } else {
+        $_SESSION['error_hapus'] = 'ID produk tidak valid.';
     }
 
-    // Kalau sedang search, pertahankan search setelah hapus
     if ($search_redirect !== '') {
         header("Location: dashboard.php?search=" . urlencode($search_redirect));
     } else {
@@ -94,21 +82,16 @@ if (isset($_GET['hapus'])) {
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| DASHBOARD STATS
-|--------------------------------------------------------------------------
-| Menghitung total produk, stok tersedia, dan stok habis.
-*/
 
-// Menghitung total semua produk
+/* Menghitung total produk, stok tersedia, dan stok habis.
+Menghitung total semua produk */
 $qTotalProduk = mysqli_query($koneksi, "
     SELECT COUNT(*) AS total_produk
     FROM produk
 ");
 $totalProduk = mysqli_fetch_assoc($qTotalProduk)['total_produk'] ?? 0;
 
-// Menghitung jumlah produk yang total stok variannya lebih dari 0
+/* Menghitung jumlah produk yang total stok variannya lebih dari 0 */
 $qStokTersedia = mysqli_query($koneksi, "
     SELECT COUNT(*) AS stok_tersedia
     FROM (
@@ -121,7 +104,7 @@ $qStokTersedia = mysqli_query($koneksi, "
 ");
 $stokTersedia = mysqli_fetch_assoc($qStokTersedia)['stok_tersedia'] ?? 0;
 
-// Menghitung jumlah produk yang total stok variannya sama dengan 0
+/* Menghitung jumlah produk yang total stok variannya sama dengan 0 */
 $qStokHabis = mysqli_query($koneksi, "
     SELECT COUNT(*) AS stok_habis
     FROM (
@@ -134,30 +117,11 @@ $qStokHabis = mysqli_query($koneksi, "
 ");
 $stokHabis = mysqli_fetch_assoc($qStokHabis)['stok_habis'] ?? 0;
 
-/*
-|--------------------------------------------------------------------------
-| SEARCH PRODUK
-|--------------------------------------------------------------------------
-| Ambil keyword pencarian dari URL.
-| Contoh: dashboard.php?search=meja
-*/
+/* search produk */
 $keyword = trim($_GET['search'] ?? '');
 $keyword_escape = mysqli_real_escape_string($koneksi, $keyword);
 
-/*
-|--------------------------------------------------------------------------
-| DATA PRODUK UNTUK TABEL
-|--------------------------------------------------------------------------
-| Query ini mengambil:
-| - id produk
-| - nama produk
-| - foto produk
-| - nama kategori
-| - harga termurah dari seluruh varian
-| - total stok semua varian
-| - detail varian (contoh: S:10 • M:5 • L:0)
-| - hasil bisa difilter berdasarkan nama produk
-*/
+/* Mengambil semua data produk untuk ditampilkan di tabel dashboard */
 $qProduk = mysqli_query($koneksi, "
     SELECT 
         p.id_produk,
@@ -221,12 +185,7 @@ $qProduk = mysqli_query($koneksi, "
 include 'header_admin.php';
 ?>
 
-<!--
-==============================================================================
-CARD STATISTIK
-==============================================================================
-Menampilkan ringkasan total produk, stok tersedia, dan stok habis.
--->
+ <!-- Menampilkan ringkasan total produk, stok tersedia, dan stok habis. -->
 <section class="mb-7 grid grid-cols-1 gap-6 lg:grid-cols-3">
     <!-- Card total produk -->
     <div class="flex items-center justify-between rounded-2xl border-l-4 border-blue-900 bg-white px-7 py-7 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md">
@@ -262,13 +221,16 @@ Menampilkan ringkasan total produk, stok tersedia, dan stok habis.
     </div>
 </section>
 
-<!--
-==============================================================================
-TABEL PRODUK
-==============================================================================
-Bagian ini menampilkan search box, tombol tambah produk, notifikasi, dan tabel.
--->
+<!-- menampilkan search box, tombol tambah produk, notifikasi, dan tabel -->
 <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+
+    <!-- Notifikasi gagal hapus -->
+    <?php if (isset($_SESSION['error_hapus'])): ?>
+        <div id="notif-error-hapus" class="mb-6 rounded-xl border border-yellow-300 bg-yellow-100 px-4 py-3 text-[15px] font-semibold text-yellow-800 shadow-sm">
+            <?= htmlspecialchars($_SESSION['error_hapus']); ?>
+        </div>
+        <?php unset($_SESSION['error_hapus']); ?>
+    <?php endif; ?>
 
     <!-- Notifikasi sukses hapus -->
     <?php if (isset($_SESSION['success_hapus'])): ?>
@@ -422,23 +384,27 @@ Bagian ini menampilkan search box, tombol tambah produk, notifikasi, dan tabel.
     </div>
 </section>
 
-<!-- Auto-hide notif hapus -->
+<!-- Auto-hide notif -->
 <script>
-    const notifHapus = document.getElementById('notif-hapus');
+    const notifList = [
+        document.getElementById('notif-hapus'),
+        document.getElementById('notif-error-hapus')
+    ];
 
-    if (notifHapus) {
-        setTimeout(() => {
-            notifHapus.style.transition = 'all 0.5s ease';
-            notifHapus.style.opacity = '0';
-            notifHapus.style.transform = 'translateY(-8px)';
-
+    notifList.forEach((notif) => {
+        if (notif) {
             setTimeout(() => {
-                notifHapus.remove();
-            }, 500);
-        }, 3000);
-    }
-</script>
+                notif.style.transition = 'all 0.5s ease';
+                notif.style.opacity = '0';
+                notif.style.transform = 'translateY(-8px)';
 
+                setTimeout(() => {
+                    notif.remove();
+                }, 500);
+            }, 3000);
+        }
+    });
+</script>
 </main>
 </div>
 </body>

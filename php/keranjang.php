@@ -6,18 +6,10 @@ if (!isset($_SESSION['login'])) {
 }
 require_once 'koneksi.php';
 
-/*
-|--------------------------------------------------------------------------
-| USER LOGIN
-|--------------------------------------------------------------------------
-*/
+/* Mengambil ID user dari session login */
 $id_user = $_SESSION['id_user'] ?? 1;
 
-/*
-|--------------------------------------------------------------------------
-| CARI / BUAT KERANJANG USER
-|--------------------------------------------------------------------------
-*/
+/* Memeriksa apakah user sudah memiliki keranjang berdasarkan id_user */
 $qCariKeranjang = mysqli_query($koneksi, "
     SELECT id_keranjang
     FROM keranjang
@@ -36,11 +28,7 @@ if ($qCariKeranjang && mysqli_num_rows($qCariKeranjang) > 0) {
     $id_keranjang = mysqli_insert_id($koneksi);
 }
 
-/*
-|--------------------------------------------------------------------------
-| TAMBAH KE KERANJANG DARI DETAIL PRODUK
-|--------------------------------------------------------------------------
-*/
+/* Mengecek varian produk, stok, dan menambahkan item ke keranjang user */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi']) && $_POST['aksi'] === 'keranjang') {
     $id_varian = isset($_POST['id_varian']) ? (int)$_POST['id_varian'] : 0;
     $jumlah    = isset($_POST['jumlah']) ? (int)$_POST['jumlah'] : 1;
@@ -97,11 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi']) && $_POST['ak
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE JUMLAH
-|--------------------------------------------------------------------------
-*/
+/* Mengupdate jumlah produk di keranjang (tambah atau kurang) sesuai aksi user dari button + dan -*/
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_qty'])) {
     $id_detail = (int)($_POST['id_detail'] ?? 0);
     $mode_qty  = $_POST['mode_qty'] ?? '';
@@ -143,11 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_qty'])) {
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| HAPUS ITEM
-|--------------------------------------------------------------------------
-*/
+/* Menghapus produk di keranjang */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus_item'])) {
     $id_detail = (int)($_POST['id_detail'] ?? 0);
 
@@ -161,11 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus_item'])) {
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| DATA KERANJANG
-|--------------------------------------------------------------------------
-*/
+/* Mengambil semua data produk dalam keranjang beserta detailnya untuk ditampilkan */
 $qCart = mysqli_query($koneksi, "
     SELECT
         kd.id_keranjang_detail,
@@ -183,11 +159,7 @@ $qCart = mysqli_query($koneksi, "
     ORDER BY kd.id_keranjang_detail DESC
 ");
 
-/*
-|--------------------------------------------------------------------------
-| TOTAL
-|--------------------------------------------------------------------------
-*/
+/* Menghitung jumlah item dalam keranjang dan total harga keseluruhan */
 $qTotal = mysqli_query($koneksi, "
     SELECT
         COUNT(kd.id_keranjang_detail) AS total_item,
@@ -207,6 +179,7 @@ function rupiah($angka) {
     return 'Rp ' . number_format((float)$angka, 0, ',', '.');
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -216,79 +189,8 @@ function rupiah($angka) {
 
     <link rel="stylesheet" href="../RuangKaryaCSS/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <style>
-        :root {
-            --font-serif-heading: "Cambria", serif;
-            --font-sans-body: "Inter", sans-serif;
-        }
-
-        .font-serif-heading { font-family: var(--font-serif-heading); }
-        .font-sans-body { font-family: var(--font-sans-body); }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 9999px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 9999px;
-        }
-
-        .cart-checkbox {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            position: relative;
-            transition: 0.2s ease;
-        }
-
-        .cart-checkbox:checked {
-            background: #1e3a8a;
-            border-color: #1e3a8a;
-        }
-
-        .cart-checkbox:checked::after {
-            content: "\f00c";
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            color: white;
-            font-size: 12px;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .cart-checkbox:indeterminate {
-            background: #1e3a8a;
-            border-color: #1e3a8a;
-        }
-
-        .cart-checkbox:indeterminate::after {
-            content: "";
-            width: 10px;
-            height: 2px;
-            background: white;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 999px;
-        }
-    </style>
 </head>
-<body class="font-sans-body bg-slate-100 text-slate-800">
+<body class="bg-slate-100 font-sans-body text-slate-800">
 
     <?php include 'header.php'; ?>
 
@@ -314,7 +216,7 @@ function rupiah($angka) {
                     <div></div>
                 </div>
 
-                <div class="custom-scrollbar h-[560px] overflow-y-auto">
+                <div class="h-[560px] overflow-y-auto">
                     <?php if ($qCart && mysqli_num_rows($qCart) > 0): ?>
                         <?php while ($row = mysqli_fetch_assoc($qCart)): ?>
                             <div
@@ -325,7 +227,7 @@ function rupiah($angka) {
                                 <div class="flex justify-center">
                                     <input
                                         type="checkbox"
-                                        class="cart-checkbox item-checkbox"
+                                        class="item-checkbox h-6 w-6 cursor-pointer rounded-md border-2 border-slate-300 bg-white text-blue-900 accent-blue-900 transition"
                                         value="<?= (int)$row['id_keranjang_detail']; ?>"
                                         checked
                                     >
@@ -379,7 +281,7 @@ function rupiah($angka) {
                                 </div>
 
                                 <div>
-                                    <p class="text-[19px] font-bold text-blue-900 md:text-[21px] item-total-text">
+                                    <p class="item-total-text text-[19px] font-bold text-blue-900 md:text-[21px]">
                                         <?= rupiah($row['subtotal']); ?>
                                     </p>
                                 </div>
@@ -409,7 +311,7 @@ function rupiah($angka) {
 
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_240px] md:items-center md:gap-5">
                             <div class="flex items-center gap-3">
-                                <input type="checkbox" id="selectAll" class="cart-checkbox" <?= $adaProduk ? 'checked' : ''; ?>>
+                                <input type="checkbox" id="selectAll" class="h-6 w-6 cursor-pointer rounded-md border-2 border-slate-300 bg-white text-blue-900 accent-blue-900 transition" <?= $adaProduk ? 'checked' : ''; ?>>
                                 <p class="text-[18px] font-semibold text-slate-800 md:text-[20px]">
                                     Pilih Semua (<span id="selectedCountText"><?= $total_item; ?></span> Produk)
                                 </p>
@@ -443,6 +345,7 @@ function rupiah($angka) {
 
     <?php include 'footer.php'; ?>
 
+    /* Menghitung total harga keseluruhan (grand total) dari item yang dipilih dari checkbox yg ditekan dan berdasarkan subtotal masing-masing produk. */
     <script>
         const itemCheckboxes = document.querySelectorAll('.item-checkbox');
         const selectAll = document.getElementById('selectAll');
