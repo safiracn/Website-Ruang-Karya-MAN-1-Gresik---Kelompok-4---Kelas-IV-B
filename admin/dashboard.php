@@ -52,13 +52,15 @@ $pageDesc = 'Kelola dan pantau semua inventaris produk karya siswa Anda.';
 | 3. Hapus produk dari tabel produk
 | 4. Simpan nama produk ke session sebagai flash message
 | 5. Redirect ke dashboard agar halaman bersih dari parameter URL
+| 6. Jika sedang search, pertahankan keyword search setelah hapus
 |
 | Catatan:
-| Karena tabel produk_varian sebelumnya memakai ON DELETE CASCADE,
-| maka varian produk akan ikut terhapus otomatis saat produk dihapus.
+| Karena tabel produk_varian memakai relasi ke produk,
+| varian bisa ikut terhapus jika FK-nya ON DELETE CASCADE.
 */
 if (isset($_GET['hapus'])) {
     $id_hapus = (int) $_GET['hapus'];
+    $search_redirect = trim($_GET['search'] ?? '');
 
     if ($id_hapus > 0) {
         // Ambil nama produk terlebih dahulu sebelum dihapus
@@ -83,8 +85,12 @@ if (isset($_GET['hapus'])) {
         $_SESSION['success_hapus'] = $namaProdukHapus;
     }
 
-    // Redirect balik ke dashboard agar URL bersih dan menghindari hapus ulang saat refresh
-    header("Location: dashboard.php");
+    // Kalau sedang search, pertahankan search setelah hapus
+    if ($search_redirect !== '') {
+        header("Location: dashboard.php?search=" . urlencode($search_redirect));
+    } else {
+        header("Location: dashboard.php");
+    }
     exit;
 }
 
@@ -130,6 +136,16 @@ $stokHabis = mysqli_fetch_assoc($qStokHabis)['stok_habis'] ?? 0;
 
 /*
 |--------------------------------------------------------------------------
+| SEARCH PRODUK
+|--------------------------------------------------------------------------
+| Ambil keyword pencarian dari URL.
+| Contoh: dashboard.php?search=meja
+*/
+$keyword = trim($_GET['search'] ?? '');
+$keyword_escape = mysqli_real_escape_string($koneksi, $keyword);
+
+/*
+|--------------------------------------------------------------------------
 | DATA PRODUK UNTUK TABEL
 |--------------------------------------------------------------------------
 | Query ini mengambil:
@@ -140,6 +156,7 @@ $stokHabis = mysqli_fetch_assoc($qStokHabis)['stok_habis'] ?? 0;
 | - harga termurah dari seluruh varian
 | - total stok semua varian
 | - detail varian (contoh: S:10 • M:5 • L:0)
+| - hasil bisa difilter berdasarkan nama produk
 */
 $qProduk = mysqli_query($koneksi, "
     SELECT 
@@ -157,6 +174,7 @@ $qProduk = mysqli_query($koneksi, "
     FROM produk p
     LEFT JOIN kategori k ON p.id_kategori = k.id_kategori
     LEFT JOIN produk_varian v ON p.id_produk = v.id_produk
+    WHERE p.nama_produk LIKE '%$keyword_escape%'
     GROUP BY p.id_produk, p.nama_produk, p.foto_produk, k.nama_kategori
     ORDER BY p.id_produk ASC
 ");
@@ -252,13 +270,7 @@ Bagian ini menampilkan search box, tombol tambah produk, notifikasi, dan tabel.
 -->
 <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
 
-    <!--
-    --------------------------------------------------------------------------
-    NOTIFIKASI SUKSES HAPUS
-    --------------------------------------------------------------------------
-    Flash message dari session.
-    Akan muncul setelah produk berhasil dihapus.
-    -->
+    <!-- Notifikasi sukses hapus -->
     <?php if (isset($_SESSION['success_hapus'])): ?>
         <div id="notif-hapus" class="mb-6 rounded-xl border border-red-300 bg-red-100 px-4 py-3 text-[15px] font-semibold text-red-700 shadow-sm">
             Produk "<span class="font-bold"><?= htmlspecialchars($_SESSION['success_hapus']); ?></span>" berhasil dihapus.
@@ -268,15 +280,22 @@ Bagian ini menampilkan search box, tombol tambah produk, notifikasi, dan tabel.
 
     <!-- Bar atas: search dan tombol tambah produk -->
     <div class="mb-6 flex items-center justify-between gap-4">
-        <!-- Input pencarian, saat ini baru tampilan -->
-        <div class="group flex h-12 w-[360px] items-center gap-3 rounded-xl bg-slate-100 px-4 transition hover:bg-slate-200">
-            <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
-            <input
-                type="text"
-                placeholder="Cari nama produk..."
-                class="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
-            >
-        </div>
+        <!--
+        Search dibungkus form GET.
+        Jadi saat admin mengetik lalu menekan Enter, browser otomatis submit.
+        -->
+        <form action="" method="GET" class="w-[360px]">
+            <div class="group flex h-12 items-center gap-3 rounded-xl bg-slate-100 px-4 transition hover:bg-slate-200">
+                <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+                <input
+                    type="text"
+                    name="search"
+                    value="<?= htmlspecialchars($keyword); ?>"
+                    placeholder="Cari nama produk..."
+                    class="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+                >
+            </div>
+        </form>
 
         <!-- Tombol menuju halaman tambah produk -->
         <a href="tambahProduk.php"
@@ -300,129 +319,119 @@ Bagian ini menampilkan search box, tombol tambah produk, notifikasi, dan tabel.
             </thead>
 
             <tbody>
-                <?php while ($row = mysqli_fetch_assoc($qProduk)) : ?>
-                    <tr class="border-b border-slate-200 align-middle transition hover:bg-slate-50">
+                <?php if (mysqli_num_rows($qProduk) > 0): ?>
+                    <?php while ($row = mysqli_fetch_assoc($qProduk)) : ?>
+                        <tr class="border-b border-slate-200 align-middle transition hover:bg-slate-50">
 
-                        <!-- Kolom informasi produk -->
-                        <td class="px-4 py-4 align-middle">
-                            <div class="flex min-h-[64px] items-center gap-4">
-                                <img
-                                    src="../images/<?= htmlspecialchars($row['foto_produk']); ?>"
-                                    alt="<?= htmlspecialchars($row['nama_produk']); ?>"
-                                    class="h-12 w-12 shrink-0 rounded-xl object-cover ring-1 ring-slate-200"
-                                >
+                            <!-- Kolom informasi produk -->
+                            <td class="px-4 py-4 align-middle">
+                                <div class="flex min-h-[64px] items-center gap-4">
+                                    <img
+                                        src="../images/<?= htmlspecialchars($row['foto_produk']); ?>"
+                                        alt="<?= htmlspecialchars($row['nama_produk']); ?>"
+                                        class="h-12 w-12 shrink-0 rounded-xl object-cover ring-1 ring-slate-200"
+                                    >
 
-                                <div class="min-w-0">
-                                    <p class="truncate text-[16px] font-bold leading-tight text-blue-900">
-                                        <?= htmlspecialchars($row['nama_produk']); ?>
-                                    </p>
-                                    <p class="mt-1 text-sm leading-none text-slate-400">
-                                        ID: PRD-<?= $row['id_produk']; ?>
+                                    <div class="min-w-0">
+                                        <p class="truncate text-[16px] font-bold leading-tight text-blue-900">
+                                            <?= htmlspecialchars($row['nama_produk']); ?>
+                                        </p>
+                                        <p class="mt-1 text-sm leading-none text-slate-400">
+                                            ID: PRD-<?= $row['id_produk']; ?>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Kolom kategori -->
+                            <td class="px-4 py-4 align-middle">
+                                <div class="flex min-h-[64px] items-center">
+                                    <span class="text-[15px] text-slate-700">
+                                        <?= htmlspecialchars($row['nama_kategori']); ?>
+                                    </span>
+                                </div>
+                            </td>
+
+                            <!-- Kolom harga -->
+                            <td class="px-4 py-4 align-middle">
+                                <div class="flex min-h-[64px] items-center">
+                                    <span class="text-[15px] font-semibold text-blue-900">
+                                        Rp <?= number_format($row['harga'], 0, ',', '.'); ?>
+                                    </span>
+                                </div>
+                            </td>
+
+                            <!-- Kolom stok + detail varian -->
+                            <td class="px-4 py-4 align-middle">
+                                <div class="flex min-h-[64px] flex-col justify-center gap-2">
+                                    <?php if ((int)$row['stok'] > 10) : ?>
+                                        <span class="inline-flex w-fit rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                                            <?= $row['stok']; ?> Pcs
+                                        </span>
+                                    <?php elseif ((int)$row['stok'] == 0) : ?>
+                                        <span class="inline-flex w-fit rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+                                            0 Pcs
+                                        </span>
+                                    <?php else : ?>
+                                        <span class="inline-flex w-fit rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
+                                            <?= $row['stok']; ?> Pcs
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <p class="pr-2 text-[11px] leading-relaxed text-slate-400">
+                                        <?= htmlspecialchars($row['detail_varian'] ?? '-'); ?>
                                     </p>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
 
-                        <!-- Kolom kategori -->
-                        <td class="px-4 py-4 align-middle">
-                            <div class="flex min-h-[64px] items-center">
-                                <span class="text-[15px] text-slate-700">
-                                    <?= htmlspecialchars($row['nama_kategori']); ?>
-                                </span>
-                            </div>
-                        </td>
+                            <!-- Kolom aksi: edit dan hapus -->
+                            <td class="px-4 py-4 align-middle">
+                                <div class="flex min-h-[64px] items-center gap-2">
 
-                        <!-- Kolom harga -->
-                        <td class="px-4 py-4 align-middle">
-                            <div class="flex min-h-[64px] items-center">
-                                <span class="text-[15px] font-semibold text-blue-900">
-                                    Rp <?= number_format($row['harga'], 0, ',', '.'); ?>
-                                </span>
-                            </div>
-                        </td>
+                                    <!-- Tombol edit menuju edit.php dengan id produk -->
+                                    <a
+                                        href="edit.php?id=<?= (int)$row['id_produk']; ?>"
+                                        title="Edit"
+                                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-sm"
+                                    >
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
 
-                        <!-- Kolom stok + detail varian -->
-                        <td class="px-4 py-4 align-middle">
-                            <div class="flex min-h-[64px] flex-col justify-center gap-2">
-                                <?php if ((int)$row['stok'] > 10) : ?>
-                                    <span class="inline-flex w-fit rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                                        <?= $row['stok']; ?> Pcs
-                                    </span>
-                                <?php elseif ((int)$row['stok'] == 0) : ?>
-                                    <span class="inline-flex w-fit rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
-                                        0 Pcs
-                                    </span>
-                                <?php else : ?>
-                                    <span class="inline-flex w-fit rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
-                                        <?= $row['stok']; ?> Pcs
-                                    </span>
-                                <?php endif; ?>
-
-                                <p class="pr-2 text-[11px] leading-relaxed text-slate-400">
-                                    <?= htmlspecialchars($row['detail_varian'] ?? '-'); ?>
-                                </p>
-                            </div>
-                        </td>
-
-                        <!-- Kolom aksi: edit dan hapus -->
-                        <td class="px-4 py-4 align-middle">
-                            <div class="flex min-h-[64px] items-center gap-2">
-
-                                <!-- Tombol edit menuju edit.php dengan id produk -->
-                                <a
-                                    href="edit.php?id=<?= (int)$row['id_produk']; ?>"
-                                    title="Edit"
-                                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-sm"
-                                >
-                                    <i class="fa-solid fa-pen"></i>
-                                </a>
-
-                                <!--
-                                ------------------------------------------------------------------
-                                Tombol hapus
-                                ------------------------------------------------------------------
-                                - Mengarah ke dashboard.php?hapus=id
-                                - Sebelum benar-benar jalan, akan muncul confirm JavaScript
-                                - Kalau klik Cancel, penghapusan dibatalkan
-                                -->
-                                <a
-                                    href="dashboard.php?hapus=<?= (int)$row['id_produk']; ?>"
-                                    title="Hapus"
-                                    onclick="return confirm('Yakin untuk menghapus produk &quot;<?= htmlspecialchars(addslashes($row['nama_produk']), ENT_QUOTES); ?>&quot;?')"
-                                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-sm"
-                                >
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
-                            </div>
+                                    <!-- Tombol hapus, search tetap dipertahankan -->
+                                    <a
+                                        href="dashboard.php?hapus=<?= (int)$row['id_produk']; ?>&search=<?= urlencode($keyword); ?>"
+                                        title="Hapus"
+                                        onclick="return confirm('Yakin untuk menghapus produk &quot;<?= htmlspecialchars(addslashes($row['nama_produk']), ENT_QUOTES); ?>&quot;?')"
+                                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-sm"
+                                    >
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5" class="px-4 py-10 text-center text-slate-400">
+                            Produk tidak ditemukan.
                         </td>
                     </tr>
-                <?php endwhile; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 </section>
 
-<!--
-==============================================================================
-JAVASCRIPT
-==============================================================================
-1. Tidak ada library tambahan
-2. Dipakai untuk auto-hide notifikasi hapus
-3. Dipakai setelah halaman selesai dimuat
--->
+<!-- Auto-hide notif hapus -->
 <script>
-    // Cari elemen notifikasi hapus
     const notifHapus = document.getElementById('notif-hapus');
 
-    // Jika notifikasi ada, hilangkan otomatis setelah 3 detik
     if (notifHapus) {
         setTimeout(() => {
-            // Tambahkan efek menghilang halus
             notifHapus.style.transition = 'all 0.5s ease';
             notifHapus.style.opacity = '0';
             notifHapus.style.transform = 'translateY(-8px)';
 
-            // Setelah animasi selesai, hapus elemen dari tampilan
             setTimeout(() => {
                 notifHapus.remove();
             }, 500);
