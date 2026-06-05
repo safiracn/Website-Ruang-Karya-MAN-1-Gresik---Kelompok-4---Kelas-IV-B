@@ -5,13 +5,13 @@
     </h3>
     <div class="space-y-5">
         <div>
-            <label class="text-sm font-medium text-slate-600 mb-1">Nama Produk <span class="text-red-600">*</span></label>
+            <label class="text-sm font-medium text-slate-600 mb-1">NAMA PRODUK <span class="text-red-600">*</span></label>
             <input type="text" name="nama_produk" placeholder="Masukkan nama produk" required
                    value="{{ old('nama_produk', $produk->nama_produk ?? '') }}"
                    class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-yellow-400 outline-none transition">
         </div>
         <div>
-            <label class="text-sm font-medium text-slate-600 mb-1">Kategori <span class="text-red-600">*</span></label>
+            <label class="text-sm font-medium text-slate-600 mb-1">KATEGORI <span class="text-red-600">*</span></label>
             <select name="id_kategori" required
                     class="block w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-yellow-400 outline-none transition">
                 <option value="" disabled {{ !isset($produk) ? 'selected' : '' }}>Pilih Kategori</option>
@@ -21,8 +21,8 @@
             </select>
         </div>
         <div>
-            <label class="text-sm font-medium text-slate-600 mb-1">Deskripsi Produk <span class="text-red-600">*</span></label>
-            <textarea name="deskripsi" rows="5" placeholder="Ceritakan detail produk..." required
+            <label class="text-sm font-medium text-slate-600 mb-1">DESKRIPSI PRODUK <span class="text-red-600">*</span></label>
+            <textarea name="deskripsi" rows="5" placeholder="Jelaskan detail keunggulan dan spesifikasi produk..." required
                       class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-yellow-400 outline-none transition">{{ old('deskripsi', $produk->deskripsi ?? '') }}</textarea>
         </div>
     </div>
@@ -35,25 +35,25 @@
     </h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-            <label class="text-sm font-medium text-slate-600 mb-1">Material <span class="text-red-600">*</span></label>
+            <label class="text-sm font-medium text-slate-600 mb-1">MATERIAL <span class="text-red-600">*</span></label>
             <input type="text" name="bahan" placeholder="Contoh: Kayu Jati" required
                    value="{{ old('bahan', $produk->bahan ?? '') }}"
                    class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 outline-none">
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-600 mb-1">Finishing</label>
+            <label class="block text-sm font-medium text-slate-600 mb-1">FINISHING</label>
             <input type="text" name="finishing" placeholder="Contoh: Melamine Gloss"
                    value="{{ old('finishing', $produk->finishing ?? '') }}"
                    class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 outline-none">
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-600 mb-1">Dimensi (PxLxT)</label>
+            <label class="block text-sm font-medium text-slate-600 mb-1">DIMENSI (PxLxT)</label>
             <input type="text" name="dimensi" placeholder="Contoh: 100 x 50 x 40 cm"
                    value="{{ old('dimensi', $produk->dimensi ?? '') }}"
                    class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 outline-none">
         </div>
         <div>
-            <label class="text-sm font-medium text-slate-600 mb-1">Garansi <span class="text-red-600">*</span></label>
+            <label class="text-sm font-medium text-slate-600 mb-1">GARANSI <span class="text-red-600">*</span></label>
             <input type="text" name="garansi" placeholder="Contoh: 1 Tahun" required
                    value="{{ old('garansi', $produk->garansi ?? '') }}"
                    class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 outline-none">
@@ -71,9 +71,9 @@
         <table class="w-full text-left border-separate border-spacing-y-3">
             <thead>
                 <tr class="text-slate-600 text-sm">
-                    <th class="px-4 py-2 font-medium">Varian Produk</th>
-                    <th class="px-4 py-2 font-medium">Harga Jual (Rp)</th>
-                    <th class="px-4 py-2 font-medium">Stok Tersedia</th>
+                    <th class="px-4 py-2 font-medium">VARIAN PRODUK</th>
+                    <th class="px-4 py-2 font-medium">HARGA JUAL (Rp)</th>
+                    <th class="px-4 py-2 font-medium">STOK TERSEDIA</th>
                 </tr>
             </thead>
             <tbody id="variant-table-body">

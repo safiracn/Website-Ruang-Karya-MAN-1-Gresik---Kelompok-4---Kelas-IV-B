@@ -59,7 +59,7 @@
                 <div class="flex flex-col gap-4">
                     <button type="submit"
                             class="w-full bg-yellow-500 text-blue-900 font-bold py-4 rounded-xl hover:scale-[1.02] transition duration-300 shadow-lg shadow-yellow-200 tracking-wider">
-                        SIMPAN PRODUK Baru
+                        Simpan Produk
                     </button>
                     <a href="{{ route('admin.dashboard') }}"
                        class="w-full bg-white text-slate-500 font-bold py-4 rounded-xl text-center border border-slate-200 hover:bg-slate-50 transition duration-300">

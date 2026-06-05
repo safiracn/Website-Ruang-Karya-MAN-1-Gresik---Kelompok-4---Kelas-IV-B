@@ -38,7 +38,7 @@
                 {{-- Foto Produk --}}
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center relative">
                     <h3 class="font-bold text-lg text-blue-900 mb-6 flex items-center gap-2 text-left">
-                        <span class="w-1 h-6 bg-yellow-500 rounded-full"></span> Foto Produk Utama
+                        <span class="w-1 h-6 bg-yellow-500 rounded-full"></span> Foto Produk Utama <span class="text-red-600">*</span>
                     </h3>
 
                     <label for="foto_utama"
