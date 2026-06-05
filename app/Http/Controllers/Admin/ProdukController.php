@@ -26,40 +26,49 @@ class ProdukController extends Controller
             'foto_utama'  => 'required|image|max:2048',
         ]);
 
-        // Upload foto
-        $foto = $request->file('foto_utama');
-        $namaFile = uniqid() . '.' . $foto->getClientOriginalExtension();
-        $foto->move(public_path('image'), $namaFile);
+        // Menggunakan Database Transaction agar jika salah satu proses gagal, data tidak rusak
+        DB::beginTransaction();
 
-        // Insert produk
-        $id_produk_baru = DB::table('produk')->insertGetId([
-            'nama_produk' => $request->nama_produk,
-            'id_kategori' => $request->id_kategori,
-            'deskripsi'   => $request->deskripsi,
-            'bahan'       => $request->bahan,
-            'finishing'   => $request->finishing,
-            'dimensi'     => $request->dimensi,
-            'garansi'     => $request->garansi,
-            'foto_produk' => $namaFile,
-        ]);
+        try {
+            // Upload foto
+            $foto = $request->file('foto_utama');
+            $namaFile = uniqid() . '.' . $foto->getClientOriginalExtension();
+            $foto->move(public_path('image'), $namaFile);
 
-        // Insert varian
-        if ($request->filled('nama_varian')) {
-            foreach ($request->nama_varian as $i => $nama) {
-                $harga = preg_replace('/[^0-9]/', '', $request->harga_varian[$i] ?? '0');
-                $stok  = preg_replace('/[^0-9]/', '', $request->stok_varian[$i] ?? '0');
+            // Insert produk
+            $id_produk_baru = DB::table('produk')->insertGetId([
+                'nama_produk' => $request->nama_produk,
+                'id_kategori' => $request->id_kategori,
+                'deskripsi'   => $request->deskripsi,
+                'bahan'       => $request->bahan,
+                'finishing'   => $request->finishing,
+                'dimensi'     => $request->dimensi,
+                'garansi'     => $request->garansi,
+                'foto_produk' => $namaFile,
+            ]);
 
-                DB::table('produk_varian')->insert([
-                    'id_produk'   => $id_produk_baru,
-                    'nama_varian' => $nama,
-                    'harga'       => $harga ?: 0,
-                    'stok'        => $stok ?: 0,
-                ]);
+            // Insert varian jika ada input
+            if ($request->filled('nama_varian')) {
+                foreach ($request->nama_varian as $i => $nama) {
+                    $harga = preg_replace('/[^0-9]/', '', $request->harga_varian[$i] ?? '0');
+                    $stok  = preg_replace('/[^0-9]/', '', $request->stok_varian[$i] ?? '0');
+
+                    DB::table('produk_varian')->insert([
+                        'id_produk'   => $id_produk_baru,
+                        'nama_varian' => $nama,
+                        'harga'       => $harga ?: 0,
+                        'stok'        => $stok ?: 0,
+                    ]);
+                }
             }
-        }
 
-        return redirect()->route('admin.dashboard')
-    ->with('success_tambah', true);
+            DB::commit();
+            return redirect()->route('admin.dashboard')->with('success_tambah', true);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan produk: ' . $e->getMessage());
+        }
     }
 
     // FORM EDIT PRODUK
@@ -95,62 +104,80 @@ class ProdukController extends Controller
             'deskripsi'   => 'required',
             'bahan'       => 'required',
             'garansi'     => 'required',
+            'foto_utama'  => 'nullable|image|max:2048', // Diubah jadi nullable karena saat edit foto tidak wajib diisi kembali
         ]);
 
-        $fotoProduk = DB::table('produk')
+        DB::beginTransaction();
+
+        try {
+            // Ambil foto lama dari database
+            $fotoProduk = DB::table('produk')->where('id_produk', $id)->value('foto_produk');
+
+            // Jika mengupload foto utama baru
+            if ($request->hasFile('foto_utama')) {
+                // Hapus foto lama di folder public/image jika file-nya ada
+                if ($fotoProduk && file_exists(public_path('image/' . $fotoProduk))) {
+                    @unlink(public_path('image/' . $fotoProduk));
+                }
+
+                $foto = $request->file('foto_utama');
+                $namaFile = uniqid() . '.' . $foto->getClientOriginalExtension();
+                $foto->move(public_path('image'), $namaFile);
+                $fotoProduk = $namaFile;
+            }
+
+            // Update data produk dasar
+            DB::table('produk')->where('id_produk', $id)->update([
+                'nama_produk' => $request->nama_produk,
+                'id_kategori' => $request->id_kategori,
+                'deskripsi'   => $request->deskripsi,
+                'bahan'       => $request->bahan,
+                'finishing'   => $request->finishing,
+                'dimensi'     => $request->dimensi,
+                'garansi'     => $request->garansi,
+                'foto_produk' => $fotoProduk,
+            ]);
+
+            // --- LOGIKA UPDATE / INSERT / DELETE VARIAN YANG SUDAH DIPERBAIKI ---
+            
+            // 1. Ambil semua ID varian lama yang tercatat di database untuk produk ini
+$idsLama = DB::table('produk_varian')
     ->where('id_produk', $id)
-    ->value('foto_produk');
+    ->pluck('id_varian')
+    ->toArray();
 
-if ($request->hasFile('foto_utama')) {
+// 2. Ambil ID varian pertama/paling tua (Varian Standard) agar TIDAK MASUK daftar hapus
+$idVarianPertama = DB::table('produk_varian')
+    ->where('id_produk', $id)
+    ->orderBy('id_varian', 'asc') // Urutkan berdasarkan ID terkecil
+    ->value('id_varian');
 
-    $foto = $request->file('foto_utama');
+// 3. Ambil ID varian yang dikirim dari form
+$idsForm = array_filter($request->id_varian ?? []);
 
-    $namaFile = uniqid() . '.' . $foto->getClientOriginalExtension();
+// 4. Cari selisih mana yang harus dihapus
+$hapusIds = array_diff($idsLama, $idsForm);
 
-    $foto->move(public_path('image'), $namaFile);
-
-    $fotoProduk = $namaFile;
+// KUNCI PENGAMAN: Hapus ID varian pertama dari daftar hapus (jika tidak sengaja masuk)
+if (($key = array_search($idVarianPertama, $hapusIds)) !== false) {
+    unset($hapusIds[$key]);
 }
 
-        DB::table('produk')->where('id_produk', $id)->update([
-    'nama_produk' => $request->nama_produk,
-    'id_kategori' => $request->id_kategori,
-    'deskripsi'   => $request->deskripsi,
-    'bahan'       => $request->bahan,
-    'finishing'   => $request->finishing,
-    'dimensi'     => $request->dimensi,
-    'garansi'     => $request->garansi,
-    'foto_produk' => $fotoProduk,
-]);
+// 5. Eksekusi hapus varian sisa yang memang boleh dihapus
+if (!empty($hapusIds)) {
+    DB::table('produk_varian')
+        ->whereIn('id_varian', $hapusIds)
+        ->delete();
+}
 
-        // Update / Insert / Delete Varian
+// 6. Proses Update atau Tambah Baru seperti biasa
 if ($request->filled('nama_varian')) {
-
-    $idsLama = DB::table('produk_varian')
-        ->where('id_produk', $id)
-        ->pluck('id_varian')
-        ->toArray();
-
-    $idsForm = array_filter($request->id_varian ?? []);
-
-    // Hapus varian yang tidak ada di form lagi
-    $hapusIds = array_diff($idsLama, $idsForm);
-
-    if (!empty($hapusIds)) {
-        DB::table('produk_varian')
-            ->whereIn('id_varian', $hapusIds)
-            ->delete();
-    }
-
-    // Update / insert varian
     foreach ($request->nama_varian as $i => $nama) {
-
         $harga = preg_replace('/[^0-9]/', '', $request->harga_varian[$i] ?? '0');
         $stok  = preg_replace('/[^0-9]/', '', $request->stok_varian[$i] ?? '0');
 
         if (!empty($request->id_varian[$i])) {
-
-            // UPDATE
+            // Ini akan tetap meng-update nama, harga, atau stok dari varian standard/pertama
             DB::table('produk_varian')
                 ->where('id_varian', $request->id_varian[$i])
                 ->update([
@@ -158,9 +185,7 @@ if ($request->filled('nama_varian')) {
                     'harga'       => $harga ?: 0,
                     'stok'        => $stok ?: 0,
                 ]);
-
         } else {
-
             // INSERT BARU
             DB::table('produk_varian')->insert([
                 'id_produk'   => $id,
@@ -172,7 +197,12 @@ if ($request->filled('nama_varian')) {
     }
 }
 
-        return redirect()->route('admin.dashboard')
-            ->with('success_update', true);
+            DB::commit();
+            return redirect()->route('admin.dashboard')->with('success_update', true);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui produk: ' . $e->getMessage());
+        }
     }
 }

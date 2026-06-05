@@ -113,8 +113,11 @@ Route::middleware(['auth', 'role:admin'])
     Route::post('/produk/tambah',         [ProdukController::class, 'store'])->name('produk.store');
 
     // Edit produk
-    Route::get('/produk/{id}/edit',       [ProdukController::class, 'edit'])->name('produk.edit');
-    Route::post('/produk/{id}/edit',      [ProdukController::class, 'update'])->name('produk.update');
+    // Menampilkan halaman form edit (GET)
+    Route::get('/produk/{id}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
+    
+    // Memproses simpan perubahan/update data (PUT)
+    Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
 
     Route::delete('/produk/{id}/hapus',
     [AdminDashboard::class, 'hapus'])

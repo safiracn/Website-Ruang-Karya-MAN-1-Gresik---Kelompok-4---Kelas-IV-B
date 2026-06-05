@@ -108,14 +108,14 @@
                     <li>
                         {{-- Riwayat: jika belum login → arahkan ke login --}}
                         <a href="
-{{
-    Auth::check()
-        ? (Auth::user()->role === 'user'
-            ? route('riwayat')
-            : route('admin.dashboard'))
-        : route('login')
-}}
-"
+            {{
+                Auth::check()
+                    ? (Auth::user()->role === 'user'
+                        ? route('riwayat')
+                        : route('admin.dashboard'))
+                    : route('login')
+            }}
+            "
                            class="{{ request()->routeIs('riwayat') ? 'text-yellow-500 border-b-2 border-blue-900 pb-1' : 'text-blue-900 hover:text-yellow-500 transition' }}">
                             Riwayat
                         </a>
@@ -123,28 +123,28 @@
                     <li class="relative">
                         {{-- Keranjang: jika belum login → arahkan ke login --}}
                         <a href="
-{{
-    Auth::check()
-        ? (Auth::user()->role === 'user'
-            ? route('riwayat')
-            : route('admin.dashboard'))
-        : route('login')
-}}
-"
+            {{
+                Auth::check()
+                    ? (Auth::user()->role === 'user'
+                        ? route('keranjang')
+                        : route('admin.dashboard'))
+                    : route('login')
+            }}
+            "
                            class="{{ request()->routeIs('keranjang') ? 'text-yellow-500' : 'text-blue-900 hover:text-yellow-500' }} transition p-2">
                             <i class="fa-solid fa-cart-shopping text-xl"></i>
                         </a>
                     </li>
                     <li>
                         <a href="
-{{ 
-    Auth::check()
-        ? (Auth::user()->role === 'admin'
-            ? route('admin.dashboard')
-            : route('profil.user'))
-        : route('login')
-}}
-"
+            {{ 
+                Auth::check()
+                    ? (Auth::user()->role === 'admin'
+                        ? route('admin.dashboard')
+                        : route('profil.user'))
+                    : route('login')
+            }}
+            "
                            class="flex items-center gap-3 group pl-4 border-l border-slate-200">
                             <div class="text-right hidden xl:block">
                                 <p class="text-[9px] text-slate-400 font-bold uppercase leading-none">Akun Saya</p>
