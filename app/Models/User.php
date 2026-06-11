@@ -8,15 +8,6 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use Notifiable;
-<<<<<<< HEAD
-    protected $table      = 'users';       // nama tabel kamu
-
-    protected $fillable = [
-        'nama_lengkap', 'email', 'password', 'no_telp', 'alamat', 'role',
-    ];
-
-    protected $hidden = ['password', 'remember_token'];
-=======
 
     protected $table = 'users';
 
@@ -37,5 +28,4 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
->>>>>>> shava
 }
