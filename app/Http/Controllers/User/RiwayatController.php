@@ -27,7 +27,11 @@ class RiwayatController extends Controller
             $query->whereNotIn('p.status_pesanan', ['Selesai', 'Dibatalkan']);
         }
 
+<<<<<<< HEAD
         $pesanan = $query->orderByDesc('p.created_at')->get();
+=======
+        $pesanan = $query->orderByDesc('p.tgl_pembelian')->get();
+>>>>>>> shava
 
         return view('user.riwayat', compact('pesanan', 'tab'));
     }

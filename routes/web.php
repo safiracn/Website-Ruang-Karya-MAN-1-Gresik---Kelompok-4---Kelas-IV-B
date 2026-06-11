@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,13 +19,15 @@ use App\Http\Controllers\User\RiwayatController;
 use App\Http\Controllers\User\ProfilUserController;
 
 // Admin
-use App\Http\Controllers\Admin\DashboardController   as AdminDashboard;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\ProfilAdminController;
+use App\Http\Controllers\Admin\PesananController;
 
 // ============================================================
 // ROUTE PUBLIK — siapa saja bisa akses
 // ============================================================
+
 
 // Home / dashboard public
 // Home
@@ -58,6 +61,20 @@ Route::get('/katalog', [KatalogController::class, 'index'])
 Route::get('/produk/{id}', [DetailProdukController::class, 'show'])
     ->name('produk.detail');
 
+
+Route::get('/', function () {
+    if (Auth::check()) {
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('home');
+    }
+    return app(\App\Http\Controllers\User\DashboardController::class)->index();
+});
+
+Route::get('/home', [DashboardController::class, 'index'])->name('home');
+Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
+Route::get('/produk/{id}', [DetailProdukController::class, 'show'])->name('produk.detail');
 
 // ============================================================
 // AUTH ROUTES
@@ -93,6 +110,31 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     // Profil user
     Route::get('/profil', [ProfilUserController::class, 'index'])->name('profil.user');
+
+
+    // Halaman Detail Order Sukses (Dimasukkan ke sini agar aman terlindungi login)
+    Route::get('/order-sukses/{id}', function ($id) {
+        $pesanan = DB::table('pembelian')
+            ->where('id_pembelian', $id)
+            ->first();
+
+        $detailPesanan = DB::table('pembelian_detail as pd')
+            ->join('produk_varian as pv', 'pd.id_varian', '=', 'pv.id_varian')
+            ->join('produk as p', 'pv.id_produk', '=', 'p.id_produk')
+            ->where('pd.id_pembelian', $id)
+            ->select(
+                'p.nama_produk',
+                'p.foto_produk',
+                'pv.nama_varian',
+                'pd.jumlah',
+                'pd.harga_satuan',
+                'pd.subtotal'
+            )
+            ->get();
+
+        return view('user.ordersukses', compact('pesanan', 'detailPesanan'));
+    })->name('order.sukses');
+
 });
 
 // ============================================================
@@ -104,22 +146,38 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
-    // Dashboard (termasuk hapus produk via GET)
-    Route::get('/dashboard',              [AdminDashboard::class, 'index'])->name('dashboard');
-    Route::get('/produk/{id}/hapus',      [AdminDashboard::class, 'hapus'])->name('produk.hapus');
+    Route::get('/dashboard', [AdminDashboard::class, 'index'])
+        ->name('dashboard');
 
-    // Tambah produk
-    Route::get('/produk/tambah',          [ProdukController::class, 'create'])->name('produk.tambah');
-    Route::post('/produk/tambah',         [ProdukController::class, 'store'])->name('produk.store');
+    Route::get('/produk/{id}/hapus', [AdminDashboard::class, 'hapus'])
+        ->name('produk.hapus');
 
-    // Edit produk
-    Route::get('/produk/{id}/edit',       [ProdukController::class, 'edit'])->name('produk.edit');
-    Route::post('/produk/{id}/edit',      [ProdukController::class, 'update'])->name('produk.update');
+    Route::get('/produk/tambah', [ProdukController::class, 'create'])
+        ->name('produk.tambah');
+
+    Route::post('/produk/tambah', [ProdukController::class, 'store'])
+        ->name('produk.store');
+
+    Route::get('/produk/{id}/edit', [ProdukController::class, 'edit'])
+        ->name('produk.edit');
+
+    Route::post('/produk/{id}/edit', [ProdukController::class, 'update'])
+        ->name('produk.update');
 
     Route::delete('/produk/{id}/hapus',
-    [AdminDashboard::class, 'hapus'])
-    ->name('produk.hapus');
+        [AdminDashboard::class, 'hapus'])
+        ->name('produk.hapus.delete');
 
-    // Profil admin
-    Route::get('/profil',                 [ProfilAdminController::class, 'index'])->name('profil');
+    Route::get('/profil',
+        [ProfilAdminController::class, 'index'])
+        ->name('profil');
+
+    Route::get('/pesanan',
+        [PesananController::class, 'index'])
+        ->name('pesanan');
+
+    Route::post('/pesanan/{id}/update',
+        [PesananController::class, 'update'])
+        ->name('pesanan.update');
+
 });

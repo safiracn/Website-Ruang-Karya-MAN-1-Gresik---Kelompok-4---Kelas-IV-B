@@ -71,7 +71,15 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#"
+                        <li>
+                            <a href="{{ route('admin.pesanan') }}"
+                            class="flex items-center gap-3 rounded-xl px-4 py-3 transition {{ $activeMenu === 'pesanan' ? 'bg-yellow-500 font-semibold text-blue-900 shadow-sm hover:bg-yellow-400' : 'hover:bg-blue-800' }}">
+                                <span class="flex h-5 w-5 items-center justify-center">
+                                    <i class="fa-solid fa-cart-shopping text-[15px]"></i>
+                                </span>
+                                <span>Pesanan</span>
+                            </a>
+                        </li>
                            class="flex items-center gap-3 rounded-xl px-4 py-3 transition {{ $activeMenu === 'pesanan' ? 'bg-yellow-500 font-semibold text-blue-900 shadow-sm hover:bg-yellow-400' : 'hover:bg-blue-800' }}">
                             <span class="flex h-5 w-5 items-center justify-center">
                                 <i class="fa-solid fa-cart-shopping text-[15px]"></i>

@@ -18,7 +18,11 @@ class RegisterController extends Controller
     {
         $request->validate([
             'nama_lengkap'        => ["required", "regex:/^[a-zA-Z'`.\s]+$/"],
+<<<<<<< HEAD
             'email'               => 'required|email|unique:user,email',
+=======
+            'email'               => 'required|email|unique:users,email',
+>>>>>>> shava
             'no_telp'             => ['required', 'regex:/^[0-9]+$/'],
             'alamat'              => 'required',
             'password'            => 'required|min:6|confirmed',

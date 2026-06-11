@@ -117,6 +117,10 @@ class CheckoutController extends Controller
             }
         }
 
+<<<<<<< HEAD
         return redirect()->route('riwayat')->with('success', 'Pesanan berhasil disimpan! Terima kasih telah berbelanja.');
+=======
+       return redirect()->route('order.sukses', $id_pembelian);
+>>>>>>> shava
     }
 }
