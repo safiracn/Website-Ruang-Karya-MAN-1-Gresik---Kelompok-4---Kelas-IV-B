@@ -21,6 +21,7 @@ use App\Http\Controllers\User\ProfilUserController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\ProfilAdminController;
+use App\Http\Controllers\Admin\PesananController;
 
 // ============================================================
 // ROUTE PUBLIK — siapa saja bisa akses
@@ -121,4 +122,14 @@ Route::middleware(['auth', 'role:admin'])
     Route::delete('/produk/{id}/hapus',   [AdminDashboard::class, 'hapus'])->name('produk.hapus.delete');
 
     Route::get('/profil',                 [ProfilAdminController::class, 'index'])->name('profil');
+    
+     Route::get(
+    '/pesanan',
+    [PesananController::class, 'index']
+)->name('pesanan');
+
+Route::post(
+    '/pesanan/{id}/update',
+    [PesananController::class, 'update']
+)->name('pesanan.update');
 });
