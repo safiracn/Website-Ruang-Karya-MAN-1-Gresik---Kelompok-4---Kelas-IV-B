@@ -37,7 +37,7 @@ class RegisterController extends Controller
             'password.confirmed'    => 'Konfirmasi password tidak sama.',
         ]);
 
-        User::create([
+        $user = User::create([
             'nama_lengkap' => $request->nama_lengkap,
             'email'        => $request->email,
             'no_telp'      => $request->no_telp,
@@ -51,6 +51,8 @@ class RegisterController extends Controller
             $user->nama_lengkap . ' membuat akun baru'
         );
 
-        return redirect()->route('login')->with('success', 'Pendaftaran berhasil. Silakan login.');
+        return redirect()
+            ->route('login')
+            ->with('success', 'Pendaftaran berhasil. Silakan login.');
     }
 }

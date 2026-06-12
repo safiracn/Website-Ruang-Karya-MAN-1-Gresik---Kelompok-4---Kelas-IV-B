@@ -41,7 +41,10 @@ class LaporanController extends Controller
             )
             ->where('status_pembayaran', 'Sudah Dibayar')
             ->sum('total_harga');
-        $pelangganBaru = Pembelian::whereBetween('created_at', [$startDate, $endDate])
+
+        // Pelanggan adalah pengguna yang pernah melakukan pemesanan dan pesanannya tidak dibatalkan."
+        $pelangganAktif = Pembelian::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status_pesanan', '!=', 'Dibatalkan')
             ->distinct('id_user')
             ->count('id_user');
 
@@ -144,6 +147,14 @@ class LaporanController extends Controller
             ->limit(5)
             ->get();
 
+        $labelProdukTerlaris = $produkTerlaris
+            ->pluck('nama_produk')
+            ->toArray();
+
+        $dataProdukTerlaris = $produkTerlaris
+            ->pluck('total_terjual')
+            ->toArray();
+
         // ─── 7. Tabel Transaksi Terkini (paginate, withQueryString agar filter tetap) ──
         $transaksiTerkini = Pembelian::with('user')
             ->orderByDesc('created_at')
@@ -182,7 +193,7 @@ class LaporanController extends Controller
             'range', 'startDate', 'endDate',
             'totalPendapatan',
             'produkTerjual',
-            'pelangganBaru',
+            'pelangganAktif',
             'belumDibayar',
             'labelHarian',
             'dataHarian',
@@ -191,6 +202,8 @@ class LaporanController extends Controller
             'dataKategori',
             'transaksiTerkini',
             'produkTerlaris',
+            'labelProdukTerlaris',
+            'dataProdukTerlaris',
             'rataRataTransaksi'
         ));
     }

@@ -113,11 +113,36 @@ class CheckoutController extends Controller
                 }
             }
 
+            if ($request->filled('selected_items')) {
+                $selectedIds = array_filter(
+                    array_map('intval', explode(',', $request->selected_items))
+                );
+
+                if (!empty($selectedIds)) {
+
+                    DB::table('keranjang_detail')
+                        ->whereIn('id_keranjang_detail', $selectedIds)
+                        ->delete();
+                }
+            }
+
             ActivityHelper::log(
                 'Checkout User',
                 'Membuat pesanan #' . $id_pembelian .
                 ' total Rp ' . number_format($request->total_final, 0, ',', '.')
             );
+
+            // Hapus item yang sudah dicheckout dari keranjang
+            if ($request->filled('selected_items')) {
+
+                $ids = array_filter(
+                    array_map('intval', explode(',', $request->selected_items))
+                );
+
+                DB::table('keranjang_detail')
+                    ->whereIn('id_keranjang_detail', $ids)
+                    ->delete();
+            }
 
             return $id_pembelian;
         });

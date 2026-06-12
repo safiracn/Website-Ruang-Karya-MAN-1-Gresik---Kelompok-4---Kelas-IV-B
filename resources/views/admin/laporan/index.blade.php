@@ -124,7 +124,7 @@
                 'color'=>'text-violet-500',
                 'bg'=>'bg-violet-50',
                 'label'=>'Pelanggan',
-                'value'=>number_format($pelangganBaru)
+                'value'=>number_format($pelangganAktif)
             ],
             [
                 'icon'=>'fa-hourglass-half',
@@ -189,50 +189,52 @@
     </div>
 
     {{-- Line Chart --}}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    {{-- Produk Terjual Harian --}}
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
         <div class="flex items-center justify-between mb-5">
             <div>
-                <h2 class="text-base font-bold text-slate-900">Produk Terjual Harian</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Total unit produk terjual per hari</p>
+                <h2 class="text-base font-bold text-slate-900">
+                    Produk Terjual Harian
+                </h2>
+                <p class="text-xs text-slate-400">
+                    Total unit produk terjual per hari
+                </p>
             </div>
-            <span class="text-[10px] uppercase tracking-widest font-bold text-slate-400">Line Chart</span>
+            <span class="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                Line Chart
+            </span>
         </div>
-        <div class="chart-wrap" style="height:200px;">
+
+        <div class="chart-wrap" style="height:250px;">
             <canvas id="chartLine"></canvas>
         </div>
     </div>
 
-    {{-- ── Produk Terlaris + Tabel Transaksi ──────────────────────────── --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {{-- Produk Terlaris --}}
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-            <h2 class="text-base font-bold text-slate-900 mb-4">Produk Terlaris</h2>
-            <div class="space-y-3">
-                @forelse($produkTerlaris as $i => $p)
-                <div class="flex items-center gap-3">
-                    <span class="w-6 h-6 flex-shrink-0 rounded-full bg-blue-900 text-white text-[10px] font-black flex items-center justify-center">
-                        {{ $i + 1 }}
-                    </span>
-                    <div class="w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-                        <img src="{{ asset('image/' . ($p->foto_produk ?? 'default.jpg')) }}"
-                             class="w-full h-full object-cover" alt="{{ $p->nama_produk }}">
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-slate-800 truncate">{{ $p->nama_produk }}</p>
-                        <p class="text-xs text-slate-400">{{ number_format($p->total_terjual) }} unit terjual</p>
-                    </div>
-                    <span class="text-xs font-bold text-green-600 whitespace-nowrap">
-                        Rp {{ number_format($p->total_pendapatan, 0, ',', '.') }}
-                    </span>
-                </div>
-                @empty
-                <p class="text-sm text-slate-400 italic text-center py-6">Belum ada data produk terlaris.</p>
-                @endforelse
+    {{-- Produk Terlaris --}}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">
+                    Produk Terlaris
+                </h2>
+                <p class="text-xs text-slate-400">
+                    Berdasarkan jumlah unit terjual
+                </p>
             </div>
+            <span class="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                Horizontal Bar
+            </span>
         </div>
 
-        {{-- Tabel Transaksi Terkini --}}
+        <div class="chart-wrap" style="height:250px;">
+            <canvas id="chartProdukTerlaris"></canvas>
+        </div>
+    </div>
+</div>
+
+ {{-- Tabel Transaksi Terkini --}}
         <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                 <h2 class="text-base font-bold text-slate-900">Transaksi Terkini</h2>
@@ -313,8 +315,7 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-
+            </div>  
             {{-- Pagination --}}
             @if($transaksiTerkini->hasPages())
             <div class="px-5 py-4 border-t border-slate-100 flex items-center justify-between">
@@ -406,6 +407,8 @@ const dataHarian    = @json($dataHarian);
 const dataTransaksi = @json($dataProdukHarian);
 const labelKategori = @json($labelKategori ?? []);
 const dataKategori  = @json($dataKategori  ?? []);
+const labelProdukTerlaris = @json($labelProdukTerlaris ?? []);
+const dataProdukTerlaris  = @json($dataProdukTerlaris ?? []);
 
 const NAVY   = '#00266B';
 const YELLOW = '#FDC003';
@@ -530,7 +533,46 @@ new Chart(document.getElementById('chartLine'), {
     }
 });
 
-// ─── Filter Tab Logic ─────────────────────────────────────────────────────
+// 4. Produk Terlaris
+if (labelProdukTerlaris.length > 0) {
+    new Chart(document.getElementById('chartProdukTerlaris'), {
+        type: 'bar',
+        data: {
+            labels: labelProdukTerlaris,
+            datasets: [{
+                label: 'Unit Terjual',
+                data: dataProdukTerlaris,
+                backgroundColor: NAVY,
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Filter Tab Logic 
 function setRange(val) {
     document.getElementById('rangeInput').value = val;
     document.querySelectorAll('.tab-btn').forEach(btn => {
