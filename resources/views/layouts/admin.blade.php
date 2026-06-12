@@ -123,11 +123,7 @@
             </div>
 
             <div class="ml-auto flex items-center gap-5">
-                <button class="flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-200 hover:text-blue-900">
-                    <i class="fa-regular fa-bell text-lg"></i>
-                </button>
-
-                <div class="flex items-center gap-3 border-l border-slate-300 pl-5">
+                <div class="flex items-center gap-3 pl-5">
                     <div class="text-right">
                         <p class="text-[15px] font-semibold leading-none text-slate-800">{{ $adminNama }}</p>
                         <p class="mt-1 text-xs text-slate-400">System Root</p>

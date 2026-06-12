@@ -79,13 +79,13 @@ class PesananController extends Controller
                 'status_kirim' => $request->status_kirim,
             ]);
 
-        ActivityHelper::log(
-            'Update Status Pesanan',
-            'Pesanan #' . $id .
-            ' -> Pembayaran: ' . $request->status_pembayaran .
-            ', Pesanan: ' . $request->status_pesanan .
-            ', Kirim: ' . $request->status_kirim
-        );
+    ActivityHelper::logPesanan(
+        'Update Status Pesanan',
+        $id,
+        '-> Pembayaran: ' . $request->status_pembayaran .
+        ', Pesanan: ' . $request->status_pesanan .
+        ', Kirim: ' . $request->status_kirim
+    );
 
         return back()->with('success', 'Status berhasil diperbarui');
     }

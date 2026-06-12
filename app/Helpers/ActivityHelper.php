@@ -20,4 +20,19 @@ class ActivityHelper
             'user_agent' => request()->userAgent(),
         ]);
     }
+
+    public static function kodePesanan($id)
+    {
+        return '#RK' . str_pad($id, 5, '0', STR_PAD_LEFT);
+    }
+
+    public static function logPesanan($activity, $pesananId, $description = '')
+    {
+        $kode = self::kodePesanan($pesananId);
+
+        return self::log(
+            $activity,
+            "Pesanan {$kode} {$description}"
+        );
+    }
 }
