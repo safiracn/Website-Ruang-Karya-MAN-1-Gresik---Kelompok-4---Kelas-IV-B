@@ -68,9 +68,12 @@
 
                         <div>
                             <label class="mb-2 block text-sm font-medium text-slate-700">Email</label>
-                            <input type="email" name="email" value="{{ old('email') }}"
-                                   placeholder="nama@email.com" required
-                                   class="w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-900">
+                            <input type="email"
+                                name="email"
+                                value="{{ old('email', request()->cookie('login_email')) }}"
+                                placeholder="nama@email.com"
+                                required
+                                class="w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-900">
                         </div>
 
                         <div>

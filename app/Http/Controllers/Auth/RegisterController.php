@@ -17,15 +17,11 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'nama_lengkap'        => ["required", "regex:/^[a-zA-Z'`.\s]+$/"],
-<<<<<<< HEAD
-            'email'               => 'required|email|unique:user,email',
-=======
-            'email'               => 'required|email|unique:users,email',
->>>>>>> shava
-            'no_telp'             => ['required', 'regex:/^[0-9]+$/'],
-            'alamat'              => 'required',
-            'password'            => 'required|min:6|confirmed',
+            'nama_lengkap' => ["required", "regex:/^[a-zA-Z'`.\s]+$/"],
+            'email'        => 'required|email|unique:users,email',
+            'no_telp'      => ['required', 'regex:/^[0-9]+$/'],
+            'alamat'       => 'required',
+            'password'     => 'required|min:6|confirmed',
         ], [
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'nama_lengkap.regex'    => 'Nama hanya boleh huruf, spasi, tanda petik, titik.',

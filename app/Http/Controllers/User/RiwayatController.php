@@ -19,7 +19,13 @@ class RiwayatController extends Controller
             ->join('produk_varian as pv', 'pd.id_varian', '=', 'pv.id_varian')
             ->join('produk as pr', 'pv.id_produk', '=', 'pr.id_produk')
             ->where('p.id_user', $id_user)
-            ->select('p.*', 'pr.nama_produk', 'pr.foto_produk', 'pr.id_produk', 'pd.subtotal');
+            ->select(
+                'p.*',
+                'pr.nama_produk',
+                'pr.foto_produk',
+                'pr.id_produk',
+                'pd.subtotal'
+            );
 
         if ($tab === 'selesai') {
             $query->where('p.status_pesanan', 'Selesai');
@@ -27,11 +33,8 @@ class RiwayatController extends Controller
             $query->whereNotIn('p.status_pesanan', ['Selesai', 'Dibatalkan']);
         }
 
-<<<<<<< HEAD
+        // pilih salah satu (aku pakai created_at biar konsisten Laravel)
         $pesanan = $query->orderByDesc('p.created_at')->get();
-=======
-        $pesanan = $query->orderByDesc('p.tgl_pembelian')->get();
->>>>>>> shava
 
         return view('user.riwayat', compact('pesanan', 'tab'));
     }
