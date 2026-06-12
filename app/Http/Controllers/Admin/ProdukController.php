@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityHelper;
 
 class ProdukController extends Controller
 {
@@ -42,6 +43,11 @@ class ProdukController extends Controller
             'garansi'     => $request->garansi,
             'foto_produk' => $namaFile,
         ]);
+
+        ActivityHelper::log(
+            'Tambah Produk',
+            'Menambahkan produk: ' . $request->nama_produk
+        );
 
         // Insert varian
         if ($request->filled('nama_varian')) {
@@ -171,6 +177,11 @@ if ($request->filled('nama_varian')) {
         }
     }
 }
+
+    ActivityHelper::log(
+        'Edit Produk',
+        'Mengubah produk: ' . $request->nama_produk
+    );
 
         return redirect()->route('admin.dashboard')
             ->with('success_update', true);

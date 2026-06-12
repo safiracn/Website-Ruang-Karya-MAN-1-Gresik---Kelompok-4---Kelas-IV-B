@@ -172,6 +172,73 @@
     </div>
 </section>
 
+{{-- Activity Log --}}
+<section class="mt-7 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <div class="mb-5 flex items-center justify-between">
+        <h2 class="text-lg font-bold text-blue-900">
+            Aktivitas Terbaru
+        </h2>
+
+        <span class="text-sm text-slate-400">
+            10 aktivitas terakhir
+        </span>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full table-fixed">
+            <thead>
+                <tr class="border-b border-slate-100 text-left text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                    <th class="w-[18%] py-3 px-4">Waktu</th>
+                    <th class="w-[18%] py-3 px-4">Pengguna</th>
+                    <th class="w-[12%] py-3 px-4 text-center">Role</th>
+                    <th class="w-[18%] py-3 px-4">Aktivitas</th>
+                    <th class="w-[34%] py-3 px-4">Deskripsi</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-100">
+                @forelse($aktivitasTerbaru as $log)
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 text-sm text-slate-500">
+                            {{ \Carbon\Carbon::parse($log->created_at)->format('d/m/Y H:i') }}
+                        </td>
+
+                        <td class="px-4 py-3 text-sm font-semibold text-slate-700">
+                            {{ $log->nama_lengkap ?? 'User Dihapus' }}
+                        </td>
+
+                        <td class="px-4 py-3 text-center">
+                            @if($log->role == 'admin')
+                                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
+                                    Admin
+                                </span>
+                            @else
+                                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">
+                                    User
+                                </span>
+                            @endif
+                        </td>
+
+
+                        <td class="px-4 py-3 text-sm font-medium text-slate-800">
+                            {{ $log->activity }}
+                        </td>
+
+                        <td class="px-4 py-3 text-sm text-slate-500 break-words">
+                            {{ $log->description }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-slate-400">
+                            Belum ada aktivitas tercatat.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</section>
 @endsection
 
 @push('scripts')

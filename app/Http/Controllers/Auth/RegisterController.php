@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\ActivityHelper;
 
 class RegisterController extends Controller
 {
@@ -44,6 +45,11 @@ class RegisterController extends Controller
             'password'     => Hash::make($request->password),
             'role'         => 'user',
         ]);
+
+        ActivityHelper::log(
+            'Registrasi User',
+            $user->nama_lengkap . ' membuat akun baru'
+        );
 
         return redirect()->route('login')->with('success', 'Pendaftaran berhasil. Silakan login.');
     }

@@ -1,38 +1,57 @@
 <?php
-// ============================================================
-// app/Models/Pembelian.php
-// ============================================================
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pembelian extends Model
 {
     protected $table      = 'pembelian';
     protected $primaryKey = 'id_pembelian';
-    public $timestamps    = false;
+    public    $timestamps = true; // pakai created_at & updated_at Laravel standar
 
     protected $fillable = [
-        'id_user', 'tgl_pembelian',
-        'nama_penerima', 'no_telp_penerima',
-        'provinsi', 'kota_kabupaten', 'kode_pos', 'detail_alamat',
+        'id_user',
+        'nama_penerima',
+        'no_telp_penerima',
+        'provinsi',
+        'kota_kabupaten',
+        'kode_pos',
+        'detail_alamat',
         'metode_pengiriman',
-        'status_pembayaran', 'status_kirim', 'status_pesanan',
+        'status_pembayaran',
+        'status_kirim',
+        'status_pesanan',
         'total_harga',
     ];
 
-    // Cast tanggal
     protected $casts = [
-        'tgl_pembelian' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'total_harga' => 'float',
     ];
 
-    public function user()
+    // ─── Relasi ───────────────────────────────────────────────────────────
+
+    /** Pemilik akun yang memesan */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
-    public function detail()
+    /** Detail item dalam pesanan ini */
+    public function details(): HasMany
     {
         return $this->hasMany(PembelianDetail::class, 'id_pembelian', 'id_pembelian');
+    }
+
+    // ─── Accessor ─────────────────────────────────────────────────────────
+
+    /** Kode pesanan otomatis, contoh: RK260605-0003 */
+    public function getKodePesananAttribute(): string
+    {
+        return 'RK260605-' . sprintf('%04d', $this->id_pembelian);
     }
 }

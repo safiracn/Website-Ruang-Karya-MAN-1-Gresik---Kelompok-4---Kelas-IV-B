@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityHelper;
 
 class PesananController extends Controller
 {
@@ -77,6 +78,14 @@ class PesananController extends Controller
                 'status_pesanan' => $request->status_pesanan,
                 'status_kirim' => $request->status_kirim,
             ]);
+
+        ActivityHelper::log(
+            'Update Status Pesanan',
+            'Pesanan #' . $id .
+            ' -> Pembayaran: ' . $request->status_pembayaran .
+            ', Pesanan: ' . $request->status_pesanan .
+            ', Kirim: ' . $request->status_kirim
+        );
 
         return back()->with('success', 'Status berhasil diperbarui');
     }

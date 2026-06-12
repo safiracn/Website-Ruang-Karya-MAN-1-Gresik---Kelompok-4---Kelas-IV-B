@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use App\Helpers\ActivityHelper;
 
 class LoginController extends Controller
 {
@@ -36,6 +37,12 @@ class LoginController extends Controller
             }
 
             $user = Auth::user();
+
+            ActivityHelper::log(
+                $user->role === 'admin' ? 'Login Admin' : 'Login User',
+                $user->nama_lengkap . ' berhasil login'
+            );
+
 
             return $user->role === 'admin'
                 ? redirect()->route('admin.dashboard')

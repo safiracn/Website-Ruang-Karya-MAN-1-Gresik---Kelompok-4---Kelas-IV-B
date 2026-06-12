@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\ProfilAdminController;
 use App\Http\Controllers\Admin\PesananController;
+use App\Http\Controllers\Admin\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
     Route::get('/profil', [ProfilUserController::class, 'index'])->name('profil.user');
+    Route::get('/order-sukses/{id}', [CheckoutController::class, 'orderSukses'])->name('order.sukses');
 });
 
 /*
@@ -117,4 +119,20 @@ Route::middleware(['auth', 'role:admin'])
     // ================= PROFIL =================
     Route::get('/profil', [ProfilAdminController::class, 'index'])
         ->name('profil');
+
+    // ================= L A P O R A N =================
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+
+        Route::get('/', [LaporanController::class, 'index'])
+            ->name('index');
+
+        Route::get('/export/excel', [LaporanController::class, 'exportExcel'])
+            ->name('export.excel');
+
+        Route::get('/export/pdf', [LaporanController::class, 'exportPdf'])
+            ->name('export.pdf');
+
+        Route::post('/import', [LaporanController::class, 'import'])
+            ->name('import');
+    });
 });
