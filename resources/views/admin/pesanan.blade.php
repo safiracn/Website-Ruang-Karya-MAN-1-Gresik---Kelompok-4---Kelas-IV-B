@@ -12,20 +12,21 @@
 </div>
 @endif
 
-<div class="grid grid-cols-2 gap-5 mb-6">
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;" class="mb-6">
 
-    <div class="bg-white rounded-2xl p-5 shadow">
-        <p class="text-slate-500">Total Pesanan</p>
-        <h2 class="text-3xl font-bold text-blue-900">
-            {{ $totalPesanan }}
-        </h2>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <p class="text-sm text-slate-500">Total Pesanan</p>
+        <h3 class="text-3xl font-bold text-blue-900 mt-2">{{ $totalPesanan }}</h3>
     </div>
 
-    <div class="bg-white rounded-2xl p-5 shadow">
-        <p class="text-slate-500">Belum Dibayar</p>
-        <h2 class="text-3xl font-bold text-red-500">
-            {{ $belumDibayar }}
-        </h2>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <p class="text-sm text-slate-500">Belum Dibayar</p>
+        <h3 class="text-3xl font-bold text-orange-500 mt-2">{{ $belumDibayar }}</h3>
+    </div>
+
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <p class="text-sm text-slate-500">Pesanan Selesai</p>
+        <h3 class="text-3xl font-bold text-green-600 mt-2">{{ $pesananSelesai }}</h3>
     </div>
 
 </div>
@@ -57,7 +58,8 @@
                     class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
                     <option value="">Semua</option>
                     <option value="Belum Dibayar">Belum Dibayar</option>
-                    <option value="Sudah dibayar">Sudah Dibayar</option>
+                    <option value="Sudah Dibayar">Sudah Dibayar</option>
+                    <option value="Dana Dikembalikan">Dana Dikembalikan</option>
                 </select>
             </div>
 
@@ -68,9 +70,11 @@
                 <select name="status_pesanan"
                     class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
                     <option value="">Semua</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Diproses">Diproses</option>
-                    <option value="Selesai">Selesai</option>
+                    <option>Pending</option>
+                    <option>Diproses</option>
+                    <option>Menunggu Konfirmasi Pembatalan</option>
+                    <option>Selesai</option>
+                    <option>Dibatalkan</option>
                 </select>
             </div>
 
@@ -107,10 +111,7 @@
     <form method="GET">
         <div class="flex items-center gap-3">
             <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
-            <input
-                type="text"
-                name="search"
-                value="{{ request('search') }}"
+           <input type="text" name="search" value="{{ $search ?? '' }}"
                 placeholder="Cari nama pelanggan atau kode order..."
                 class="w-full border-0 bg-transparent focus:ring-0 text-sm text-slate-700 placeholder:text-slate-400">
         </div>
@@ -167,16 +168,38 @@
                     @csrf
 
                     {{-- STATUS PEMBAYARAN --}}
-                    <td class="py-4 px-4">
-                        <select name="status_pembayaran"
-                            class="text-xs font-semibold rounded-full border-0 px-3 py-1.5 cursor-pointer
-                            {{ $row->status_pembayaran == 'Sudah dibayar'
-                                ? 'bg-emerald-100 text-emerald-700'
-                                : 'bg-orange-100 text-orange-600' }}">
-                            <option value="Belum Dibayar" {{ $row->status_pembayaran=='Belum Dibayar' ? 'selected' : '' }}>Belum Dibayar</option>
-                            <option value="Sudah dibayar" {{ $row->status_pembayaran=='Sudah dibayar' ? 'selected' : '' }}>Sudah Dibayar</option>
-                        </select>
-                    </td>
+<td class="py-4 px-4">
+    <select name="status_pembayaran"
+        class="text-xs font-semibold rounded-full border-0 px-3 py-1.5 cursor-pointer
+        @php
+            // Membaca status dan mengubahnya ke huruf kecil semua agar pengecekan warna tidak error lagi
+            $statusClean = strtolower($row->status_pembayaran);
+            
+            if (str_contains($statusClean, 'sudah')) {
+                echo 'bg-emerald-100 text-emerald-700';
+            } elseif (str_contains($statusClean, 'dana') || str_contains($statusClean, 'kembali')) {
+                echo 'bg-slate-100 text-slate-600 border border-slate-200'; // Warna Abu-abu untuk Dana Dikembalikan
+            } else {
+                echo 'bg-orange-100 text-orange-600'; // Default warna orange untuk Belum Dibayar
+            }
+        @endphp">
+        
+        <option value="Belum Dibayar"
+            {{ in_array($row->status_pembayaran, ['Belum Dibayar', 'Belum dibayar']) ? 'selected' : '' }}>
+            Belum Dibayar
+        </option>
+
+        <option value="Sudah Dibayar"
+            {{ in_array($row->status_pembayaran, ['Sudah Dibayar', 'Sudah dibayar']) ? 'selected' : '' }}>
+            Sudah Dibayar
+        </option>
+
+        <option value="Dana Dikembalikan"
+            {{ in_array($row->status_pembayaran, ['Dana Dikembalikan', 'Dana dikembalikan']) ? 'selected' : '' }}>
+            Dana Dikembalikan
+        </option>
+    </select>
+</td>
 
                     {{-- STATUS PESANAN --}}
                     <td class="py-4 px-4">
@@ -186,12 +209,27 @@
                                 : ($row->status_pesanan == 'Diproses' ? 'bg-blue-100 text-blue-700'
                                 : ($row->status_pesanan == 'Dibatalkan' ? 'bg-red-100 text-red-600'
                                 : 'bg-slate-100 text-slate-600')) }}">
-                            <option value="Pending" {{ $row->status_pesanan=='Pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="Diproses" {{ $row->status_pesanan=='Diproses' ? 'selected' : '' }}>Diproses</option>
-                            <option value="Selesai" {{ $row->status_pesanan=='Selesai' ? 'selected' : '' }}>Selesai</option>
-                            <option value="Dibatalkan" {{ $row->status_pesanan=='Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
-                        </select>
-                    </td>
+                            <option {{ $row->status_pesanan=='Pending' ? 'selected' : '' }}>
+                                Pending
+                            </option>
+
+                            <option {{ $row->status_pesanan=='Diproses' ? 'selected' : '' }}>
+                                Diproses
+                            </option>
+
+                            <option {{ $row->status_pesanan=='Menunggu Konfirmasi Pembatalan' ? 'selected' : '' }}>
+                                Menunggu Konfirmasi Pembatalan
+                            </option>
+
+                            <option {{ $row->status_pesanan=='Selesai' ? 'selected' : '' }}>
+                                Selesai
+                            </option>
+
+                            <option {{ $row->status_pesanan=='Dibatalkan' ? 'selected' : '' }}>
+                                Dibatalkan
+                            </option>
+                                                    </select>
+                                                </td>
 
                     {{-- STATUS PENGIRIMAN --}}
                     <td class="py-4 px-4">

@@ -116,7 +116,7 @@
                         @else
                             <a href="{{ route('login') }}"
                                class="rounded-2xl border-2 border-blue-900 px-6 py-4 text-sm font-bold text-blue-900 transition hover:bg-blue-50 text-center">
-                                🛒 Login untuk Beli
+                                🛒 Tambah ke Keranjang
                             </a>
                         @endauth
 
@@ -199,6 +199,7 @@
 @push('scripts')
 <script>
     function pilihVarian(btn) {
+        // 1. Atur visual tombol aktif/nonaktif
         document.querySelectorAll('.size-btn').forEach(item => {
             item.classList.remove('bg-blue-900', 'text-white', 'border-blue-900');
             item.classList.add('text-slate-700', 'border-slate-300', 'bg-white');
@@ -206,21 +207,33 @@
         btn.classList.add('bg-blue-900', 'text-white', 'border-blue-900');
         btn.classList.remove('text-slate-700', 'border-slate-300', 'bg-white');
 
+        // 2. Ambil data dari atribut tombol
         const harga    = parseInt(btn.dataset.harga);
         const stok     = parseInt(btn.dataset.stok);
         const idVarian = btn.dataset.idVarian;
         const nama     = btn.dataset.nama;
 
-        document.getElementById('id_varian').value       = idVarian;
-        document.getElementById('id_varian_beli').value  = idVarian;
-        document.getElementById('label-stok').innerText  = stok;
-        document.getElementById('jumlah').max            = stok;
+        // 3. PENGAMAN: Isi data ke elemen hanya jika elemennya ada di layar
+        const elVarian = document.getElementById('id_varian');
+        if (elVarian) elVarian.value = idVarian;
+
+        // Ini bagian yang bikin error kemarin kalau role-nya Guest, sekarang sudah aman!
+        const elVarianBeli = document.getElementById('id_varian_beli');
+        if (elVarianBeli) elVarianBeli.value = idVarian;
+
+        const elStok = document.getElementById('label-stok');
+        if (elStok) elStok.innerText = stok;
+
+        const elJumlah = document.getElementById('jumlah');
+        if (elJumlah) elJumlah.max = stok;
 
         const labelVarian = document.getElementById('label-varian');
         if (labelVarian) labelVarian.innerText = nama;
 
-        document.getElementById('harga-produk').innerText =
-            'Rp ' + harga.toLocaleString('id-ID');
+        const elHarga = document.getElementById('harga-produk');
+        if (elHarga) {
+            elHarga.innerText = 'Rp ' + harga.toLocaleString('id-ID');
+        }
     }
 
     function changeQty(amount) {
@@ -236,10 +249,13 @@
         }
     }
 
-    // Sinkronkan jumlah antara form keranjang dan form beli
-    document.getElementById('jumlah').addEventListener('input', function () {
-        const inputB = document.getElementById('jumlah_beli');
-        if (inputB) inputB.value = this.value;
-    });
+    // PENGAMAN: Listener input kuantitas agar tidak error untuk Guest
+    const inputJml = document.getElementById('jumlah');
+    if (inputJml) {
+        inputJml.addEventListener('input', function () {
+            const inputB = document.getElementById('jumlah_beli');
+            if (inputB) inputB.value = this.value;
+        });
+    }
 </script>
 @endpush

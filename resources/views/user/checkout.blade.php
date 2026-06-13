@@ -28,13 +28,28 @@
         </div>
     </header>
 
+    {{-- Menampilkan Error Alert dari Server/Controller jika ada --}}
+    @if ($errors->any())
+        <div class="mx-6 mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 roundedshadow-sm">
+            <p class="font-bold">Mohon periksa kembali inputan Anda:</p>
+            <ul class="list-disc list-inside text-sm mt-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form id="orderForm" action="{{ route('checkout.proses') }}" method="POST"
           class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
         @csrf
 
         <input type="hidden"
            name="selected_items"
-           value="{{ request('selected_items') }}">
+           value="{{ old('selected_items', request('selected_items')) }}">
+        <input type="hidden" name="id_produk_langsung" value="{{ old('id_produk_langsung', request('id_produk')) }}">
+    <input type="hidden" name="id_varian_langsung" value="{{ old('id_varian_langsung', request('id_varian')) }}">
+    <input type="hidden" name="jumlah_langsung" value="{{ old('jumlah_langsung', request('jumlah')) }}">
 
         {{-- ========== INFORMASI PENGIRIMAN ========== --}}
         <div class="space-y-6">
@@ -44,47 +59,70 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium mb-1">Nama Penerima</label>
-                        <input type="text" id="nama" name="nama" required
-                               class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none">
+                        <input type="text" id="nama" name="nama" value="{{ old('nama') }}" required placeholder="Contoh: Shava Nisa'"
+                               class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none @error('nama') border-red-500 bg-red-50 focus:ring-red-400 @else border-slate-300 @enderror">
+                               <p class="text-[11px] text-gray-400 mt-0.5">Hanya boleh huruf, spasi, dan tanda petik (')</p>
+        @error('nama')
+            <p class="text-xs text-red-600 font-semibold mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+        @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">No. Telepon</label>
-                        <input type="text" id="noTelp" name="noTelp" required
-                               class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none">
+                        <input type="text" id="noTelp" name="noTelp" value="{{ old('noTelp') }}" required placeholder="Contoh: 0832XXXXXXXX"
+                               class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none @error('noTelp') border-red-500 bg-red-50 focus:ring-red-400 @else border-slate-300 @enderror">
+                               <p class="text-[11px] text-gray-400 mt-0.5">Hanya boleh diisi angka</p>
+        @error('noTelp')
+            <p class="text-xs text-red-600 font-semibold mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+        @enderror
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Provinsi</label>
-                            <input type="text" id="provinsi" name="provinsi" required
-                                   class="w-full p-2.5 border border-slate-300 rounded-lg outline-none">
+                            <input type="text" id="provinsi" name="provinsi" value="{{ old('provinsi') }}" required
+                                   class="w-full p-2.5 border border-slate-300 rounded-lg outline-none @error('provinsi') border-red-500 bg-red-50 focus:ring-red-400 @else border-slate-300 @enderror">
+                                   <p class="text-[11px] text-gray-400 mt-0.5">Hanya boleh huruf</p>
+        @error('provinsi')
+            <p class="text-xs text-red-600 font-semibold mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+        @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Kota/Kabupaten</label>
-                            <input type="text" id="kota" name="kota" required
-                                   class="w-full p-2.5 border border-slate-300 rounded-lg outline-none">
+                            <input type="text" id="kota" name="kota" value="{{ old('kota') }}" required
+                                   class="w-full p-2.5 border border-slate-300 rounded-lg outline-none @error('kota') border-red-500 bg-red-50 focus:ring-red-400 @else border-slate-300 @enderror">
+                                   <p class="text-[11px] text-gray-400 mt-0.5">Hanya boleh huruf</p>
+        @error('kota')
+            <p class="text-xs text-red-600 font-semibold mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+        @enderror
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Kode Pos</label>
-                        <input type="text" id="kodePos" name="kodePos" required
-                               class="w-full p-2.5 border border-slate-300 rounded-lg outline-none">
+                        <input type="text" id="kodePos" name="kodePos" value="{{ old('kodePos') }}" required
+                               class="w-full p-2.5 border border-slate-300 rounded-lg outline-none @error('kodePos') border-red-500 bg-red-50 focus:ring-red-400 @else border-slate-300 @enderror">
+                               <p class="text-[11px] text-gray-400 mt-0.5">Hanya boleh diisi angka</p>
+        @error('kodePos')
+            <p class="text-xs text-red-600 font-semibold mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ $message }}</p>
+        @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Detail Alamat</label>
                         <textarea id="detail" name="detail" rows="3" required
-                                  class="w-full p-2.5 border border-slate-300 rounded-lg outline-none"></textarea>
+                                  class="w-full p-2.5 border border-slate-300 rounded-lg outline-none @error('detail') border-red-500 bg-red-50 focus:ring-red-400 @else border-slate-300 @enderror">{{ old('detail') }}</textarea>
+                                  @error('detail')
+            <p class="text-xs text-red-600 font-semibold mt-1">{{ $message }}</p>
+        @enderror
                     </div>
                     <div>
                         <h3 class="font-bold text-blue-900">Metode Pengiriman</h3>
                         <div class="flex gap-4 mt-2">
                             <label class="flex-1 cursor-pointer">
-                                <input type="radio" name="pengiriman" value="Ambil" checked class="hidden peer">
+                                <input type="radio" name="pengiriman" value="Ambil" {{ old('pengiriman', 'Ambil') == 'Ambil' ? 'checked' : '' }} class="hidden peer">
                                 <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-400 font-semibold transition-all">
                                     Ambil
                                 </div>
                             </label>
                             <label class="flex-1 cursor-pointer">
-                                <input type="radio" name="pengiriman" value="Antar" class="hidden peer">
+                                <input type="radio" name="pengiriman" value="Antar" {{ old('pengiriman') == 'Antar' ? 'checked' : '' }} class="hidden peer">
                                 <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:bg-yellow-100 peer-checked:border-yellow-400 font-semibold transition-all">
                                     Antar
                                 </div>
@@ -145,39 +183,83 @@
     </footer>
 </div>
 
+@stack('scripts')
+
 @push('scripts')
 <script>
-    // Validasi sebelum submit
-    document.getElementById('orderForm').addEventListener('submit', function (e) {
-        const fields = [
-            { id: 'nama',     label: 'Nama',          type: 'alpha' },
-            { id: 'noTelp',   label: 'No. Telepon',   type: 'num' },
-            { id: 'provinsi', label: 'Provinsi',       type: 'alpha' },
-            { id: 'kota',     label: 'Kota',           type: 'alpha' },
-            { id: 'kodePos',  label: 'Kode Pos',       type: 'num' },
-            { id: 'detail',   label: 'Detail Alamat',  type: 'required' },
-        ];
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // Regex pengetatan kriteria input kamu
+        const alphaRegex = /^[a-zA-Z\s']+$/; // Huruf, spasi, dan tanda petik satu (')
+        const numRegex   = /^[0-9]+$/;       // Hanya angka
 
-        const alphaRegex = /^[a-zA-Z\s']+$/;
-        const numRegex   = /^[0-9]+$/;
+        // 1. FILTER REALTIME SAAT KETIK (Mencegah karakter ilegal masuk ke inputan)
+        function filterInput(elementId, regexType) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
 
-        for (const field of fields) {
-            const el  = document.getElementById(field.id);
-            const val = el.value.trim();
+            el.addEventListener('keypress', function (e) {
+                // Beri akses tombol khusus (BackSpace, Enter, Delete, Tab)
+                if (e.key === 'Backspace' || e.key === 'Enter' || e.key === 'Delete' || e.key === 'Tab') {
+                    return;
+                }
+                
+                if (regexType === 'alpha') {
+                    if (!alphaRegex.test(e.key)) { e.preventDefault(); }
+                } else if (regexType === 'num') {
+                    if (!numRegex.test(e.key)) { e.preventDefault(); }
+                }
+            });
 
-            if (!val) {
-                alert(`Peringatan: ${field.label} tidak boleh kosong!`);
-                e.preventDefault(); el.focus(); return;
-            }
-            if (field.type === 'alpha' && !alphaRegex.test(val)) {
-                alert(`Peringatan: ${field.label} hanya boleh huruf!`);
-                e.preventDefault(); el.focus(); return;
-            }
-            if (field.type === 'num' && !numRegex.test(val)) {
-                alert(`Peringatan: ${field.label} hanya boleh angka!`);
-                e.preventDefault(); el.focus(); return;
-            }
+            // Antisipasi jika user melakukan Copy Paste teks ilegal
+            el.addEventListener('input', function () {
+                let val = this.value;
+                if (regexType === 'alpha') {
+                    // Hapus karakter selain huruf, spasi, dan petik (')
+                    this.value = val.replace(/[^a-zA-Z\s']/g, '');
+                } else if (regexType === 'num') {
+                    // Hapus karakter selain angka
+                    this.value = val.replace(/[^0-9]/g, '');
+                }
+            });
         }
+
+        // Jalankan pelindung input realtime
+        filterInput('nama', 'alpha');
+        filterInput('provinsi', 'alpha');
+        filterInput('kota', 'alpha');
+        filterInput('noTelp', 'num');
+        filterInput('kodePos', 'num');
+
+        // 2. VALIDASI FINAL SAAT TOMBOL SUBMIT DIKLIK
+        document.getElementById('orderForm').addEventListener('submit', function (e) {
+            const fields = [
+                { id: 'nama',     label: 'Nama Lengkap',   type: 'alpha' },
+                { id: 'noTelp',   label: 'No. Telepon',    type: 'num' },
+                { id: 'provinsi', label: 'Provinsi',       type: 'alpha' },
+                { id: 'kota',     label: 'Kota/Kabupaten', type: 'alpha' },
+                { id: 'kodePos',  label: 'Kode Pos',       type: 'num' },
+                { id: 'detail',   label: 'Detail Alamat',  type: 'required' },
+            ];
+
+            for (const field of fields) {
+                const el  = document.getElementById(field.id);
+                const val = el.value.trim();
+
+                if (!val) {
+                    alert(`Peringatan: ${field.label} tidak boleh kosong!`);
+                    e.preventDefault(); el.focus(); return;
+                }
+                if (field.type === 'alpha' && !alphaRegex.test(val)) {
+                    alert(`Peringatan: ${field.label} hanya boleh diisi huruf, spasi, dan simbol ' !`);
+                    e.preventDefault(); el.focus(); return;
+                }
+                if (field.type === 'num' && !numRegex.test(val)) {
+                    alert(`Peringatan: ${field.label} hanya boleh berisi angka!`);
+                    e.preventDefault(); el.focus(); return;
+                }
+            }
+        });
     });
 </script>
 @endpush

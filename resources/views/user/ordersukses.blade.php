@@ -96,19 +96,126 @@
             </div>
         </section>
 
-        {{-- Status & Tanggal --}}
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-5 rounded-xl border-l-4 border-yellow-400 border border-slate-200 shadow-sm">
-                <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase block mb-1">Status Pesanan</span>
-                <p class="text-base font-bold text-yellow-600">● Menunggu Pembayaran</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl border-l-4 border-blue-900 border border-slate-200 shadow-sm">
-                <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase block mb-1">Tanggal Pembelian</span>
-                <p class="text-base font-bold text-blue-900">
-                    {{ \Carbon\Carbon::parse($pesanan->tgl_pembelian ?? $pesanan->created_at ?? now())->translatedFormat('d F Y') }}
-                </p>
-            </div>
-        </section>
+       @php
+
+$statusTitle = '';
+$statusDesc = '';
+$statusColor = '';
+
+if($pesanan->status_pesanan == 'Dibatalkan'){
+
+    $statusTitle = 'Pesanan Dibatalkan';
+    $statusDesc  = 'Pesanan telah dibatalkan dan tidak akan diproses lebih lanjut.';
+    $statusColor = 'red';
+
+}elseif($pesanan->status_pesanan == 'Menunggu Konfirmasi Pembatalan'){
+
+    $statusTitle = 'Menunggu Konfirmasi Pembatalan';
+    $statusDesc  = 'Permintaan pembatalan telah dikirim ke admin. Mohon tunggu proses verifikasi.';
+    $statusColor = 'orange';
+
+}elseif($pesanan->status_pembayaran == 'Belum Dibayar'){
+
+    $statusTitle = 'Menunggu Pembayaran';
+    $statusDesc  = 'Silakan kirim bukti pembayaran ke WhatsApp admin.';
+    $statusColor = 'yellow';
+
+}elseif($pesanan->status_kirim == 'Diterima'){
+
+    $statusTitle = 'Pesanan Selesai';
+    $statusDesc  = 'Pesanan telah diterima. Terima kasih telah berbelanja.';
+    $statusColor = 'green';
+
+}elseif($pesanan->status_kirim == 'Dikirim'){
+
+    $statusTitle = 'Pesanan Dikirim';
+    $statusDesc  = 'Pesanan sedang dalam perjalanan menuju alamat Anda.';
+    $statusColor = 'blue';
+
+}elseif($pesanan->status_pesanan == 'Diproses'){
+
+    $statusTitle = 'Sedang Diproses';
+    $statusDesc  = 'Pembayaran telah dikonfirmasi dan pesanan sedang diproses.';
+    $statusColor = 'blue';
+
+}else{
+
+    $statusTitle = 'Menunggu Konfirmasi';
+    $statusDesc  = 'Admin sedang memverifikasi pembayaran Anda.';
+    $statusColor = 'orange';
+
+}
+
+@endphp
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+
+    <div class="flex items-center gap-4">
+
+        <div class="
+            w-16 h-16 rounded-full flex items-center justify-center
+
+            @if($statusColor=='green')
+                bg-green-100 text-green-600
+            @elseif($statusColor=='blue')
+                bg-blue-100 text-blue-600
+            @elseif($statusColor=='yellow')
+                bg-yellow-100 text-yellow-600
+            @else
+                bg-orange-100 text-orange-600
+            @endif
+        ">
+            <i class="fa-solid fa-box text-xl"></i>
+        </div>
+
+        <div>
+            <h3 class="text-2xl font-bold text-blue-900">
+                {{ $statusTitle }}
+            </h3>
+
+            <p class="text-slate-500 mt-1">
+                {{ $statusDesc }}
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="grid md:grid-cols-3 gap-4 mt-5">
+
+    <div class="bg-white p-4 rounded-xl border">
+        <p class="text-xs text-slate-400 uppercase">
+            Pembayaran
+        </p>
+
+        <p class="font-semibold mt-1">
+            {{ $pesanan->status_pembayaran }}
+        </p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl border">
+        <p class="text-xs text-slate-400 uppercase">
+            Pengiriman
+        </p>
+
+        <p class="font-semibold mt-1">
+            {{ $pesanan->status_kirim }}
+        </p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl border">
+        <p class="text-xs text-slate-400 uppercase">
+            Tanggal Pembelian
+        </p>
+
+        <p class="font-semibold mt-1">
+            {{ \Carbon\Carbon::parse($pesanan->created_at)->format('d M Y, H:i') }}
+        </p>
+    </div>
+
+</div>
+
+        
 
         {{-- Grid Utama: Rincian Produk & Ringkasan Harga --}}
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -175,15 +282,51 @@
             </div>
         </section>
 
+        @if($pesanan->status_kirim == 'Dikirim')
+
+        <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-xl p-4 text-sm text-center">
+
+            Pesanan sedang dalam proses pengiriman dan tidak dapat dibatalkan.
+
+        </div>
+
+        @endif
+
         {{-- Navigasi Bawah Kembali/Riwayat --}}
-        <section class="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-xl mx-auto pt-4 border-t border-slate-200">
-            <a href="{{ route('riwayat') }}" class="flex items-center justify-center w-full sm:w-1/2 border border-slate-300 text-slate-600 bg-white hover:bg-slate-50 py-3 rounded-xl font-bold text-xs text-center shadow-sm transition">
-                Lihat Riwayat Pesanan
-            </a>
-            <a href="{{ route('home') }}" class="flex items-center justify-center w-full sm:w-1/2 bg-blue-900 hover:bg-opacity-95 text-white py-3 rounded-xl font-bold text-xs text-center shadow-sm transition">
-                Kembali ke Beranda
-            </a>
-        </section>
+       {{-- Navigasi Bawah --}}
+<section class="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-xl mx-auto pt-4 border-t border-slate-200">
+
+    <a href="{{ route('riwayat') }}"
+       class="flex items-center justify-center w-full sm:w-1/2 border border-slate-300 text-slate-600 bg-white hover:bg-slate-50 py-3 rounded-xl font-bold text-xs text-center shadow-sm transition">
+        Kembali ke Riwayat
+    </a>
+
+    @if(
+        $pesanan->status_kirim == 'Belum dikirim'
+        &&
+        $pesanan->status_pesanan != 'Dibatalkan'
+    )
+
+    <form action="{{ route('pesanan.batal',$pesanan->id_pembelian) }}"
+          method="POST"
+          class="w-full sm:w-1/2"
+          onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
+
+        @csrf
+
+        <button
+            type="submit"
+            class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold text-xs shadow-sm transition">
+
+            Batalkan Pesanan
+
+        </button>
+
+    </form>
+
+    @endif
+
+</section>
     </div>
 
     {{-- Footer Instansi --}}

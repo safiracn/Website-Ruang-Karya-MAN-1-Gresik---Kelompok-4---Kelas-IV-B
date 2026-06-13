@@ -110,7 +110,7 @@
                         <a href="
             {{
                 Auth::check()
-                    ? (Auth::user()->role === 'user'
+                    ? (Auth::user()->role_id == 2
                         ? route('riwayat')
                         : route('admin.dashboard'))
                     : route('login')
@@ -121,20 +121,20 @@
                         </a>
                     </li>
                     <li class="relative">
-                        {{-- Keranjang: jika belum login → arahkan ke login --}}
-                        <a href="
+    {{-- Keranjang: jika belum login → login, jika sudah login cek id_role --}}
+    <a href="
 {{
     Auth::check()
-        ? (Auth::user()->role === 'user'
+        ? (Auth::user()->role_id == 2
             ? route('keranjang')
             : route('admin.dashboard'))
         : route('login')
 }}
 "
-                           class="{{ request()->routeIs('keranjang') ? 'text-yellow-500' : 'text-blue-900 hover:text-yellow-500' }} transition p-2">
-                            <i class="fa-solid fa-cart-shopping text-xl"></i>
-                        </a>
-                    </li>
+       class="{{ request()->routeIs('keranjang') ? 'text-yellow-500' : 'text-blue-900 hover:text-yellow-500' }} transition p-2">
+        <i class="fa-solid fa-cart-shopping text-xl"></i>
+    </a>
+</li>
                     <li>
                         <a href="
             {{ 

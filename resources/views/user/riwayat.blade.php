@@ -30,9 +30,37 @@
                 <div class="flex-1 text-center md:text-left">
                     <h4 class="font-bold text-blue-900">{{ $row->nama_produk ?? 'Produk tidak ditemukan' }}</h4>
                     <p class="text-blue-900 font-black text-lg">Rp {{ number_format($row->subtotal, 0, ',', '.') }}</p>
-                    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100">
-                        {{ $row->status_pesanan }}
-                    </span>
+                    @if($row->status_pesanan == 'Menunggu Konfirmasi Pembatalan')
+
+    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-orange-50 text-orange-600 border border-orange-100">
+        Menunggu Konfirmasi Pembatalan
+    </span>
+
+@elseif($row->status_pesanan == 'Dibatalkan')
+
+    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-50 text-red-600 border border-red-100">
+        Dibatalkan
+    </span>
+
+@elseif($row->status_pesanan == 'Selesai')
+
+    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-green-50 text-green-600 border border-green-100">
+        Selesai
+    </span>
+
+@elseif($row->status_pesanan == 'Diproses')
+
+    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100">
+        Diproses
+    </span>
+
+@else
+
+    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-yellow-50 text-yellow-600 border border-yellow-100">
+        Pending
+    </span>
+
+@endif
                 </div>
                 <div class="flex gap-2">
 

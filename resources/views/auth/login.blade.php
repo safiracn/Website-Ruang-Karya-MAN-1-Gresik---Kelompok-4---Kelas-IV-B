@@ -96,7 +96,6 @@
                                 <input type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-300 text-blue-900">
                                 Remember Me
                             </label>
-                            <a href="#" class="text-sm font-semibold text-blue-900 hover:underline">Lupa Kata Sandi?</a>
                         </div>
 
                         <button type="submit"

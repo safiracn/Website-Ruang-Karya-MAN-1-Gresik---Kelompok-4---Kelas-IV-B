@@ -21,7 +21,7 @@ return new class extends Migration
         $table->string('kode_pos', 10);
         $table->text('detail_alamat');
         $table->enum('metode_pengiriman', ['Ambil', 'Antar']);
-        $table->enum('status_pembayaran', ['Sudah dibayar', 'Belum Dibayar', 'Dana Dikembalikan'])
+        $table->enum('status_pembayaran', ['Sudah dibayar', 'Belum Dibayar', 'Dana dikembalikan'])
               ->default('Belum Dibayar');
         $table->enum('status_kirim', ['Belum dikirim', 'Dikirim', 'Diterima'])
               ->default('Belum dikirim');

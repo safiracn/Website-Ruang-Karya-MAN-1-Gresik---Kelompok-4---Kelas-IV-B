@@ -15,8 +15,11 @@ class CheckoutController extends Controller
         $id_user = Auth::user()->id;
         $items = [];
 
-        if ($request->filled('selected_items')) {
-            $ids = array_filter(array_map('intval', explode(',', $request->selected_items)));
+        // 1. Ambil list ID item terpilih, prioritaskan dari data session lama (jika gagal validasi) baru dari request URL
+        $selectedItemsString = old('selected_items', $request->selected_items);
+
+        if (!empty($selectedItemsString)) {
+            $ids = array_filter(array_map('intval', explode(',', $selectedItemsString)));
 
             if (!empty($ids)) {
                 $placeholders = implode(',', $ids);
@@ -41,20 +44,27 @@ class CheckoutController extends Controller
             }
         }
 
-        elseif ($request->isMethod('post') && $request->input('aksi') === 'beli') {
+        // 2. Antisipasi jika metodenya adalah "Beli Langsung" tanpa lewat keranjang belanjaan
+        elseif (($request->isMethod('post') && $request->input('aksi') === 'beli') || old('id_varian_langsung')) {
+            
+            // Ambil data produk (baik dari request post awal atau dari session flash data lama)
+            $id_produk = old('id_produk_langsung', $request->id_produk);
+            $id_varian = old('id_varian_langsung', $request->id_varian);
+            $jumlah    = old('jumlah_langsung', $request->jumlah);
+
             $row = DB::table('produk as p')
                 ->join('produk_varian as v', 'p.id_produk', '=', 'v.id_produk')
-                ->where('p.id_produk', $request->id_produk)
-                ->where('v.id_varian', $request->id_varian)
+                ->where('p.id_produk', $id_produk)
+                ->where('v.id_varian', $id_varian)
                 ->select('p.nama_produk', 'p.foto_produk', 'v.harga', 'v.nama_varian')
                 ->first();
 
             if ($row) {
                 $items[] = [
-                    'id_varian' => $request->id_varian,
+                    'id_varian' => $id_varian,
                     'nama'      => $row->nama_produk . ' (' . $row->nama_varian . ')',
                     'harga'     => $row->harga,
-                    'jumlah'    => $request->jumlah,
+                    'jumlah'    => $jumlah,
                     'gambar'    => $row->foto_produk,
                 ];
             }
@@ -67,15 +77,32 @@ class CheckoutController extends Controller
 
     public function proses(Request $request)
     {
-        $request->validate([
+        $rules = [
             'nama'      => ['required', 'regex:/^[a-zA-Z\s\']+$/'],
             'noTelp'    => ['required', 'regex:/^[0-9]+$/'],
-            'provinsi'  => ['required'],
-            'kota'      => ['required'],
+            'provinsi'   => ['required', 'regex:/^[a-zA-Z\s]+$/'],
+            'kota'       => ['required', 'regex:/^[a-zA-Z\s]+$/'],
             'kodePos'   => ['required', 'regex:/^[0-9]+$/'],
             'detail'    => 'required',
             'pengiriman'=> 'required|in:Ambil,Antar',
-        ]);
+        ];
+
+        // 2. Buat Pesan Error Kustom Bahasa Indonesia
+    $messages = [
+        'nama.required'     => 'Nama Penerima wajib diisi.',
+        'nama.regex'        => 'Format Nama Lengkap salah! Hanya boleh huruf, spasi, dan tanda petik (\').',
+        'noTelp.required'   => 'Nomor Telepon wajib diisi.',
+        'noTelp.regex'      => 'Format Nomor Telepon salah! Hanya boleh berisi angka (0-9).',
+        'provinsi.required' => 'Provinsi wajib diisi.',
+        'provinsi.regex'    => 'Format Provinsi salah! Hanya boleh berisi huruf dan spasi.',
+        'kota.required'     => 'Kota/Kabupaten wajib diisi.',
+        'kota.regex'        => 'Format Kota/Kabupaten salah! Hanya boleh berisi huruf dan spasi.',
+        'kodePos.required'  => 'Kode Pos wajib diisi.',
+        'kodePos.regex'     => 'Format Kode Pos salah! Hanya boleh berisi angka (0-9).',
+        'detail.required'   => 'Detail Alamat wajib diisi.',
+    ];
+
+    $request->validate($rules, $messages);
 
         $id_pembelian = DB::transaction(function () use ($request) {
 
@@ -90,7 +117,15 @@ class CheckoutController extends Controller
                 'kode_pos'          => $request->kodePos,
                 'detail_alamat'     => $request->detail,
                 'metode_pengiriman' => $request->pengiriman,
+
+                // STATUS AWAL PESANAN
+                'status_pembayaran' => 'Belum Dibayar',
+                'status_pesanan'    => 'Pending',
+                'status_kirim'      => 'Belum dikirim',
+
                 'total_harga'       => $request->total_final,
+                'created_at'        => now(),
+    'updated_at'        => now(),
             ]);
 
             if ($request->has('items')) {
@@ -153,8 +188,9 @@ class CheckoutController extends Controller
     public function orderSukses($id)
     {
         $pesanan = DB::table('pembelian')
-            ->where('id_pembelian', $id)
-            ->first();
+        ->select('pembelian.*', 'created_at AS tgl_pembelian') // ⬅️ Tambahkan select alias ini
+        ->where('id_pembelian', $id)
+        ->first();
 
         $detailPesanan = DB::table('pembelian_detail')
             ->join('produk_varian', 'pembelian_detail.id_varian', '=', 'produk_varian.id_varian')

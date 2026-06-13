@@ -59,9 +59,10 @@ class LaporanController extends Controller
             ->sum('pembelian_detail.jumlah');
 
         // hitung total nominal yang belum dibayar
-        $belumDibayar = Pembelian::whereBetween('created_at', [$startDate, $endDate])
-            ->where('status_pembayaran', 'Belum Dibayar')
-            ->sum('total_harga');
+        $belumDibayar = DB::table('pembelian')
+    ->whereBetween('created_at', [$startDate, $endDate])
+    ->whereRaw('LOWER(status_pembayaran) = ?', ['belum dibayar'])
+    ->sum('total_harga');
     
         $rataRataTransaksi = Pembelian::whereBetween('created_at', [$startDate, $endDate])
             ->where('status_pembayaran', 'Sudah Dibayar')
