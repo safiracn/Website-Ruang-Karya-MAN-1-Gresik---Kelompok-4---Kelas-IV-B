@@ -58,12 +58,12 @@ class PesananController extends Controller
     $totalPesanan = DB::table('pembelian')->count();
 
     $belumDibayar = DB::table('pembelian')
-    ->whereRaw('LOWER(status_pembayaran) = ?', ['belum dibayar'])
-    ->sum('total_harga');
+        ->whereRaw('LOWER(status_pembayaran) = ?', ['belum dibayar'])
+        ->count();
     
     $perluDiproses = DB::table('pembelian')
-    ->where('status_pesanan', 'Diproses')
-    ->count();
+        ->where('status_pesanan', 'Diproses')
+        ->count();
 
     $menungguPembatalan = DB::table('pembelian')
         ->where('status_pesanan', 'Menunggu Konfirmasi Pembatalan')

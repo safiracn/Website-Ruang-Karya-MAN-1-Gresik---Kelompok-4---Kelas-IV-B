@@ -247,9 +247,9 @@
                             <th class="px-5 py-3 text-left">Kode</th>
                             <th class="px-5 py-3 text-left">Tanggal</th>
                             <th class="px-5 py-3 text-left">Pembeli</th>
-                            <th class="px-5 py-3 text-left">Pembayaran</th>
-                            <th class="px-5 py-3 text-left">Pesanan</th>
-                            <th class="px-5 py-3 text-left">Pengiriman</th>
+                            <th class="px-5 py-3 text-left">Status Pembayaran</th>
+                            <th class="px-5 py-3 text-left">Status Pesanan</th>
+                            <th class="px-5 py-3 text-left">Status Pengiriman</th>
                             <th class="px-5 py-3 text-right">Total</th>
                         </tr>
                     </thead>
@@ -365,12 +365,14 @@
             </button>
         </div>
         <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-5 text-xs text-amber-800 leading-relaxed">
-            <strong>Format kolom yang diperlukan:</strong><br>
-            <code class="font-mono">kode_pesanan | status_pembayaran | status_pesanan | status_pengiriman</code><br><br>
-            Nilai valid:<br>
-            • Status Pembayaran: <em>Sudah Dibayar</em> / <em>Belum Dibayar</em><br>
-            • Status Pesanan: <em>Pending</em> / <em>Diproses</em> / <em>Selesai</em> / <em>Dibatalkan</em><br>
-            • Status Pengiriman: <em>Belum dikirim</em> / <em>Dikirim</em> / <em>Diterima</em>
+            <strong>Format kolom:</strong><br>
+            <code class="font-mono">kode_pesanan | status_pembayaran | status_pesanan | status_pengiriman</code>
+
+            <ul class="mt-2 list-disc pl-4">
+                <li><strong>Status Pembayaran:</strong> Belum Dibayar, Sudah dibayar, Dana dikembalikan</li>
+                <li><strong>Status Pesanan:</strong> Pending, Diproses, Menunggu Konfirmasi Pembatalan, Selesai, Dibatalkan</li>
+                <li><strong>Status Pengiriman:</strong> Belum dikirim, Dikirim, Diterima</li>
+            </ul>
         </div>
         <form method="POST" action="{{ route('admin.laporan.import') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf

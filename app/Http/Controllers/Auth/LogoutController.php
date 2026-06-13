@@ -11,16 +11,21 @@ class LogoutController extends Controller
 {
     public function logout(Request $request)
     {
-        ActivityHelper::log(
-            'Logout',
-            Auth::user()->nama_lengkap . ' logout dari sistem'
-        );
+        if (Auth::check()) {
+            ActivityHelper::log(
+                'Logout',
+                Auth::user()->nama_lengkap . ' logout dari sistem'
+            );
+            
+            // Keluarkan user secara resmi
+            Auth::logout();
+        }
 
-        Auth::logout();
-
+        // Proses pembersihan sisa session (tetap dijalankan agar aman)
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // Kembalikan ke halaman login dengan selamat tanpa error 500
         return redirect()->route('login');
     }
 }

@@ -64,22 +64,44 @@ class LaporanImport implements ToCollection, WithHeadingRow
     private function normalizePembayaran($value)
     {
         $v = strtolower(trim($value ?? ''));
+
         return match ($v) {
-            'sudah dibayar', 'lunas' => 'Sudah dibayar',   // d kecil
-            'belum dibayar', 'belum' => 'Belum Dibayar',   // D kapital
+            'sudah dibayar', 'lunas'
+                => 'Sudah dibayar',
+
+            'belum dibayar', 'belum'
+                => 'Belum Dibayar',
+
+            'dana dikembalikan',
+            'refund',
+            'dikembalikan'
+                => 'Dana dikembalikan',
+
             default => null
         };
     }
 
     private function normalizePesanan($value)
     {
-        $v = strtolower(trim($value));
+        $v = strtolower(trim($value ?? ''));
 
         return match ($v) {
-            'pending' => 'Pending',
-            'diproses' => 'Diproses',
-            'selesai' => 'Selesai',
-            'dibatalkan' => 'Dibatalkan',
+            'pending'
+                => 'Pending',
+
+            'diproses'
+                => 'Diproses',
+
+            'menunggu konfirmasi pembatalan',
+            'konfirmasi pembatalan'
+                => 'Menunggu Konfirmasi Pembatalan',
+
+            'selesai'
+                => 'Selesai',
+
+            'dibatalkan'
+                => 'Dibatalkan',
+
             default => null
         };
     }
@@ -87,10 +109,17 @@ class LaporanImport implements ToCollection, WithHeadingRow
     private function normalizeKirim($value)
     {
         $v = strtolower(trim($value ?? ''));
+
         return match ($v) {
-            'belum dikirim', 'belum' => 'Belum dikirim',  // d kecil
-            'dikirim'                => 'Dikirim',
-            'diterima'               => 'Diterima',
+            'belum dikirim', 'belum'
+                => 'Belum dikirim',
+
+            'dikirim'
+                => 'Dikirim',
+
+            'diterima'
+                => 'Diterima',
+
             default => null
         };
     }

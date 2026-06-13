@@ -57,7 +57,7 @@ class LaporanExport implements FromCollection, WithHeadings, WithMapping, WithTi
     {
         $this->rowNumber++;
 
-        $kodePesanan = 'RK260605-' . sprintf('%04d', $row->id_pembelian);
+        $kodePesanan = 'RK' . str_pad($row->id_pembelian, 5, '0', STR_PAD_LEFT);
 
         // Rangkum nama produk dari detail
         $produkList = $row->details->map(function ($d) {

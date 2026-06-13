@@ -43,34 +43,38 @@
                     <h2 class="text-4xl font-extrabold tracking-tight text-blue-900">Daftar</h2>
                     <p class="mt-2 text-sm text-slate-500">Buat akun baru untuk mulai menjelajahi karya dan produk kreatif.</p>
 
-                    {{-- Error validasi --}}
+                    {{-- Error validasi dari Laravel --}}
                     @if($errors->any())
                         <div class="mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                             {{ $errors->first() }}
                         </div>
                     @endif
 
-                    <form action="{{ route('register') }}" method="POST" class="mt-6 space-y-4">
+                    {{-- Kontainer Pesan Error Real-time JavaScript --}}
+                    <div id="js-error-msg" class="hidden mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                    </div>
+
+                    <form action="{{ route('register') }}" method="POST" id="registerForm" class="mt-6 space-y-4">
                         @csrf
 
                         <div>
                             <label class="mb-2 block text-sm font-semibold text-slate-700">Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}"
-                                   placeholder="Masukkan nama lengkap" required
+                            <input type="text" name="nama_lengkap" id="nama_lengkap" value="{{ old('nama_lengkap') }}"
+                                   placeholder="Masukkan nama lengkap" required oninput="validasiNama(this)"
                                    class="w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-900">
                         </div>
 
                         <div>
                             <label class="mb-2 block text-sm font-semibold text-slate-700">Email</label>
-                            <input type="email" name="email" value="{{ old('email') }}"
+                            <input type="email" name="email" id="email" value="{{ old('email') }}"
                                    placeholder="nama@email.com" required
                                    class="w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-900">
                         </div>
 
                         <div>
                             <label class="mb-2 block text-sm font-semibold text-slate-700">No. Telepon</label>
-                            <input type="text" name="no_telp" value="{{ old('no_telp') }}"
-                                   placeholder="08xxxxxxxxxx" required
+                            <input type="text" name="no_telp" id="no_telp" value="{{ old('no_telp') }}"
+                                   placeholder="08xxxxxxxxxx" required oninput="validasiTelepon(this)"
                                    class="w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-900">
                         </div>
 
@@ -81,9 +85,9 @@
                         </div>
 
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-slate-700">Kata Sandi</label>
+                            <label class="mb-2 block text-sm font-semibold text-slate-700">Kata Sandi (Minimal 6 Karakter)</label>
                             <div class="flex overflow-hidden rounded-md border border-slate-300 focus-within:border-blue-900">
-                                <input type="password" name="password" id="password"
+                                <input type="password" name="password" id="password" minlength="6"
                                        placeholder="Masukkan kata sandi" required
                                        class="w-full px-4 py-3 text-sm outline-none">
                                 <button type="button" onclick="togglePassword('password', 'icon-pass')"
@@ -96,10 +100,6 @@
                         <div>
                             <label class="mb-2 block text-sm font-semibold text-slate-700">Konfirmasi Kata Sandi</label>
                             <div class="flex overflow-hidden rounded-md border border-slate-300 focus-within:border-blue-900">
-                                {{-- 
-                                    PENTING: name HARUS 'password_confirmation' 
-                                    agar laravel validation 'confirmed' bisa bekerja 
-                                --}}
                                 <input type="password" name="password_confirmation" id="password_confirmation"
                                        placeholder="Ulangi kata sandi" required
                                        class="w-full px-4 py-3 text-sm outline-none">
@@ -129,7 +129,7 @@
                     <div class="relative flex h-full flex-col justify-end p-8 text-white sm:p-10">
                         <h3 class="text-3xl font-extrabold leading-tight sm:text-5xl">Bergabung Bersama Ruang Karya</h3>
                         <p class="mt-4 max-w-md text-base leading-8 text-slate-200 sm:text-lg">
-                            Buat akun untuk menikmati pengalaman belanja karya kreatif, kerajinan tangan, dan produk siswa terbaik.
+                            Buat akun untuk menikmati pengalaman belanja karya kreatif, kerajinan tangan, dan Ghost produk siswa terbaik.
                         </p>
                         <div class="mt-8">
                             <a href="{{ route('katalog') }}"
@@ -146,19 +146,68 @@
     </div>
 </div>
 
+{{-- LOGIKA VALIDASI JAVASCRIPT --}}
 <script>
+    // 1. Validasi Input Nama (Hanya Huruf, Spasi, dan Tanda Petik Satu)
+    function validasiNama(input) {
+        // Regex ini akan menghapus angka dan karakter selain huruf, spasi, dan petik (')
+        input.value = input.value.replace(/[^a-zA-Z\s']/g, '');
+    }
+
+    // 3. Validasi Input No Telepon (Hanya Angka)
+    function validasiTelepon(input) {
+        // Regex ini akan langsung menghapus karakter non-angka saat diketik
+        input.value = input.value.replace(/[^0-9]/g, '');
+    }
+
+    // Fitur Show/Hide Password
     function togglePassword(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);
         
         if (input.type === 'password') {
             input.type = 'text';
-            icon.className = 'fa-solid fa-eye-slash'; // Berubah jadi mata dicoret
+            icon.className = 'fa-solid fa-eye-slash';
         } else {
             input.type = 'password';
-            icon.className = 'fa-solid fa-eye';       // Berubah kembali jadi mata terbuka
+            icon.className = 'fa-solid fa-eye';
         }
     }
+
+    // Validasi Final Saat Form akan Disubmit/Dikirim
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('password_confirmation').value;
+        const errorBox = document.getElementById('js-error-msg');
+        
+        let errors = [];
+
+        // 2. Validasi Struktur Email (Harus mengandung tanda '@' dan domain yang valid)
+        if (!email.includes('@') || email.indexOf('@') === 0 || email.lastIndexOf('@') === email.length - 1) {
+            errors.push("Format Email tidak valid! Pastikan menggunakan tanda '@' dengan benar.");
+        }
+
+        // 4a. Validasi Panjang Minimal Password
+        if (password.length < 6) {
+            errors.push("Kata Sandi minimal harus terdiri dari 6 karakter!");
+        }
+
+        // 4b. Validasi Kesamaan Password dan Konfirmasi Password
+        if (password !== confirmPassword) {
+            errors.push("Konfirmasi Kata Sandi tidak cocok! Pastikan isinya sama.");
+        }
+
+        // Jika ditemukan error, batalkan pengiriman form dan tampilkan pesan ke user
+        if (errors.length > 0) {
+            e.preventDefault(); // Mencegah form dikirim ke controller laravel
+            errorBox.innerHTML = errors.join('<br>');
+            errorBox.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll otomatis ke atas agar user membaca errornya
+        } else {
+            errorBox.classList.add('hidden');
+        }
+    });
 </script>
 </body>
 </html>
