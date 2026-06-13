@@ -12,34 +12,22 @@
 </div>
 @endif
 
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1rem;" class="mb-6">
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;" class="mb-6">
+
     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-    <p class="text-sm text-slate-500">Total Pesanan</p>
-    <h3 class="text-3xl font-bold text-blue-900 mt-2">
-        {{ $totalPesanan }}
-    </h3>
-</div>
+        <p class="text-sm text-slate-500">Total Pesanan</p>
+        <h3 class="text-3xl font-bold text-blue-900 mt-2">{{ $totalPesanan }}</h3>
+    </div>
 
-<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-    <p class="text-sm text-slate-500">Perlu Diproses</p>
-    <h3 class="text-3xl font-bold text-blue-500 mt-2">
-        {{ $perluDiproses }}
-    </h3>
-</div>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <p class="text-sm text-slate-500">Belum Dibayar</p>
+        <h3 class="text-3xl font-bold text-orange-500 mt-2">{{ $belumDibayar }}</h3>
+    </div>
 
-<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-    <p class="text-sm text-slate-500">Menunggu Pembatalan</p>
-    <h3 class="text-3xl font-bold text-yellow-500 mt-2">
-        {{ $menungguPembatalan }}
-    </h3>
-</div>
-
-<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-    <p class="text-sm text-slate-500">Pesanan Selesai</p>
-    <h3 class="text-3xl font-bold text-green-600 mt-2">
-        {{ $pesananSelesai }}
-    </h3>
-</div>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <p class="text-sm text-slate-500">Pesanan Selesai</p>
+        <h3 class="text-3xl font-bold text-green-600 mt-2">{{ $pesananSelesai }}</h3>
+    </div>
 
 </div>
 

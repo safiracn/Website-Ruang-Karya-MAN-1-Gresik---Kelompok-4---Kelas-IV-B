@@ -77,6 +77,7 @@ class PesananController extends Controller
     return view('admin.pesanan', compact(
     'pesanan',
     'totalPesanan',
+    'belumDibayar',      // tambah ini
     'perluDiproses',
     'menungguPembatalan',
     'pesananSelesai',
