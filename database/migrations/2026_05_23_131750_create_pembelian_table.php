@@ -21,11 +21,11 @@ return new class extends Migration
         $table->string('kode_pos', 10);
         $table->text('detail_alamat');
         $table->enum('metode_pengiriman', ['Ambil', 'Antar']);
-        $table->enum('status_pembayaran', ['Sudah dibayar', 'Belum Dibayar'])
+        $table->enum('status_pembayaran', ['Sudah dibayar', 'Belum Dibayar', 'Dana Dikembalikan'])
               ->default('Belum Dibayar');
         $table->enum('status_kirim', ['Belum dikirim', 'Dikirim', 'Diterima'])
               ->default('Belum dikirim');
-        $table->enum('status_pesanan', ['Pending', 'Diproses', 'Selesai', 'Dibatalkan'])
+        $table->enum('status_pesanan', ['Pending', 'Diproses', 'Menunggu Konfirmasi Pembatalan', 'Selesai', 'Dibatalkan'])
               ->default('Pending');
         $table->decimal('total_harga', 12, 2)->default(0);
         $table->timestamps();
