@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\ActivityHelper;
 
 class RegisterController extends Controller
 {
@@ -17,11 +18,11 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'nama_lengkap'        => ["required", "regex:/^[a-zA-Z'`.\s]+$/"],
-            'email'               => 'required|email|unique:user,email',
-            'no_telp'             => ['required', 'regex:/^[0-9]+$/'],
-            'alamat'              => 'required',
-            'password'            => 'required|min:6|confirmed',
+            'nama_lengkap' => ["required", "regex:/^[a-zA-Z'`.\s]+$/"],
+            'email'        => 'required|email|unique:users,email',
+            'no_telp'      => ['required', 'regex:/^[0-9]+$/'],
+            'alamat'       => 'required',
+            'password'     => 'required|min:6|confirmed',
         ], [
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'nama_lengkap.regex'    => 'Nama hanya boleh huruf, spasi, tanda petik, titik.',
@@ -36,15 +37,22 @@ class RegisterController extends Controller
             'password.confirmed'    => 'Konfirmasi password tidak sama.',
         ]);
 
-        User::create([
-            'nama_lengkap' => $request->nama_lengkap,
-            'email'        => $request->email,
-            'no_telp'      => $request->no_telp,
-            'alamat'       => $request->alamat,
-            'password'     => Hash::make($request->password),
-            'role'         => 'user',
-        ]);
+        $user = User::create([
+    'nama_lengkap' => $request->nama_lengkap,
+    'email'        => $request->email,
+    'no_telp'      => $request->no_telp,
+    'alamat'       => $request->alamat,
+    'password'     => Hash::make($request->password),
+    'role_id'      => 2, // <-- Ganti dari 'role' => 'user' menjadi 'role_id' => 2
+]);
 
-        return redirect()->route('login')->with('success', 'Pendaftaran berhasil. Silakan login.');
+        ActivityHelper::log(
+            'Registrasi User',
+            $user->nama_lengkap . ' membuat akun baru'
+        );
+
+        return redirect()
+            ->route('login')
+            ->with('success', 'Pendaftaran berhasil. Silakan login.');
     }
 }

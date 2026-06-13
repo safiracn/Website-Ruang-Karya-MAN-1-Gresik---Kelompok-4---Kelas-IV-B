@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityHelper;
 
 class ProdukController extends Controller
 {
@@ -35,17 +36,22 @@ class ProdukController extends Controller
             $namaFile = uniqid() . '.' . $foto->getClientOriginalExtension();
             $foto->move(public_path('image'), $namaFile);
 
-            // Insert produk
-            $id_produk_baru = DB::table('produk')->insertGetId([
-                'nama_produk' => $request->nama_produk,
-                'id_kategori' => $request->id_kategori,
-                'deskripsi'   => $request->deskripsi,
-                'bahan'       => $request->bahan,
-                'finishing'   => $request->finishing,
-                'dimensi'     => $request->dimensi,
-                'garansi'     => $request->garansi,
-                'foto_produk' => $namaFile,
-            ]);
+        // Insert produk
+        $id_produk_baru = DB::table('produk')->insertGetId([
+            'nama_produk' => $request->nama_produk,
+            'id_kategori' => $request->id_kategori,
+            'deskripsi'   => $request->deskripsi,
+            'bahan'       => $request->bahan,
+            'finishing'   => $request->finishing,
+            'dimensi'     => $request->dimensi,
+            'garansi'     => $request->garansi,
+            'foto_produk' => $namaFile,
+        ]);
+
+        ActivityHelper::log(
+            'Tambah Produk',
+            'Menambahkan produk: ' . $request->nama_produk
+        );
 
             // Insert varian jika ada input
             if ($request->filled('nama_varian')) {
@@ -196,6 +202,11 @@ if ($request->filled('nama_varian')) {
         }
     }
 }
+
+    ActivityHelper::log(
+        'Edit Produk',
+        'Mengubah produk: ' . $request->nama_produk
+    );
 
             DB::commit();
             return redirect()->route('admin.dashboard')->with('success_update', true);

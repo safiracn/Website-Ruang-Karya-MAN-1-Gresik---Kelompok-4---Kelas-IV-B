@@ -6,7 +6,8 @@
     <title>Daftar - Ruang Karya</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
             --font-serif-heading: "Cambria", serif;
@@ -85,8 +86,10 @@
                                 <input type="password" name="password" id="password"
                                        placeholder="Masukkan kata sandi" required
                                        class="w-full px-4 py-3 text-sm outline-none">
-                                <button type="button" onclick="togglePassword('password')"
-                                        class="flex w-12 items-center justify-center border-l border-slate-300 text-slate-500 hover:bg-slate-50">👁</button>
+                                <button type="button" onclick="togglePassword('password', 'icon-pass')"
+                                        class="flex w-12 items-center justify-center border-l border-slate-300 text-slate-500 hover:bg-slate-50">
+                                    <i id="icon-pass" class="fa-solid fa-eye"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -100,8 +103,10 @@
                                 <input type="password" name="password_confirmation" id="password_confirmation"
                                        placeholder="Ulangi kata sandi" required
                                        class="w-full px-4 py-3 text-sm outline-none">
-                                <button type="button" onclick="togglePassword('password_confirmation')"
-                                        class="flex w-12 items-center justify-center border-l border-slate-300 text-slate-500 hover:bg-slate-50">👁</button>
+                                <button type="button" onclick="togglePassword('password_confirmation', 'icon-confirm')"
+                                        class="flex w-12 items-center justify-center border-l border-slate-300 text-slate-500 hover:bg-slate-50">
+                                    <i id="icon-confirm" class="fa-solid fa-eye"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -142,9 +147,17 @@
 </div>
 
 <script>
-    function togglePassword(id) {
-        const input = document.getElementById(id);
-        input.type = input.type === 'password' ? 'text' : 'password';
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fa-solid fa-eye-slash'; // Berubah jadi mata dicoret
+        } else {
+            input.type = 'password';
+            icon.className = 'fa-solid fa-eye';       // Berubah kembali jadi mata terbuka
+        }
     }
 </script>
 </body>

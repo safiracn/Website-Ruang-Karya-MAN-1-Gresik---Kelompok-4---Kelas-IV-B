@@ -6,6 +6,7 @@
     <title>Login - Ruang Karya</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
             theme: { extend: { fontFamily: { jakarta: ['"Plus Jakarta Sans"', 'sans-serif'] } } }
@@ -68,9 +69,12 @@
 
                         <div>
                             <label class="mb-2 block text-sm font-medium text-slate-700">Email</label>
-                            <input type="email" name="email" value="{{ old('email') }}"
-                                   placeholder="nama@email.com" required
-                                   class="w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-900">
+                            <input type="email"
+                                name="email"
+                                value="{{ old('email', request()->cookie('login_email')) }}"
+                                placeholder="nama@email.com"
+                                required
+                                class="w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-900">
                         </div>
 
                         <div>
@@ -79,10 +83,11 @@
                                 <input type="password" name="password" id="password"
                                        placeholder="Masukkan kata sandi Anda" required
                                        class="w-full px-4 py-3 text-sm outline-none">
-                                <button type="button" onclick="togglePassword()"
-                                        class="flex w-12 items-center justify-center border-l border-slate-300 text-slate-500 hover:bg-slate-50">
-                                    👁
-                                </button>
+                                {{-- TOMBOL IKON MATA YANG DIPERBAIKI --}}
+        <button type="button" onclick="togglePassword()"
+                class="flex w-12 items-center justify-center border-l border-slate-300 text-slate-500 hover:bg-slate-50">
+            <i id="toggle-icon" class="fa-solid fa-eye"></i>
+        </button>
                             </div>
                         </div>
 
@@ -148,7 +153,17 @@
 <script>
     function togglePassword() {
         const input = document.getElementById('password');
-        input.type = input.type === 'password' ? 'text' : 'password';
+        const icon = document.getElementById('toggle-icon');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            // Ubah ke ikon mata tercoret (hide)
+            icon.className = 'fa-solid fa-eye-slash';
+        } else {
+            input.type = 'password';
+            // Kembalikan ke ikon mata terbuka (show)
+            icon.className = 'fa-solid fa-eye';
+        }
     }
 </script>
 </body>

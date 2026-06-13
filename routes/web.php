@@ -3,12 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-// Auth
+// Controllers
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LogoutController;
 
-// User
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\KatalogController;
 use App\Http\Controllers\User\DetailProdukController;
@@ -17,112 +16,122 @@ use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\RiwayatController;
 use App\Http\Controllers\User\ProfilUserController;
 
-// Admin
-use App\Http\Controllers\Admin\DashboardController   as AdminDashboard;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\ProfilAdminController;
+use App\Http\Controllers\Admin\PesananController;
+use App\Http\Controllers\Admin\LaporanController;
 
-// ============================================================
-// ROUTE PUBLIK — siapa saja bisa akses
-// ============================================================
+/*
+|--------------------------------------------------------------------------
+| PUBLIC ROUTES
+|--------------------------------------------------------------------------
+*/
 
-// Home / dashboard public
-// Home
 Route::get('/', function () {
-
-    // Kalau sudah login
     if (Auth::check()) {
-
-        // Kalau admin → dashboard admin
-        if (Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        // Kalau user biasa → dashboard user
-        return redirect()->route('home');
+        // Ganti dengan mengecek role_id === 1 (admin)
+        return Auth::user()->role_id === 1
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('home');
     }
 
-    // Guest tetap lihat dashboard user/public
-    return app(\App\Http\Controllers\User\DashboardController::class)->index();
+    return app(DashboardController::class)->index();
 });
 
-// Dashboard user/public
-Route::get('/home', [DashboardController::class, 'index'])
-    ->name('home');
-    
-// Katalog produk
-Route::get('/katalog', [KatalogController::class, 'index'])
-    ->name('katalog');
+Route::get('/home', [DashboardController::class, 'index'])->name('home');
+Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
+Route::get('/produk/{id}', [DetailProdukController::class, 'show'])->name('produk.detail');
 
-// Detail produk
-Route::get('/produk/{id}', [DetailProdukController::class, 'show'])
-    ->name('produk.detail');
-
-
-// ============================================================
-// AUTH ROUTES
-// ============================================================
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login',    [LoginController::class, 'showForm'])->name('login');
-    Route::post('/login',   [LoginController::class, 'login']);
+    Route::get('/login', [LoginController::class, 'showForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
-    Route::post('/register',[RegisterController::class, 'register']);
+    Route::post('/register', [RegisterController::class, 'register']);
 });
 
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-// ============================================================
-// USER ROUTES — harus login + role user
-// ============================================================
+/*
+|--------------------------------------------------------------------------
+| USER ROUTES
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth', 'role:user'])->group(function () {
 
-    // Keranjang
-    Route::get('/keranjang',          [KeranjangController::class, 'index'])->name('keranjang');
-    Route::post('/keranjang/tambah',  [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
-    Route::post('/keranjang/update',  [KeranjangController::class, 'updateQty'])->name('keranjang.update');
-    Route::post('/keranjang/hapus',   [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang');
+    Route::post('/keranjang/tambah', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+    Route::post('/keranjang/update', [KeranjangController::class, 'updateQty'])->name('keranjang.update');
+    Route::post('/keranjang/hapus', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
-    // Checkout
-    Route::match(['get', 'post'], '/checkout', [CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/checkout/proses',   [CheckoutController::class, 'proses'])->name('checkout.proses');
+    Route::match(['get','post'], '/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/proses', [CheckoutController::class, 'proses'])->name('checkout.proses');
 
-    // Riwayat
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
-
-    // Profil user
     Route::get('/profil', [ProfilUserController::class, 'index'])->name('profil.user');
+    Route::get('/order-sukses/{id}', [CheckoutController::class, 'orderSukses'])->name('order.sukses');
 });
 
-// ============================================================
-// ADMIN ROUTES — harus login + role admin
-// ============================================================
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES (FIXED)
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
-    // Dashboard (termasuk hapus produk via GET)
-    Route::get('/dashboard',              [AdminDashboard::class, 'index'])->name('dashboard');
-    Route::get('/produk/{id}/hapus',      [AdminDashboard::class, 'hapus'])->name('produk.hapus');
+    // ================= DASHBOARD =================
+    Route::get('/dashboard', [AdminDashboard::class, 'index'])
+        ->name('dashboard');
 
-    // Tambah produk
-    Route::get('/produk/tambah',          [ProdukController::class, 'create'])->name('produk.tambah');
-    Route::post('/produk/tambah',         [ProdukController::class, 'store'])->name('produk.store');
+    // ================= PRODUK =================
+    Route::get('/produk/tambah', [ProdukController::class, 'create'])
+        ->name('produk.tambah');
+
+    Route::post('/produk/tambah', [ProdukController::class, 'store'])
+        ->name('produk.store');
 
     // Edit produk
-    // Menampilkan halaman form edit (GET)
-    Route::get('/produk/{id}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
-    
-    // Memproses simpan perubahan/update data (PUT)
-    Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::get('/produk/{id}/edit',       [ProdukController::class, 'edit'])->name('produk.edit');
+    Route::post('/produk/{id}/edit',      [ProdukController::class, 'update'])->name('produk.update');
 
-    Route::delete('/produk/{id}/hapus',
-    [AdminDashboard::class, 'hapus'])
-    ->name('produk.hapus');
+    Route::delete('/produk/{id}', [AdminDashboard::class, 'hapus'])
+        ->name('produk.hapus');
 
-    // Profil admin
-    Route::get('/profil',                 [ProfilAdminController::class, 'index'])->name('profil');
+    Route::get('/pesanan', [PesananController::class, 'index'])
+        ->name('pesanan');
+
+    Route::post('/pesanan/{id}', [PesananController::class, 'update'])
+        ->name('pesanan.update');
+
+    // ================= PROFIL =================
+    Route::get('/profil', [ProfilAdminController::class, 'index'])
+        ->name('profil');
+
+    // ================= L A P O R A N =================
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+
+        Route::get('/', [LaporanController::class, 'index'])
+            ->name('index');
+
+        Route::get('/export/excel', [LaporanController::class, 'exportExcel'])
+            ->name('export.excel');
+
+        Route::get('/export/pdf', [LaporanController::class, 'exportPdf'])
+            ->name('export.pdf');
+
+        Route::post('/import', [LaporanController::class, 'import'])
+            ->name('import');
+    });
 });

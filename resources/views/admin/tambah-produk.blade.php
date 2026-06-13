@@ -85,15 +85,16 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // Memastikan fungsi validasiAngka terbaca secara global global jika dibutuhkan diluar file ini
-            window.validasiAngka = function(input) {
-                const valid = input.value.replace(/[^0-9]/g, '');
-                if (input.value !== valid) input.value = valid;
+        // === SEKARANG SAMA PERSIS DENGAN FILE EDIT ===
+        function validasiAngka(input) {
+            let valid = input.value.replace(/[^0-9]/g, '');
+            if (input.value !== valid) {
+                alert('Kolom Harga Jual hanya boleh diisi dengan angka!');
+                input.value = valid;
             }
-        });
+        }
 
-        // Fungsi tambah row varian tetap sama
+        // Fungsi tambah row varian
         function addNewVariantRow() {
             const input = document.getElementById('new-variant-name');
             const name  = input.value.trim();

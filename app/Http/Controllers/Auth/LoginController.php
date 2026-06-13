@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
+use App\Helpers\ActivityHelper;
 
 class LoginController extends Controller
 {
@@ -17,33 +19,39 @@ class LoginController extends Controller
     {
         $request->validate([
             'email'    => 'required|email',
-            'password' => 'required|min:6',
-        ], [
-            'email.required'    => 'Email wajib diisi.',
-            'email.email'       => 'Format email tidak valid.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min'      => 'Password minimal 6 karakter.',
+            'password' => 'required',
         ]);
 
-        $credentials = [
-            'email'    => $request->email,
-            'password' => $request->password,
-        ];
+        $credentials = $request->only('email', 'password');
+        $remember = $request->boolean('remember');
 
-        // Auth::attempt() otomatis handle password_hash/password_verify
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::attempt($credentials, $remember)) {
+
             $request->session()->regenerate();
 
-            $users = Auth::user();
-
-            // Redirect berdasarkan role — sama dengan logika login.php lama
-            if ($users->role === 'admin') {
-                return redirect()->route('admin.dashboard');
+            // Simpan cookie email kalau remember dicentang
+            if ($remember) {
+                Cookie::queue('login_email', $request->email, 60 * 24 * 30); // 30 hari
+            } else {
+                Cookie::queue(Cookie::forget('login_email'));
             }
 
-            return redirect()->route('home');
+            $user = Auth::user();
+
+            // Catat log aktivitas login
+            ActivityHelper::log(
+                $user->role_id === 1 ? 'Login Admin' : 'Login User',
+                $user->nama_lengkap . ' berhasil login'
+            );
+
+            // Alihkan halaman berdasarkan role_id
+            return $user->role_id === 1 
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('home');
         }
 
-        return back()->withErrors(['email' => 'Email atau password salah.'])->withInput($request->only('email'));
+        return back()
+            ->withErrors(['email' => 'Email atau password salah'])
+            ->withInput();
     }
 }

@@ -32,6 +32,10 @@
           class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
         @csrf
 
+        <input type="hidden"
+           name="selected_items"
+           value="{{ request('selected_items') }}">
+
         {{-- ========== INFORMASI PENGIRIMAN ========== --}}
         <div class="space-y-6">
             <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">

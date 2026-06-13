@@ -6,20 +6,21 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityHelper;
 
 class CheckoutController extends Controller
 {
     public function index(Request $request)
     {
-        $id_user = Auth::id();
-        $items   = [];
+        $id_user = Auth::user()->id;
+        $items = [];
 
-        // Dari keranjang (via GET selected_items)
         if ($request->filled('selected_items')) {
             $ids = array_filter(array_map('intval', explode(',', $request->selected_items)));
 
             if (!empty($ids)) {
                 $placeholders = implode(',', $ids);
+
                 $rows = DB::select("
                     SELECT kd.jumlah, pv.id_varian, pv.harga, pv.nama_varian, p.nama_produk, p.foto_produk
                     FROM keranjang_detail kd
@@ -39,7 +40,7 @@ class CheckoutController extends Controller
                 }
             }
         }
-        // Beli langsung dari detail produk
+
         elseif ($request->isMethod('post') && $request->input('aksi') === 'beli') {
             $row = DB::table('produk as p')
                 ->join('produk_varian as v', 'p.id_produk', '=', 'v.id_produk')
@@ -69,54 +70,106 @@ class CheckoutController extends Controller
         $request->validate([
             'nama'      => ['required', 'regex:/^[a-zA-Z\s\']+$/'],
             'noTelp'    => ['required', 'regex:/^[0-9]+$/'],
-            'provinsi'  => ['required', 'regex:/^[a-zA-Z\s\']+$/'],
-            'kota'      => ['required', 'regex:/^[a-zA-Z\s\']+$/'],
+            'provinsi'  => ['required'],
+            'kota'      => ['required'],
             'kodePos'   => ['required', 'regex:/^[0-9]+$/'],
             'detail'    => 'required',
             'pengiriman'=> 'required|in:Ambil,Antar',
         ]);
 
-        $id_user = Auth::id();
+        $id_pembelian = DB::transaction(function () use ($request) {
 
-        $id_pembelian = DB::table('pembelian')->insertGetId([
-            'id_user'            => $id_user,
-            'nama_penerima'      => $request->nama,
-            'no_telp_penerima'   => $request->noTelp,
-            'provinsi'           => $request->provinsi,
-            'kota_kabupaten'     => $request->kota,
-            'kode_pos'           => $request->kodePos,
-            'detail_alamat'      => $request->detail,
-            'metode_pengiriman'  => $request->pengiriman,
-            'total_harga'        => $request->total_final,
-        ]);
+            $id_user = Auth::id();
 
-        if ($request->has('items') && is_array($request->items)) {
-            foreach ($request->items as $item) {
-                $subtotal = $item['harga'] * $item['jumlah'];
+            $id_pembelian = DB::table('pembelian')->insertGetId([
+                'id_user'           => $id_user,
+                'nama_penerima'     => $request->nama,
+                'no_telp_penerima'  => $request->noTelp,
+                'provinsi'          => $request->provinsi,
+                'kota_kabupaten'    => $request->kota,
+                'kode_pos'          => $request->kodePos,
+                'detail_alamat'     => $request->detail,
+                'metode_pengiriman' => $request->pengiriman,
+                'total_harga'       => $request->total_final,
+            ]);
 
-                DB::table('pembelian_detail')->insert([
-                    'id_pembelian'  => $id_pembelian,
-                    'id_varian'     => $item['id_varian'],
-                    'jumlah'        => $item['jumlah'],
-                    'harga_satuan'  => $item['harga'],
-                    'subtotal'      => $subtotal,
-                ]);
+            if ($request->has('items')) {
 
-                // Kurangi stok
-                DB::table('produk_varian')
-                    ->where('id_varian', $item['id_varian'])
-                    ->decrement('stok', $item['jumlah']);
+                foreach ($request->items as $item) {
+
+                    $subtotal = $item['harga'] * $item['jumlah'];
+
+                    DB::table('pembelian_detail')->insert([
+                        'id_pembelian' => $id_pembelian,
+                        'id_varian'    => $item['id_varian'],
+                        'jumlah'       => $item['jumlah'],
+                        'harga_satuan' => $item['harga'],
+                        'subtotal'     => $subtotal,
+                    ]);
+
+                    DB::table('produk_varian')
+                        ->where('id_varian', $item['id_varian'])
+                        ->decrement('stok', $item['jumlah']);
+                }
             }
 
-            // Kosongkan keranjang setelah checkout
-            $keranjang = DB::table('keranjang')->where('id_user', $id_user)->first();
-            if ($keranjang) {
+            if ($request->filled('selected_items')) {
+                $selectedIds = array_filter(
+                    array_map('intval', explode(',', $request->selected_items))
+                );
+
+                if (!empty($selectedIds)) {
+
+                    DB::table('keranjang_detail')
+                        ->whereIn('id_keranjang_detail', $selectedIds)
+                        ->delete();
+                }
+            }
+
+            ActivityHelper::log(
+                'Checkout User',
+                'Membuat pesanan #' . $id_pembelian .
+                ' total Rp ' . number_format($request->total_final, 0, ',', '.')
+            );
+
+            // Hapus item yang sudah dicheckout dari keranjang
+            if ($request->filled('selected_items')) {
+
+                $ids = array_filter(
+                    array_map('intval', explode(',', $request->selected_items))
+                );
+
                 DB::table('keranjang_detail')
-                    ->where('id_keranjang', $keranjang->id_keranjang)
+                    ->whereIn('id_keranjang_detail', $ids)
                     ->delete();
             }
-        }
 
-        return redirect()->route('riwayat')->with('success', 'Pesanan berhasil disimpan! Terima kasih telah berbelanja.');
+            return $id_pembelian;
+        });
+
+        return redirect()->route('order.sukses', $id_pembelian);
+    }
+
+    public function orderSukses($id)
+    {
+        $pesanan = DB::table('pembelian')
+            ->where('id_pembelian', $id)
+            ->first();
+
+        $detailPesanan = DB::table('pembelian_detail')
+            ->join('produk_varian', 'pembelian_detail.id_varian', '=', 'produk_varian.id_varian')
+            ->join('produk', 'produk_varian.id_produk', '=', 'produk.id_produk')
+            ->where('pembelian_detail.id_pembelian', $id)
+            ->select(
+                'produk.nama_produk',
+                'produk.foto_produk',
+                'produk_varian.nama_varian',
+                'pembelian_detail.jumlah',
+                'pembelian_detail.harga_satuan',
+                'pembelian_detail.subtotal'
+            )
+            ->get();
+
+        return view('user.ordersukses', compact('pesanan', 'detailPesanan'));
     }
 }

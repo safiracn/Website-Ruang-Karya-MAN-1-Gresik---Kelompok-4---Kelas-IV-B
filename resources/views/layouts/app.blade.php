@@ -123,14 +123,14 @@
                     <li class="relative">
                         {{-- Keranjang: jika belum login → arahkan ke login --}}
                         <a href="
-            {{
-                Auth::check()
-                    ? (Auth::user()->role === 'user'
-                        ? route('keranjang')
-                        : route('admin.dashboard'))
-                    : route('login')
-            }}
-            "
+{{
+    Auth::check()
+        ? (Auth::user()->role === 'user'
+            ? route('keranjang')
+            : route('admin.dashboard'))
+        : route('login')
+}}
+"
                            class="{{ request()->routeIs('keranjang') ? 'text-yellow-500' : 'text-blue-900 hover:text-yellow-500' }} transition p-2">
                             <i class="fa-solid fa-cart-shopping text-xl"></i>
                         </a>
@@ -244,7 +244,7 @@
         </div>
 
         {{-- WhatsApp Float Button --}}
-        <a href="https://wa.me/628123456789"
+        <a href="https://wa.me/6285859249749"
            class="fixed bottom-8 left-8 bg-green-500 w-16 h-16 flex items-center justify-center rounded-full shadow-xl hover:scale-110 transition-all duration-300 z-50 group">
             <i class="fab fa-whatsapp text-white text-2xl"></i>
             <span class="absolute left-20 flex items-center bg-white text-gray-800 text-sm font-medium px-4 py-2 rounded-xl shadow-lg opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap">

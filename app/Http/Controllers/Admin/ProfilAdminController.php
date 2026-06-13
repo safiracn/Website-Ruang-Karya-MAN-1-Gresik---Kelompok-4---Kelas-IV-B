@@ -10,11 +10,7 @@ class ProfilAdminController extends Controller
 {
     public function index()
     {
-        $admin = DB::table('users')
-            ->where('id', Auth::id())
-            ->where('role', 'admin')
-            ->select('id', 'nama_lengkap', 'email', 'no_telp', 'alamat')
-            ->first();
+        $admin = Auth::user();
 
         return view('admin.profil', compact('admin'));
     }

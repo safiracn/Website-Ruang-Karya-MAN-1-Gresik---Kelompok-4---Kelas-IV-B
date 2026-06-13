@@ -35,7 +35,12 @@
                     </span>
                 </div>
                 <div class="flex gap-2">
-                    <a href="#" class="text-xs px-4 py-2 border border-blue-900 text-blue-900 rounded-lg font-bold">Detail</a>
+
+                   <a href="{{ route('order.sukses', $row->id_pembelian) }}"
+                    class="text-xs px-4 py-2 border border-blue-900 text-blue-900 rounded-lg font-bold hover:bg-slate-50 transition">
+                        Detail
+                    </a>
+                    
                     @if($row->status_pesanan === 'Selesai')
                         <a href="{{ route('produk.detail', $row->id_produk) }}"
                            class="text-xs px-4 py-2 bg-yellow-500 text-blue-900 rounded-lg font-bold">Beli Lagi</a>

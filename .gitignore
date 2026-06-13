@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> shava
 *.log
 .DS_Store
 .env
@@ -25,3 +29,10 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+<<<<<<< HEAD
+=======
+=======
+node_modules
+RuangKaryaCSS/output.css
+>>>>>>> 1efe0f315e915e23b89d8333cef82be6b3862b54
+>>>>>>> shava

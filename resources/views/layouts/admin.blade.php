@@ -1,16 +1,4 @@
-{{--
-    Layout untuk halaman admin.
-    Menggantikan: header_admin.php (include sidebar + topbar)
 
-    Penggunaan di view admin:
-    @extends('layouts.admin')
-    @section('title', 'Judul Halaman')
-    @section('activeMenu', 'dashboard')
-    @section('pageDesc', 'Deskripsi halaman')
-    @section('content')
-        ... isi halaman admin ...
-    @endsection
---}}
 
 <!DOCTYPE html>
 <html lang="id">
@@ -71,17 +59,19 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#"
-                           class="flex items-center gap-3 rounded-xl px-4 py-3 transition {{ $activeMenu === 'pesanan' ? 'bg-yellow-500 font-semibold text-blue-900 shadow-sm hover:bg-yellow-400' : 'hover:bg-blue-800' }}">
-                            <span class="flex h-5 w-5 items-center justify-center">
-                                <i class="fa-solid fa-cart-shopping text-[15px]"></i>
-                            </span>
-                            <span>Pesanan</span>
-                        </a>
-                    </li>
+                        <li>
+    <a href="{{ route('admin.pesanan') }}"
+       class="flex items-center gap-3 rounded-xl px-4 py-3 transition {{ $activeMenu === 'pesanan' ? 'bg-yellow-500 font-semibold text-blue-900 shadow-sm hover:bg-yellow-400' : 'hover:bg-blue-800' }}">
+        <span class="flex h-5 w-5 items-center justify-center">
+            <i class="fa-solid fa-cart-shopping text-[15px]"></i>
+        </span>
+        <span>Pesanan</span>
+    </a>
+</li>
                     <li>
-                        <a href="#"
-                           class="flex items-center gap-3 rounded-xl px-4 py-3 transition {{ $activeMenu === 'laporan' ? 'bg-yellow-500 font-semibold text-blue-900 shadow-sm hover:bg-yellow-400' : 'hover:bg-blue-800' }}">
+                        <a href="{{ route('admin.laporan.index') }}"
+                            class="flex items-center gap-3 rounded-xl px-4 py-3 transition
+                            {{ $activeMenu === 'laporan' ? 'bg-yellow-500 font-semibold text-blue-900' : 'hover:bg-blue-800' }}">
                             <span class="flex h-5 w-5 items-center justify-center">
                                 <i class="fa-solid fa-chart-column text-[15px]"></i>
                             </span>
@@ -133,11 +123,7 @@
             </div>
 
             <div class="ml-auto flex items-center gap-5">
-                <button class="flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-200 hover:text-blue-900">
-                    <i class="fa-regular fa-bell text-lg"></i>
-                </button>
-
-                <div class="flex items-center gap-3 border-l border-slate-300 pl-5">
+                <div class="flex items-center gap-3 pl-5">
                     <div class="text-right">
                         <p class="text-[15px] font-semibold leading-none text-slate-800">{{ $adminNama }}</p>
                         <p class="mt-1 text-xs text-slate-400">System Root</p>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityHelper;
+use App\Models\ActivityLog;
 
 class DashboardController extends Controller
 {
@@ -47,7 +49,27 @@ class DashboardController extends Controller
             ->orderBy('p.id_produk')
             ->get();
 
-        return view('admin.dashboard', compact('totalProduk', 'stokTersedia', 'stokHabis', 'produk', 'keyword'));
+        $aktivitasTerbaru = ActivityLog::leftJoin(
+                'users',
+                'activity_logs.user_id',
+                '=',
+                'users.id'
+            )
+            ->select(
+                'activity_logs.*',
+                'users.nama_lengkap'
+            )
+            ->latest()
+            ->limit(10)
+            ->get();
+        return view('admin.dashboard', compact(
+            'totalProduk',
+            'stokTersedia',
+            'stokHabis',
+            'produk',
+            'keyword',
+            'aktivitasTerbaru'
+        ));
     }
 
     public function hapus(Request $request, $id)
@@ -69,6 +91,11 @@ class DashboardController extends Controller
         }
 
         DB::table('produk')->where('id_produk', $id)->delete();
+
+        ActivityHelper::log(
+            'Hapus Produk',
+            'Menghapus produk: ' . $namaProduk
+        );
 
         return redirect()->route('admin.dashboard', ['search' => $keyword])
             ->with('success_hapus', $namaProduk);
