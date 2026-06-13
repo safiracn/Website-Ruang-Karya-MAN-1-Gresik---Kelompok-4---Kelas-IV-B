@@ -90,6 +90,12 @@ class CheckoutController extends Controller
                 'kode_pos'          => $request->kodePos,
                 'detail_alamat'     => $request->detail,
                 'metode_pengiriman' => $request->pengiriman,
+
+                // STATUS AWAL PESANAN
+                'status_pembayaran' => 'Belum Dibayar',
+                'status_pesanan'    => 'Pending',
+                'status_kirim'      => 'Belum dikirim',
+
                 'total_harga'       => $request->total_final,
             ]);
 

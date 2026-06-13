@@ -60,13 +60,28 @@ class PesananController extends Controller
     $belumDibayar = DB::table('pembelian')
         ->where('status_pembayaran', 'Belum Dibayar')
         ->count();
+    
+    $perluDiproses = DB::table('pembelian')
+    ->where('status_pesanan', 'Diproses')
+    ->count();
+
+    $menungguPembatalan = DB::table('pembelian')
+        ->where('status_pesanan', 'Menunggu Konfirmasi Pembatalan')
+        ->count();
+
+    $pesananSelesai = DB::table('pembelian')
+        ->where('status_pesanan', 'Selesai')
+        ->count();
+    
 
     return view('admin.pesanan', compact(
-        'pesanan',
-        'totalPesanan',
-        'belumDibayar',
-        'search'
-    ));
+    'pesanan',
+    'totalPesanan',
+    'perluDiproses',
+    'menungguPembatalan',
+    'pesananSelesai',
+    'search'
+));
 }
 
     public function update(Request $request, $id)
