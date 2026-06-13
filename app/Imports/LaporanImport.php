@@ -16,20 +16,20 @@ class LaporanImport implements ToCollection, WithHeadingRow
     public function collection(Collection $rows)
     {
         DB::transaction(function () use ($rows) {
-
             foreach ($rows as $i => $row) {
 
                 $kode = $row['kode_pesanan'] ?? null;
-
                 if (!$kode) {
                     $this->skipped[] = "Baris ".($i+2)." (kode kosong)";
                     continue;
                 }
 
-                $pembelian = Pembelian::where('id_pembelian', $kode)
-                    ->orWhere('kode_pesanan', $kode)
-                    ->first();
+                if (!preg_match('/(\d+)$/', $kode, $matches)) {
+                    $this->skipped[] = "Baris ".($i+2)." - format kode '$kode' tidak dikenali";
+                    continue;
+                }
 
+                $pembelian = Pembelian::find((int) $matches[1]);
                 if (!$pembelian) {
                     $this->skipped[] = "Kode $kode tidak ditemukan";
                     continue;
@@ -39,24 +39,34 @@ class LaporanImport implements ToCollection, WithHeadingRow
                 $statusPesanan    = $this->normalizePesanan($row['status_pesanan'] ?? null);
                 $statusKirim      = $this->normalizeKirim($row['status_pengiriman'] ?? null);
 
-                $pembelian->update([
-                    'status_pembayaran' => $statusPembayaran,
-                    'status_pesanan'    => $statusPesanan,
-                    'status_kirim'      => $statusKirim,
-                ]);
+                // ── Hanya simpan yang benar-benar berubah ──────────────────
+                $updateData = [];
 
-                $this->updated++;
+                if ($statusPembayaran && $statusPembayaran !== $pembelian->status_pembayaran) {
+                    $updateData['status_pembayaran'] = $statusPembayaran;
+                }
+                if ($statusPesanan && $statusPesanan !== $pembelian->status_pesanan) {
+                    $updateData['status_pesanan'] = $statusPesanan;
+                }
+                if ($statusKirim && $statusKirim !== $pembelian->status_kirim) {
+                    $updateData['status_kirim'] = $statusKirim;
+                }
+
+                // Hanya update & hitung jika ada yang benar-benar berubah
+                if (!empty($updateData)) {
+                    $pembelian->update($updateData);
+                    $this->updated++;
+                }
             }
         });
     }
 
     private function normalizePembayaran($value)
     {
-        $v = strtolower(trim($value));
-
+        $v = strtolower(trim($value ?? ''));
         return match ($v) {
-            'sudah dibayar' => 'Sudah Dibayar',
-            'belum dibayar' => 'Belum Dibayar',
+            'sudah dibayar', 'lunas' => 'Sudah dibayar',   // d kecil
+            'belum dibayar', 'belum' => 'Belum Dibayar',   // D kapital
             default => null
         };
     }
@@ -76,12 +86,11 @@ class LaporanImport implements ToCollection, WithHeadingRow
 
     private function normalizeKirim($value)
     {
-        $v = strtolower(trim($value));
-
+        $v = strtolower(trim($value ?? ''));
         return match ($v) {
-            'belum dikirim' => 'Belum Dikirim',
-            'dikirim' => 'Dikirim',
-            'diterima' => 'Diterima',
+            'belum dikirim', 'belum' => 'Belum dikirim',  // d kecil
+            'dikirim'                => 'Dikirim',
+            'diterima'               => 'Diterima',
             default => null
         };
     }

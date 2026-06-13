@@ -12,7 +12,7 @@ class ActivityHelper
         $user = Auth::user();
 
         ActivityLog::create([
-            'user_id' => $user?->id_user,
+            'user_id' => $user?->id,
             'role' => $user?->role ?? 'Guest',
             'activity' => $activity,
             'description' => $description,

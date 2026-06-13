@@ -104,8 +104,8 @@ Route::middleware(['auth', 'role:admin'])
         ->name('produk.store');
 
     // Edit produk
-    Route::get('/produk/{id}/edit',       [ProdukController::class, 'edit'])->name('produk.edit');
-    Route::post('/produk/{id}/edit',      [ProdukController::class, 'update'])->name('produk.update');
+    Route::get('/produk/{id}/edit',  [ProdukController::class, 'edit'])->name('produk.edit');
+Route::post('/produk/{id}/edit', [ProdukController::class, 'update'])->name('produk.update');
 
     Route::delete('/produk/{id}', [AdminDashboard::class, 'hapus'])
         ->name('produk.hapus');

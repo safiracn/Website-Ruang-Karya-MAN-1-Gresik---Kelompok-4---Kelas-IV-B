@@ -39,7 +39,7 @@ class LaporanController extends Controller
                 'created_at',
                 [$startDate, $endDate]
             )
-            ->where('status_pembayaran', 'Sudah Dibayar')
+            ->where('status_pembayaran', 'Sudah dibayar')
             ->sum('total_harga');
 
         // Pelanggan adalah pengguna yang pernah melakukan pemesanan dan pesanannya tidak dibatalkan."
@@ -55,7 +55,7 @@ class LaporanController extends Controller
                 'pembelian.id_pembelian'
             )
             ->whereBetween('pembelian.created_at', [$startDate, $endDate])
-            ->where('pembelian.status_pembayaran', 'Sudah Dibayar')
+            ->where('pembelian.status_pembayaran', 'Sudah dibayar')
             ->sum('pembelian_detail.jumlah');
 
         // hitung total nominal yang belum dibayar
@@ -65,13 +65,13 @@ class LaporanController extends Controller
     ->sum('total_harga');
     
         $rataRataTransaksi = Pembelian::whereBetween('created_at', [$startDate, $endDate])
-            ->where('status_pembayaran', 'Sudah Dibayar')
+            ->where('status_pembayaran', 'Sudah dibayar')
             ->avg('total_harga');
 
         // ─── 3. Chart Bar: Pendapatan Harian ──────────────────────────────
         $pendapatanHarian = Pembelian::selectRaw('DATE(created_at) as tanggal, SUM(total_harga) as total')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->where('status_pembayaran', 'Sudah Dibayar')
+            ->where('status_pembayaran', 'Sudah dibayar')
             ->groupBy(DB::raw('DATE(created_at)'))
             ->orderBy('tanggal')
             ->get()
@@ -95,7 +95,7 @@ class LaporanController extends Controller
                 'pembelian.id_pembelian'
             )
             ->whereBetween('pembelian.created_at', [$startDate, $endDate])
-            ->where('pembelian.status_pembayaran', 'Sudah Dibayar')
+            ->where('pembelian.status_pembayaran', 'Sudah dibayar')
             ->selectRaw('DATE(pembelian.created_at) as tanggal,
                         SUM(pembelian_detail.jumlah) as jumlah')
             ->groupBy(DB::raw('DATE(pembelian.created_at)'))
@@ -122,7 +122,7 @@ class LaporanController extends Controller
             ->join('kategori', 'produk.id_kategori', '=', 'kategori.id_kategori')
             ->join('pembelian', 'pembelian_detail.id_pembelian', '=', 'pembelian.id_pembelian')
             ->whereBetween('pembelian.created_at', [$startDate, $endDate])
-            ->where('pembelian.status_pembayaran', 'Sudah Dibayar')
+            ->where('pembelian.status_pembayaran', 'Sudah dibayar')
             ->selectRaw('kategori.nama_kategori, SUM(pembelian_detail.subtotal) as total')
             ->groupBy('kategori.id_kategori', 'kategori.nama_kategori')
             ->orderByDesc('total')
@@ -136,7 +136,7 @@ class LaporanController extends Controller
             ->join('produk', 'produk_varian.id_produk', '=', 'produk.id_produk')
             ->join('pembelian', 'pembelian_detail.id_pembelian', '=', 'pembelian.id_pembelian')
             ->whereBetween('pembelian.created_at', [$startDate, $endDate])
-            ->where('pembelian.status_pembayaran', 'Sudah Dibayar')
+            ->where('pembelian.status_pembayaran', 'Sudah dibayar')
             ->selectRaw('
                 produk.nama_produk,
                 produk.foto_produk,
@@ -240,7 +240,7 @@ class LaporanController extends Controller
             ->get();
 
         $totalPendapatan = $pesanan
-            ->where('status_pembayaran', 'Sudah Dibayar')
+            ->where('status_pembayaran', 'Sudah dibayar')
             ->sum('total_harga');
 
         $pdf = PDF::loadView('admin.laporan.pdf', [

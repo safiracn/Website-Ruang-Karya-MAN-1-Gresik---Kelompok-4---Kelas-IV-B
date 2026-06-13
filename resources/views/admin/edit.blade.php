@@ -21,10 +21,9 @@
             <p class="text-sm text-slate-500 mt-1">Edit data produk yang sudah ada.</p>
         </div>
 
-        <form action="{{ route('admin.produk.update', $produk->id_produk) }}" method="POST" enctype="multipart/form-data"
-              class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            @csrf
-            @method('PUT')
+        <form action="{{ route('admin.produk.update', $produk->id_produk) }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+    @csrf
+    ```
             
             <input type="hidden" name="id" value="{{ $produk->id_produk }}">
 

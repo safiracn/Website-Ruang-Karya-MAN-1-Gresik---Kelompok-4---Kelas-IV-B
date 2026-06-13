@@ -49,7 +49,7 @@
         <div>
             <label class="block text-sm font-medium text-slate-600 mb-1">DIMENSI (PxLxT)</label>
             <input type="text" name="dimensi" placeholder="Contoh: 100 x 50 x 40 cm"
-                   value="{{ old('dimensi', $produk->dimensi ?? '') }}"
+                   value="{{ old('dimensi', $produk->dimensi ?? '') }}" 
                    class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 outline-none">
         </div>
         <div>
