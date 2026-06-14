@@ -18,7 +18,6 @@ class LaporanExport implements FromCollection, WithHeadings, WithMapping, WithTi
 {
     protected Carbon $startDate;
     protected Carbon $endDate;
-    protected int    $rowNumber = 0;
 
     public function __construct(Carbon $startDate, Carbon $endDate)
     {
@@ -28,57 +27,39 @@ class LaporanExport implements FromCollection, WithHeadings, WithMapping, WithTi
 
     public function collection()
     {
-        return Pembelian::with(['user', 'details.varian.produk'])
-            ->whereBetween('created_at', [$this->startDate, $this->endDate])
+        return Pembelian::whereBetween('created_at', [$this->startDate, $this->endDate])
             ->orderByDesc('created_at')
             ->get();
     }
 
+    /**
+     * Kolom export DISAMAKAN dengan tabel "Transaksi Terkini" di halaman Laporan:
+     * Order ID | Tanggal Order | Customer | Status Pembayaran | Status Pesanan | Status Pengiriman | Total
+     */
     public function headings(): array
     {
         return [
-            'No',
-            'Kode Pesanan',
-            'Tanggal Pembelian',
-            'Nama Akun Pembeli',
-            'Nama Penerima',
-            'No. Telp Penerima',
-            'Kota/Kabupaten',
-            'Metode Pengiriman',
+            'Order ID',
+            'Tanggal Order',
+            'Customer',
             'Status Pembayaran',
             'Status Pesanan',
             'Status Pengiriman',
-            'Produk (Ringkasan)',
-            'Total Harga (Rp)',
+            'Total',
         ];
     }
 
     public function map($row): array
     {
-        $this->rowNumber++;
-
-        $kodePesanan = 'RK' . str_pad($row->id_pembelian, 5, '0', STR_PAD_LEFT);
-
-        // Rangkum nama produk dari detail
-        $produkList = $row->details->map(function ($d) {
-            $namaProduk = $d->varian?->produk?->nama_produk ?? 'Produk';
-            $namaVarian = $d->varian?->nama_varian ?? '-';
-            return "{$namaProduk} ({$namaVarian}) x{$d->jumlah}";
-        })->implode('; ');
+        $orderId = 'RK' . str_pad($row->id_pembelian, 5, '0', STR_PAD_LEFT);
 
         return [
-            $this->rowNumber,
-            $kodePesanan,
-            Carbon::parse($row->created_at)->format('d/m/Y H:i'),
-            $row->user?->nama_lengkap ?? '-',
-            $row->nama_penerima,
-            $row->no_telp_penerima,
-            $row->kota_kabupaten,
-            $row->metode_pengiriman,
+            $orderId,
+            Carbon::parse($row->created_at)->format('d/m/Y'),
+            $row->nama_penerima,           // ← Customer = nama_penerima, BUKAN nama akun
             $row->status_pembayaran,
             $row->status_pesanan,
             $row->status_kirim,
-            $produkList,
             (float) $row->total_harga,
         ];
     }
@@ -90,16 +71,37 @@ class LaporanExport implements FromCollection, WithHeadings, WithMapping, WithTi
 
     public function styles(Worksheet $sheet): array
     {
-        return [
-            // Header row
-            1 => [
-                'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF'], 'size' => 11],
-                'fill' => [
-                    'fillType'   => Fill::FILL_SOLID,
-                    'startColor' => ['argb' => 'FF00266B'],
-                ],
-                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        $headerStyle = [
+            'font' => [
+                'bold'  => true,
+                'color' => ['argb' => 'FFFFFFFF'],
+                'size'  => 10,
             ],
+            'fill' => [
+                'fillType'   => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF00266B'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical'   => Alignment::VERTICAL_CENTER,
+                'wrapText'   => true,
+            ],
+        ];
+
+        // Kolom D, E, F = Status Pembayaran, Status Pesanan, Status Pengiriman
+        // ditandai kuning sebagai "kolom yang bisa diubah saat import"
+        $editableStyle = [
+            'fill' => [
+                'fillType'   => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FFFFF9C4'],
+            ],
+        ];
+
+        $sheet->getStyle('D2:F' . $sheet->getHighestRow())
+              ->applyFromArray($editableStyle);
+
+        return [
+            1 => $headerStyle,
         ];
     }
 }

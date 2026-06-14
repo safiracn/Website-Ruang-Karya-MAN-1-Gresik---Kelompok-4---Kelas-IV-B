@@ -102,12 +102,14 @@ class CheckoutController extends Controller
         'detail.required'   => 'Detail Alamat wajib diisi.',
     ];
 
+    // ACID 
     $request->validate($rules, $messages);
 
         $id_pembelian = DB::transaction(function () use ($request) {
 
             $id_user = Auth::id();
 
+            // Membuat data pesanan baru
             $id_pembelian = DB::table('pembelian')->insertGetId([
                 'id_user'           => $id_user,
                 'nama_penerima'     => $request->nama,
@@ -125,7 +127,7 @@ class CheckoutController extends Controller
 
                 'total_harga'       => $request->total_final,
                 'created_at'        => now(),
-    'updated_at'        => now(),
+                'updated_at'        => now(),
             ]);
 
             if ($request->has('items')) {
@@ -134,6 +136,7 @@ class CheckoutController extends Controller
 
                     $subtotal = $item['harga'] * $item['jumlah'];
 
+                    // Menyimpan detail produk yang dibeli
                     DB::table('pembelian_detail')->insert([
                         'id_pembelian' => $id_pembelian,
                         'id_varian'    => $item['id_varian'],
@@ -144,7 +147,7 @@ class CheckoutController extends Controller
 
                     DB::table('produk_varian')
                         ->where('id_varian', $item['id_varian'])
-                        ->decrement('stok', $item['jumlah']);
+                        ->decrement('stok', $item['jumlah']); // Mengurangi stok produk sesuai jumlah yang dibeli
                 }
             }
 
@@ -180,7 +183,7 @@ class CheckoutController extends Controller
             }
 
             return $id_pembelian;
-        });
+        }); // ACID SAMPE SINI 
 
         return redirect()->route('order.sukses', $id_pembelian);
     }

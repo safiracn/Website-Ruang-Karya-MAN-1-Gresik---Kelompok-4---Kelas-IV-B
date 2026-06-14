@@ -40,6 +40,7 @@
         </div>
     @endif
 
+    <!-- // Form digunakan untuk mengisi data penerima dan mengirim pesanan -->
     <form id="orderForm" action="{{ route('checkout.proses') }}" method="POST"
           class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
         @csrf

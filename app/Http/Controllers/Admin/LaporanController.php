@@ -157,12 +157,10 @@ class LaporanController extends Controller
             ->toArray();
 
         // ─── 7. Tabel Transaksi Terkini (paginate, withQueryString agar filter tetap) ──
-        $transaksiTerkini = Pembelian::with('user')
-            ->orderByDesc('created_at')
-            ->paginate(10)
-            ->withQueryString()
-            ->through(function ($item) {
-
+            $transaksiTerkini = Pembelian::orderByDesc('created_at')
+                ->paginate(10)
+                ->withQueryString()
+                ->through(function ($item) {
             // NORMALISASI STATUS PEMBAYARAN
             $item->status_pembayaran = match (strtolower(trim($item->status_pembayaran))) {
                 'sudah dibayar' => 'Sudah Dibayar',

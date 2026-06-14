@@ -17,11 +17,11 @@ class LogoutController extends Controller
                 Auth::user()->nama_lengkap . ' logout dari sistem'
             );
             
-            // Keluarkan user secara resmi
+            // Menghapus status login pengguna
             Auth::logout();
         }
 
-        // Proses pembersihan sisa session (tetap dijalankan agar aman)
+        // Menghapus session yang masih tersisa setelah logout
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

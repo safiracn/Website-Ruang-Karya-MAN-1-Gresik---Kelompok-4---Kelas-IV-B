@@ -25,11 +25,12 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
         $remember = $request->boolean('remember');
 
+        // Melakukan autentikasi dengan mencocokkan email dan password yang dimasukkan pengguna dengan data pada database
         if (Auth::attempt($credentials, $remember)) {
-
+            // Membuat session baru setelah login berhasil untuk meningkatkan keamanan
             $request->session()->regenerate();
 
-            // Simpan cookie email kalau remember dicentang
+            // Menyimpan email pengguna ke cookie selama 30 hari ketika Remember Me dicentang
             if ($remember) {
                 Cookie::queue('login_email', $request->email, 60 * 24 * 30); // 30 hari
             } else {

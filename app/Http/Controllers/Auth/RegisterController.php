@@ -15,6 +15,7 @@ class RegisterController extends Controller
         return view('auth.register');
     }
 
+    // Melakukan validasi data seperti email, password, nomor telepon, dan nama sebelum disimpan
     public function register(Request $request)
     {
         $request->validate([
@@ -42,7 +43,7 @@ class RegisterController extends Controller
     'email'        => $request->email,
     'no_telp'      => $request->no_telp,
     'alamat'       => $request->alamat,
-    'password'     => Hash::make($request->password),
+    'password'     => Hash::make($request->password), // Password dienkripsi sebelum disimpan sehingga lebih aman
     'role_id'      => 2, // <-- Ganti dari 'role' => 'user' menjadi 'role_id' => 2
 ]);
 

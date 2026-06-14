@@ -84,7 +84,7 @@ class RiwayatController extends Controller
         "Mohon diproses.%0A" .
         "Terima kasih.";
 
-    $nomorAdmin = "6285859249749";
+    $nomorAdmin = "6285150688313";
 
     return redirect(
         "https://wa.me/{$nomorAdmin}?text={$pesan}"

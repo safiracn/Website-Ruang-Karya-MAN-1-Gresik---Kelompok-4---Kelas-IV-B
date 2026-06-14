@@ -28,8 +28,7 @@ class PesananController extends Controller
 
             $q->where(function ($sub) use ($search) {
 
-                $sub->where('u.nama_lengkap', 'LIKE', "%{$search}%")
-                    ->orWhere('p.nama_penerima', 'LIKE', "%{$search}%")
+                $sub->where('p.nama_penerima', 'LIKE', "%{$search}%")
                     ->orWhere('u.no_telp', 'LIKE', "%{$search}%")
                     ->orWhereRaw(
                         "CONCAT('RK', LPAD(p.id_pembelian,5,'0')) LIKE ?",

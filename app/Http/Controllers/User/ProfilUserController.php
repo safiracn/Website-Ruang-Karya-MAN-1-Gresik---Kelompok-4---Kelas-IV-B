@@ -10,7 +10,7 @@ class ProfilUserController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::user(); // Mengambil data pengguna yang sedang login
 
         if (!$user) {
             abort(404, 'User tidak ditemukan');
@@ -31,6 +31,6 @@ class ProfilUserController extends Controller
             . urlencode($inisial)
             . "&background=e2e8f0&color=1e3a8a&size=128";
 
-        return view('user.profil', compact('user', 'avatarUrl'));
+        return view('user.profil', compact('user', 'avatarUrl')); // Membuat avatar otomatis berdasarkan inisial nama pengguna
     }
 }

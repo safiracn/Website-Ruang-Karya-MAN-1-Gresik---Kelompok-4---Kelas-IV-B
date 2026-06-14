@@ -54,6 +54,7 @@
                     <div id="js-error-msg" class="hidden mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                     </div>
 
+                    <!-- Form digunakan untuk mengirim data pendaftaran pengguna ke RegisterController -->
                     <form action="{{ route('register') }}" method="POST" id="registerForm" class="mt-6 space-y-4">
                         @csrf
 

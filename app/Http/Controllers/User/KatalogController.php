@@ -9,10 +9,10 @@ class KatalogController extends Controller
 {
     public function index()
     {
-        $kategoris = DB::table('kategori')->get();
+        $kategoris = DB::table('kategori')->get(); //Mengambil seluruh kategori dari database
 
         // Ambil produk + kategori + harga termurah dari varian
-        $produk = DB::table('produk as p')
+        $produk = DB::table('produk as p') // Mengambil data produk yang akan ditampilkan pada halaman katalog
             ->join('kategori as k', 'p.id_kategori', '=', 'k.id_kategori')
             ->join('produk_varian as v', 'p.id_produk', '=', 'v.id_produk')
             ->select(

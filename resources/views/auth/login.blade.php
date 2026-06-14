@@ -64,14 +64,16 @@
                         </div>
                     @endif
 
+                    <!--Form login mengirim data email dan password ke LoginController-->
                     <form action="{{ route('login') }}" method="POST" class="mt-6 space-y-5">
                         @csrf
 
-                        <div>
+                        <!-- Mengambil email yang tersimpan pada cookie agar otomatis terisi kembali saat membuka halaman login -->
+                        <div> 
                             <label class="mb-2 block text-sm font-medium text-slate-700">Email</label>
                             <input type="email"
                                 name="email"
-                                value="{{ old('email', request()->cookie('login_email')) }}"
+                                value="{{ old('email', request()->cookie('login_email')) }}" 
                                 placeholder="nama@email.com"
                                 required
                                 class="w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-900">
@@ -93,6 +95,7 @@
 
                         <div class="flex items-center justify-between">
                             <label class="inline-flex items-center gap-2 text-sm text-slate-600">
+                                <!--Checkbox Remember Me digunakan untuk mengaktifkan penyimpanan email menggunakan cookie-->
                                 <input type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-300 text-blue-900">
                                 Remember Me
                             </label>

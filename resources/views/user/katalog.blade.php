@@ -32,8 +32,9 @@
             </div>
 
             {{-- Grid Produk --}}
+            <!-- Menampilkan seluruh produk yang dikirim dari controller -->
             <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach($produk as $row)
+                @foreach($produk as $row) 
                     <a href="{{ route('produk.detail', $row->id_produk) }}"
                        class="product-item block group"
                        data-category="{{ strtolower($row->nama_kategori) }}">

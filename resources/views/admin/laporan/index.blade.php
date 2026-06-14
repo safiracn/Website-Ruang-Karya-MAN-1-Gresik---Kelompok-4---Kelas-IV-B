@@ -244,9 +244,9 @@
                 <table class="min-w-full text-sm">
                     <thead>
                         <tr class="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-400 font-bold">
-                            <th class="px-5 py-3 text-left">Kode</th>
-                            <th class="px-5 py-3 text-left">Tanggal</th>
-                            <th class="px-5 py-3 text-left">Pembeli</th>
+                            <th class="px-5 py-3 text-left">Order ID</th>
+                            <th class="px-5 py-3 text-left">Tanggal Order</th>
+                            <th class="px-5 py-3 text-left">Customer</th>
                             <th class="px-5 py-3 text-left">Status Pembayaran</th>
                             <th class="px-5 py-3 text-left">Status Pesanan</th>
                             <th class="px-5 py-3 text-left">Status Pengiriman</th>
@@ -256,7 +256,7 @@
                     <tbody class="divide-y divide-slate-100">
                      @forelse($transaksiTerkini as $trx)
                     @php
-                        $kode = 'RK260605-' . sprintf('%04d', $trx->id_pembelian);
+                        $kode = 'RK' . sprintf('%05d', $trx->id_pembelian);
 
                         $badgeBayar = $trx->status_pembayaran === 'Sudah Dibayar'
                             ? 'bg-green-100 text-green-700'
@@ -283,7 +283,7 @@
                                 {{ \Carbon\Carbon::parse($trx->created_at)->format('d/m/Y') }}
                             </td>
                             <td class="px-5 py-3 font-medium text-slate-700">
-                                {{ $trx->user?->nama_lengkap ?? '-' }}
+                                {{ $trx->nama_penerima }}
                             </td>
                             <td class="px-5 py-3">
                                 <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $badgeBayar }}">
@@ -366,7 +366,7 @@
         </div>
         <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-5 text-xs text-amber-800 leading-relaxed">
             <strong>Format kolom:</strong><br>
-            <code class="font-mono">kode_pesanan | status_pembayaran | status_pesanan | status_pengiriman</code>
+            <code class="font-mono">order_id | status_pembayaran | status_pesanan | status_pengiriman</code>
 
             <ul class="mt-2 list-disc pl-4">
                 <li><strong>Status Pembayaran:</strong> Belum Dibayar, Sudah dibayar, Dana dikembalikan</li>

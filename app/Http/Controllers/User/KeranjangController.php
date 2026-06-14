@@ -45,7 +45,8 @@ class KeranjangController extends Controller
 
         return view('user.keranjang', compact('items', 'totalItem', 'grandTotal'));
     }
-
+    
+    // Menambahkan produk ke keranjang belanja
     public function tambah(Request $request)
     {
         $id_user     = Auth::id();
@@ -80,6 +81,7 @@ class KeranjangController extends Controller
         return redirect()->route('keranjang');
     }
 
+    // Mengubah jumlah produk dalam keranjang
     public function updateQty(Request $request)
     {
         $id_user     = Auth::id();
@@ -107,6 +109,7 @@ class KeranjangController extends Controller
         return redirect()->route('keranjang');
     }
 
+    // Menghapus produk dari keranjang
     public function hapus(Request $request)
     {
         $id_user     = Auth::id();

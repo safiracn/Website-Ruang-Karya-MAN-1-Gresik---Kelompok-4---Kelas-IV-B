@@ -36,7 +36,7 @@
 @php
     // 1. Otomatisasi Kode Pembelian (Menggunakan ID Pembelian dari DB)
     $idPesanan = $pesanan->id_pembelian ?? 0;
-    $kodePesanan = 'RK260605-' . sprintf('%04d', $idPesanan);
+    $kodePesanan = 'RK' . sprintf('%05d', $idPesanan);
     
     // 2. Mengambil Nama Akun Pembeli (Siswa yang Login)
     $namaAkunPembeli = Auth::user()->name ?? Auth::user()->nama_lengkap ?? 'Pelanggan';
@@ -274,7 +274,7 @@ if($pesanan->status_pesanan == 'Dibatalkan'){
                         Silakan lakukan konfirmasi bukti transfer Anda kepada admin melalui tautan WhatsApp di bawah ini.
                     </p>
                     <a class="flex items-center justify-center gap-3 w-full bg-yellow-500 hover:bg-yellow-400 transition-all py-3.5 px-4 rounded-xl text-blue-900 font-black tracking-wide shadow-md hover:scale-[1.01] active:scale-[0.99] uppercase text-sm" 
-                       href="https://wa.me/6285859249749?text={{ $pesanWA }}" target="_blank">
+                       href="https://wa.me/6285150688313?text={{ $pesanWA }}" target="_blank">
                         <i class="fab fa-whatsapp text-lg"></i>
                         Konfirmasi via WhatsApp
                     </a>
@@ -298,7 +298,7 @@ if($pesanan->status_pesanan == 'Dibatalkan'){
 
     <a href="{{ route('riwayat') }}"
        class="flex items-center justify-center w-full sm:w-1/2 border border-slate-300 text-slate-600 bg-white hover:bg-slate-50 py-3 rounded-xl font-bold text-xs text-center shadow-sm transition">
-        Kembali ke Riwayat
+        Lihat Riwayat
     </a>
 
     @if(

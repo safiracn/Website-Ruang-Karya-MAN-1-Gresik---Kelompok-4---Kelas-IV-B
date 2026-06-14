@@ -11,7 +11,7 @@ class DetailProdukController extends Controller
     {
         $id = (int) $id;
 
-        $produk = DB::table('produk as p')
+        $produk = DB::table('produk as p') // Mengambil informasi lengkap produk yang dipilih pengguna
             ->join('kategori as k', 'p.id_kategori', '=', 'k.id_kategori')
             ->where('p.id_produk', $id)
             ->select('p.*', 'k.nama_kategori')
@@ -22,7 +22,7 @@ class DetailProdukController extends Controller
         }
 
         // Urutan varian: XS, S, M, L, XL, XXL, Standard, lainnya
-        $varians = DB::table('produk_varian')
+        $varians = DB::table('produk_varian') // Mengambil seluruh varian produk seperti ukuran atau jenis produk
             ->where('id_produk', $id)
             ->orderByRaw("CASE nama_varian
                 WHEN 'XS' THEN 1 WHEN 'S' THEN 2 WHEN 'M' THEN 3

@@ -141,7 +141,7 @@
                 {{-- ORDER ID --}}
                 <td class="py-4 px-4">
                     <span class="font-bold text-blue-900 text-sm bg-blue-50 px-2.5 py-1 rounded-lg">
-                        #RK{{ str_pad($row->id_pembelian,5,'0',STR_PAD_LEFT) }}
+                        RK{{ str_pad($row->id_pembelian,5,'0',STR_PAD_LEFT) }}
                     </span>
                 </td>
 
