@@ -136,7 +136,7 @@ tbody tr:nth-child(even) td {
             <td>
                 <span class="badge {{ $badgePesan }}">
                     {{ $p->status_pesanan === 'Menunggu Konfirmasi Pembatalan'
-                        ? 'Konfirmasi'
+                        ? 'Menunggu Konfirmasi Pembatalan'
                         : $p->status_pesanan }}
                 </span>
             </td>
