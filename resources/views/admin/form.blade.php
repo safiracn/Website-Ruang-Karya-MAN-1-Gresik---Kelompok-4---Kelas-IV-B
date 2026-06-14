@@ -102,15 +102,15 @@
                                 </div>
                             </td>
                             <td class="px-4 py-4">
-                                <input type="text" name="harga_varian[]" value="{{ $v->harga }}"
-                                       oninput="validasiAngka(this)"
-                                       class="no-spinner w-full p-2 bg-transparent border-b border-slate-300 focus:border-blue-900 outline-none font-semibold">
-                            </td>
-                            <td class="px-4 py-4 last:rounded-r-xl text-center">
-                                <input type="number" name="stok_varian[]" value="{{ $v->stok }}"
-                                       oninput="validasiAngka(this)"
-                                       class="w-20 p-2 bg-transparent border-b border-slate-300 focus:border-blue-900 outline-none text-center font-semibold">
-                            </td>
+    <input type="text" name="harga_varian[]" value="{{ $v->harga }}"
+           oninput="validasiAngka(this, 'Harga Jual')"
+           class="no-spinner w-full p-2 bg-transparent border-b border-slate-300 focus:border-blue-900 outline-none font-semibold">
+</td>
+<td class="px-4 py-4 last:rounded-r-xl text-center">
+    <input type="number" name="stok_varian[]" value="{{ $v->stok }}"
+           oninput="validasiAngka(this, 'Stok Tersedia')"
+           class="w-20 p-2 bg-transparent border-b border-slate-300 focus:border-blue-900 outline-none text-center font-semibold">
+</td>
                         </tr>
                     @endforeach
                 @else
@@ -129,13 +129,15 @@
                             </div>
                         </td>
                         <td class="px-4 py-4">
-                            <input type="text" name="harga_varian[]" value="0" oninput="validasiAngka(this)"
-                                   class="no-spinner w-full p-2 bg-transparent border-b border-slate-300 outline-none font-semibold">
-                        </td>
-                        <td class="px-4 py-4 last:rounded-r-xl text-center">
-                            <input type="number" name="stok_varian[]" value="0" oninput="validasiAngka(this)"
-                                   class="w-20 p-2 bg-transparent border-b border-slate-300 outline-none text-center font-semibold">
-                        </td>
+    <input type="text" name="harga_varian[]" value="0" 
+           oninput="validasiAngka(this, 'Harga Jual')"
+           class="no-spinner w-full p-2 bg-transparent border-b border-slate-300 outline-none font-semibold">
+</td>
+<td class="px-4 py-4 last:rounded-r-xl text-center">
+    <input type="number" name="stok_varian[]" value="0" 
+           oninput="validasiAngka(this, 'Stok Tersedia')"
+           class="w-20 p-2 bg-transparent border-b border-slate-300 outline-none text-center font-semibold">
+</td>
                     </tr>
                 @endif
             </tbody>

@@ -23,7 +23,6 @@
 
         <form action="{{ route('admin.produk.update', $produk->id_produk) }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 xl:grid-cols-3 gap-8">
     @csrf
-    ```
             
             <input type="hidden" name="id" value="{{ $produk->id_produk }}">
 
@@ -81,13 +80,13 @@
             }
         }
 
-        function validasiAngka(input) {
-            let valid = input.value.replace(/[^0-9]/g, '');
-            if (input.value !== valid) {
-                alert('Kolom Harga Jual hanya boleh diisi dengan angka!');
-                input.value = valid;
-            }
-        }
+        function validasiAngka(input, namaKolom) {
+    let valid = input.value.replace(/[^0-9]/g, '');
+    if (input.value !== valid) {
+        alert('Kolom ' + namaKolom + ' hanya boleh diisi dengan angka!');
+        input.value = valid;
+    }
+}
 
         function addNewVariantRow() {
             const input = document.getElementById('new-variant-name');
@@ -109,11 +108,11 @@
                     </div>
                 </td>
                 <td class="px-4 py-4">
-                    <input type="text" name="harga_varian[]" value="0" oninput="validasiAngka(this)"
+                    <input type="text" name="harga_varian[]" value="0" oninput="validasiAngka(this, 'Harga Jual')"
                            class="no-spinner w-full p-2 bg-transparent border-b border-slate-300 outline-none font-semibold">
                 </td>
                 <td class="px-4 py-4 last:rounded-r-xl text-center">
-                    <input type="number" name="stok_varian[]" value="0" oninput="validasiAngka(this)"
+                    <input type="number" name="stok_varian[]" value="0" oninput="validasiAngka(this, 'Stok Tersedia')"
                            class="w-20 p-2 bg-transparent border-b border-slate-300 outline-none text-center font-semibold">
                 </td>
             `;

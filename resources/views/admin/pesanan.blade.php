@@ -126,6 +126,7 @@
                 <th class="py-3 px-4 text-left text-[11px] uppercase tracking-wider text-slate-400 font-bold rounded-l-xl">Order ID</th>
                 <th class="py-3 px-4 text-left text-[11px] uppercase tracking-wider text-slate-400 font-bold">Customer</th>
                 <th class="py-3 px-4 text-left text-[11px] uppercase tracking-wider text-slate-400 font-bold">Total</th>
+                <th class="py-3 px-4 text-left text-[11px] uppercase tracking-wider text-slate-400 font-bold">Tanggal Order</th>
                 <th class="py-3 px-4 text-left text-[11px] uppercase tracking-wider text-slate-400 font-bold">Status Pembayaran</th>
                 <th class="py-3 px-4 text-left text-[11px] uppercase tracking-wider text-slate-400 font-bold">Status Pesanan</th>
                 <th class="py-3 px-4 text-left text-[11px] uppercase tracking-wider text-slate-400 font-bold">Status Pengiriman</th>
@@ -163,6 +164,15 @@
                         Rp {{ number_format($row->total_harga,0,',','.') }}
                     </span>
                 </td>
+
+                <td class="py-4 px-4">
+                        <span class="text-sm text-slate-700 font-medium">
+                            {{ \Carbon\Carbon::parse($row->created_at)->format('d M Y') }}
+                        </span>
+                        <p class="text-xs text-slate-400">
+                            {{ \Carbon\Carbon::parse($row->created_at)->format('H:i') }} WIB
+                        </p>
+                    </td>
 
                 <form action="{{ route('admin.pesanan.update',$row->id_pembelian) }}" method="POST">
                     @csrf

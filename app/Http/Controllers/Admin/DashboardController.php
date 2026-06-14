@@ -73,31 +73,56 @@ class DashboardController extends Controller
     }
 
     public function hapus(Request $request, $id)
-    {
-        $keyword = $request->input('search', '');
-        $id = (int) $id;
+{
+    $keyword = $request->input('search', '');
+    $id = (int) $id;
 
-        // Cek apakah produk sudah pernah dipakai di transaksi
-        $totalDipakai = DB::table('pembelian_detail as pd')
-            ->join('produk_varian as pv', 'pd.id_varian', '=', 'pv.id_varian')
-            ->where('pv.id_produk', $id)
-            ->count();
+    // 1. Cek apakah produk ini ada di dalam transaksi yang MASIH AKTIF (Belum Selesai & Belum Batal)
+    // Jika statusnya 'Pending', 'Diproses', dll., maka hitungannya akan > 0 (Tolak Hapus)
+    $totalTransaksiAktif = DB::table('pembelian_detail as pd')
+        ->join('produk_varian as pv', 'pd.id_varian', '=', 'pv.id_varian')
+        ->join('pembelian as p', 'pd.id_pembelian', '=', 'p.id_pembelian')
+        ->where('pv.id_produk', $id)
+        ->whereNotIn('p.status_pesanan', ['Selesai', 'Dibatalkan']) // 💡 Transaksi Selesai/Batal DIABAIKAN (Bisa Dihapus)
+        ->count();
 
-        $namaProduk = DB::table('produk')->where('id_produk', $id)->value('nama_produk') ?? 'Produk';
+    $namaProduk = DB::table('produk')->where('id_produk', $id)->value('nama_produk') ?? 'Produk';
 
-        if ($totalDipakai > 0) {
-            return redirect()->route('admin.dashboard', ['search' => $keyword])
-                ->with('error_hapus', "Produk \"{$namaProduk}\" tidak bisa dihapus karena sudah pernah masuk transaksi.");
+    // 2. JIKA ada transaksi yang masih berjalan/aktif, BARU kita tolak penghapusannya
+    if ($totalTransaksiAktif > 0) {
+        return redirect()->route('admin.dashboard', ['search' => $keyword])
+            ->with('error_hapus', "Produk \"{$namaProduk}\" tidak bisa dihapus karena masih ada dalam transaksi aktif user yang belum selesai.");
+    }
+
+    // 3. JIKA HANYA ADA transaksi yang Selesai/Batal, proses hapus di bawah ini akan dijalankan
+    DB::transaction(function () use ($id) {
+        // Ambil semua id_varian yang dimiliki oleh produk ini
+        $idVarians = DB::table('produk_varian')->where('id_produk', $id)->pluck('id_varian')->toArray();
+
+        if (!empty($idVarians)) {
+            // A. Bersihkan produk dari keranjang belanja user jika ada yang menyimpannya
+            DB::table('keranjang_detail')->whereIn('id_varian', $idVarians)->delete();
+
+            // B. 🛠️ PUTUS HUBUNGAN FOREIGN KEY: Ubah id_varian di riwayat pembelian (Selesai/Batal) menjadi NULL
+            // Cara ini membuat data produk bisa dihapus tanpa merusak/menghapus nota riwayat milik user
+            DB::table('pembelian_detail')
+                ->whereIn('id_varian', $idVarians)
+                ->update(['id_varian' => null]);
         }
 
+        // C. Hapus data varian produk
+        DB::table('produk_varian')->where('id_produk', $id)->delete();
+
+        // D. Hapus produk utama
         DB::table('produk')->where('id_produk', $id)->delete();
+    });
 
-        ActivityHelper::log(
-            'Hapus Produk',
-            'Menghapus produk: ' . $namaProduk
-        );
+    ActivityHelper::log(
+        'Hapus Produk',
+        'Menghapus produk: ' . $namaProduk
+    );
 
-        return redirect()->route('admin.dashboard', ['search' => $keyword])
-            ->with('success_hapus', $namaProduk);
-    }
+    return redirect()->route('admin.dashboard', ['search' => $keyword])
+        ->with('success_hapus', $namaProduk);
+}
 }

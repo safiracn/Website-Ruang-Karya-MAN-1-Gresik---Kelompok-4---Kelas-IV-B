@@ -77,8 +77,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
     Route::get('/profil', [ProfilUserController::class, 'index'])->name('profil.user');
-    Route::get('/order-sukses/{id}', [CheckoutController::class, 'orderSukses'])->name('order.sukses');
     Route::post('/pesanan/{id}/batal' ,[RiwayatController::class, 'batal'])->name('pesanan.batal');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/order-sukses/{id}', [CheckoutController::class, 'orderSukses'])->name('order.sukses');
 });
 
 /*
