@@ -148,9 +148,7 @@
                 {{-- CUSTOMER --}}
                 <td class="py-4 px-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-800 text-white font-bold flex items-center justify-center text-sm shadow-sm">
-                            {{ strtoupper(substr($row->nama_penerima,0,1)) }}
-                        </div>
+
                         <div>
                             <p class="font-semibold text-slate-800 text-sm">{{ $row->nama_penerima }}</p>
                             <p class="text-xs text-slate-400">{{ $row->no_telp_penerima }}</p>
